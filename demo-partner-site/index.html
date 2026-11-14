@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Demo Learning Platform — ACCESSFLOW embed demo</title>
+    <style>
+      :root { --ink: #1f2430; --bg: #f4f6fb; --brand: #3b3f9e; }
+      body { margin: 0; font-family: system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
+      header { background: var(--brand); color: #fff; padding: 1rem; }
+      header p { margin: 0; font-size: 1.25rem; font-weight: 700; }
+      main { max-width: 60rem; margin: 0 auto; padding: 1.5rem 1rem; }
+      .card { background: #fff; border: 1px solid #c9cde0; border-radius: 1rem; padding: 1.25rem; margin-bottom: 1.5rem; }
+      label, select { font-size: 1rem; }
+      select { min-height: 44px; }
+      #events { font-family: ui-monospace, monospace; background: #111; color: #9ef09e; padding: 1rem; border-radius: .5rem; min-height: 3rem; }
+      a { color: var(--brand); }
+    </style>
+  </head>
+  <body>
+    <header><p>Demo Learning Platform</p></header>
+    <main>
+      <h1>Start your career journey</h1>
+      <p>
+        This neutral demo page is a <strong>separate website</strong> (different origin) showing how a learning platform embeds
+        ACCESSFLOW with one script tag. It is not Savanna and does not imitate any real platform.
+      </p>
+
+      <section class="card" aria-labelledby="signup-title">
+        <h2 id="signup-title">Create your accessible profile</h2>
+        <p>
+          <label for="locale">Language for the embedded form:</label>
+          <select id="locale">
+            <option value="en">English</option>
+            <option value="am">አማርኛ</option>
+            <option value="om">Afaan Oromoo</option>
+            <option value="so">Soomaali</option>
+            <option value="ti">ትግርኛ</option>
+          </select>
+        </p>
+        <accessflow-signup id="signup" partner-key="pk_demo_learning_platform" locale="en" frame-title="ACCESSFLOW: create your account"></accessflow-signup>
+      </section>
+
+      <section class="card" aria-labelledby="job-title">
+        <h2 id="job-title">Featured job: Customer Support Agent</h2>
+        <accessflow-job-application partner-key="pk_demo_learning_platform" job-id="0c000000-0000-4000-8000-000000000001"
+          frame-title="ACCESSFLOW: apply for Customer Support Agent"></accessflow-job-application>
+      </section>
+
+      <section class="card" aria-labelledby="events-title">
+        <h2 id="events-title">Events received by this page</h2>
+        <p>The partner page only receives opaque events — never personal data.</p>
+        <pre id="events" aria-live="polite">(none yet)</pre>
+      </section>
+    </main>
+    <script>
+      // ACCESSFLOW_HOST is replaced by serve.mjs; default for local demos.
+      const host = window.ACCESSFLOW_HOST || 'http://localhost:8081'
+      const s = document.createElement('script')
+      s.src = host + '/accessflow.js'
+      document.body.appendChild(s)
+      const log = document.getElementById('events')
+      const show = (e) => { log.textContent = (log.textContent === '(none yet)' ? '' : log.textContent + '\n') + e.type + ' ' + JSON.stringify(e.detail) }
+      document.addEventListener('accessflow:ready', show)
+      document.addEventListener('accessflow:completed', show)
+      document.getElementById('locale').addEventListener('change', (e) => document.getElementById('signup').setAttribute('locale', e.target.value))
+    </script>
+  </body>
+</html>

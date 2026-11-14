@@ -50,23 +50,21 @@ export function ReviewStep({
       <dl className="flex flex-col divide-y divide-line rounded-2xl border-2 border-line bg-surface">
         {visibleSteps(def, data).flatMap((step) =>
           step.fields.map((f) => (
-            <div
-              key={f.id}
-              className="flex flex-col gap-2 p-4 sm:flex-row sm:items-start sm:justify-between"
-            >
-              <div className="flex flex-col gap-1">
-                <dt className="font-semibold text-muted">{text(f).label}</dt>
-                <dd className="whitespace-pre-line text-lg">{display(f)}</dd>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                icon={<Pencil size={16} aria-hidden="true" />}
-                onClick={() => onChange(step.id)}
-              >
-                {t('flow.change')}
-                <span className="sr-only">: {text(f).label}</span>
-              </Button>
+            // A <dl> may only contain div > (dt + dd); the Change button therefore lives inside the dd.
+            <div key={f.id} className="flex flex-col gap-1 p-4">
+              <dt className="font-semibold text-muted">{text(f).label}</dt>
+              <dd className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <span className="whitespace-pre-line text-lg">{display(f)}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={<Pencil size={16} aria-hidden="true" />}
+                  onClick={() => onChange(step.id)}
+                >
+                  {t('flow.change')}
+                  <span className="sr-only">: {text(f).label}</span>
+                </Button>
+              </dd>
             </div>
           )),
         )}

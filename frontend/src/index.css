@@ -14,7 +14,8 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('./assets/fonts/noto-sans-ethiopic-ethiopic-400-normal.woff2') format('woff2');
+  /* Use the font already installed on the device (Android ships Noto Sans Ethiopic) before downloading it. */
+  src: local('Noto Sans Ethiopic'), local('NotoSansEthiopic-Regular'), url('./assets/fonts/noto-sans-ethiopic-ethiopic-400-normal.woff2') format('woff2');
   /* Downloaded only when Ethiopic characters are on the page (Amharic, Tigrinya). */
   unicode-range: U+1200-139F, U+2D80-2DDF, U+AB00-AB2F, U+1E7E0-1E7FF;
 }
@@ -23,7 +24,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('./assets/fonts/noto-sans-ethiopic-ethiopic-700-normal.woff2') format('woff2');
+  src: local('Noto Sans Ethiopic Bold'), local('NotoSansEthiopic-Bold'), url('./assets/fonts/noto-sans-ethiopic-ethiopic-700-normal.woff2') format('woff2');
   unicode-range: U+1200-139F, U+2D80-2DDF, U+AB00-AB2F, U+1E7E0-1E7FF;
 }
 
@@ -186,13 +187,12 @@ body {
   border-width: 2px;
 }
 
+/* Movement only: text is never faded, so it is at full contrast from the first frame. */
 @keyframes af-fade-up {
   from {
-    opacity: 0;
     transform: translateY(6px);
   }
   to {
-    opacity: 1;
     transform: none;
   }
 }
