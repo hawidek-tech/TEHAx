@@ -1,0 +1,16 @@
+{
+  "key": "support-request",
+  "version": 1,
+  "sections": ["support"],
+  "steps": [
+    { "id": "supportCategory", "section": "support", "fields": [
+      { "id": "supportCategory", "type": "radio", "required": true, "icon": "help", "options": [
+        { "value": "REGISTRATION_HELP" }, { "value": "APPLICATION_HELP" }, { "value": "INTERVIEW_SUPPORT" },
+        { "value": "WORKPLACE_ADJUSTMENT" }, { "value": "TECHNOLOGY" }, { "value": "OTHER" } ] } ] },
+    { "id": "supportMessage", "section": "support", "fields": [
+      { "id": "supportMessage", "type": "textarea", "required": true, "maxLength": 2000, "sensitive": true, "icon": "message" } ] },
+    { "id": "supportContact", "section": "support", "fields": [
+      { "id": "supportContact", "type": "radio", "required": true, "icon": "contact", "options": [
+        { "value": "IN_APP" }, { "value": "PHONE" }, { "value": "SMS" }, { "value": "EMAIL" } ] } ] }
+  ]
+}

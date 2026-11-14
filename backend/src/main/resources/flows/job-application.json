@@ -1,0 +1,29 @@
+{
+  "key": "job-application",
+  "version": 1,
+  "sections": ["contact", "answers", "sharing"],
+  "requireOneOf": ["contactPhone", "contactEmail"],
+  "steps": [
+    { "id": "contactPhone", "section": "contact", "fields": [
+      { "id": "contactPhone", "type": "tel", "prefill": "account.phone", "autocomplete": "tel", "icon": "phone" } ] },
+    { "id": "contactEmail", "section": "contact", "fields": [
+      { "id": "contactEmail", "type": "email", "prefill": "account.email", "autocomplete": "email", "icon": "mail" } ] },
+    { "id": "motivation", "section": "answers", "fields": [
+      { "id": "motivation", "type": "textarea", "required": true, "minLength": 10, "maxLength": 2000, "icon": "message" } ] },
+    { "id": "relevantExperience", "section": "answers", "fields": [
+      { "id": "relevantExperience", "type": "textarea", "required": true, "maxLength": 2000, "prefill": "profile.summary", "icon": "briefcase" } ] },
+    { "id": "availability", "section": "answers", "fields": [
+      { "id": "availability", "type": "radio", "required": true, "icon": "calendar", "options": [
+        { "value": "IMMEDIATELY" }, { "value": "TWO_WEEKS" }, { "value": "ONE_MONTH" }, { "value": "LATER" } ] } ] },
+    { "id": "shareSections", "section": "sharing", "fields": [
+      { "id": "shareSections", "type": "checkboxes", "required": true, "icon": "shield",
+        "defaultValue": ["NAME", "LOCATION", "EDUCATION", "EXPERIENCE", "SKILLS", "LANGUAGES"],
+        "options": [ { "value": "NAME" }, { "value": "LOCATION" }, { "value": "EDUCATION" }, { "value": "EXPERIENCE" },
+                     { "value": "SKILLS" }, { "value": "LANGUAGES" }, { "value": "RESUME" } ] } ] },
+    { "id": "shareAccommodation", "section": "sharing", "fields": [
+      { "id": "shareAccommodation", "type": "radio", "required": true, "defaultValue": "no", "icon": "lock",
+        "options": [ { "value": "no" }, { "value": "yes" } ] } ] },
+    { "id": "accommodationNote", "section": "sharing", "showIf": { "field": "shareAccommodation", "in": ["yes"] }, "fields": [
+      { "id": "accommodationNote", "type": "textarea", "required": true, "maxLength": 2000, "sensitive": true, "icon": "message" } ] }
+  ]
+}

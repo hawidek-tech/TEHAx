@@ -1,0 +1,74 @@
+{
+  "key": "profile",
+  "version": 1,
+  "sections": ["about", "location", "work", "education", "identity", "support"],
+  "steps": [
+    { "id": "givenName", "section": "about", "fields": [
+      { "id": "givenName", "type": "text", "required": true, "maxLength": 100, "autocomplete": "given-name", "icon": "user" } ] },
+    { "id": "fatherName", "section": "about", "fields": [
+      { "id": "fatherName", "type": "text", "required": true, "maxLength": 100, "autocomplete": "family-name", "icon": "user" } ] },
+    { "id": "grandfatherName", "section": "about", "fields": [
+      { "id": "grandfatherName", "type": "text", "maxLength": 100, "autocomplete": "additional-name", "icon": "user" } ] },
+    { "id": "birthYear", "section": "about", "fields": [
+      { "id": "birthYear", "type": "year", "min": 1940, "max": -14, "autocomplete": "bday-year", "icon": "calendar" } ] },
+    { "id": "region", "section": "location", "fields": [
+      { "id": "region", "type": "select", "required": true, "optionsSource": "regions", "icon": "map" } ] },
+    { "id": "city", "section": "location", "fields": [
+      { "id": "city", "type": "text", "maxLength": 100, "autocomplete": "address-level2", "icon": "map" } ] },
+    { "id": "headline", "section": "work", "fields": [
+      { "id": "headline", "type": "text", "required": true, "maxLength": 200, "icon": "briefcase" } ] },
+    { "id": "summary", "section": "work", "fields": [
+      { "id": "summary", "type": "textarea", "maxLength": 2000, "icon": "text" } ] },
+    { "id": "experience", "section": "work", "fields": [
+      { "id": "experience", "type": "list", "maxItems": 10, "icon": "briefcase", "itemFields": [
+        { "id": "title", "type": "text", "required": true, "maxLength": 120 },
+        { "id": "organization", "type": "text", "required": true, "maxLength": 120 },
+        { "id": "startYear", "type": "year", "min": 1950, "max": 0 },
+        { "id": "endYear", "type": "year", "min": 1950, "max": 0 },
+        { "id": "description", "type": "textarea", "maxLength": 1000 } ] } ] },
+    { "id": "education", "section": "education", "fields": [
+      { "id": "education", "type": "list", "maxItems": 10, "icon": "school", "itemFields": [
+        { "id": "level", "type": "select", "required": true, "options": [
+          { "value": "PRIMARY" }, { "value": "SECONDARY" }, { "value": "TVET" }, { "value": "DIPLOMA" },
+          { "value": "BACHELOR" }, { "value": "MASTER" }, { "value": "DOCTORATE" }, { "value": "OTHER" } ] },
+        { "id": "institution", "type": "text", "required": true, "maxLength": 150 },
+        { "id": "field", "type": "text", "maxLength": 120 },
+        { "id": "yearCompleted", "type": "year", "min": 1950, "max": 6 } ] } ] },
+    { "id": "skills", "section": "education", "fields": [
+      { "id": "skills", "type": "textarea", "maxLength": 1000, "icon": "star" } ] },
+    { "id": "languages", "section": "education", "fields": [
+      { "id": "languages", "type": "checkboxes", "icon": "language", "options": [
+        { "value": "am" }, { "value": "om" }, { "value": "so" }, { "value": "ti" }, { "value": "en" },
+        { "value": "sgn" }, { "value": "other" } ] } ] },
+    { "id": "identityRoute", "section": "identity", "fields": [
+      { "id": "identityRoute", "type": "radio", "required": true, "icon": "id", "options": [
+        { "value": "NATIONAL_ID" }, { "value": "KEBELE_ID" }, { "value": "PASSPORT" }, { "value": "REFUGEE_ID" },
+        { "value": "OTHER_DOCUMENT" }, { "value": "PARTNER_REFERRAL" }, { "value": "REFER_ME" }, { "value": "LATER" } ] } ] },
+    { "id": "documentLabel", "section": "identity", "showIf": { "field": "identityRoute", "in": ["OTHER_DOCUMENT"] }, "fields": [
+      { "id": "documentLabel", "type": "text", "required": true, "maxLength": 100, "icon": "id" } ] },
+    { "id": "documentLast4", "section": "identity",
+      "showIf": { "field": "identityRoute", "in": ["NATIONAL_ID", "KEBELE_ID", "PASSPORT", "REFUGEE_ID", "OTHER_DOCUMENT"] }, "fields": [
+      { "id": "documentLast4", "type": "text", "required": true, "minLength": 4, "maxLength": 4, "validator": "last4",
+        "sensitive": true, "icon": "id" } ] },
+    { "id": "documentFile", "section": "identity",
+      "showIf": { "field": "identityRoute", "in": ["NATIONAL_ID", "KEBELE_ID", "PASSPORT", "REFUGEE_ID", "OTHER_DOCUMENT"] }, "fields": [
+      { "id": "documentFile", "type": "file", "filePurpose": "IDENTITY_DOCUMENT", "sensitive": true, "voice": false, "icon": "upload" } ] },
+    { "id": "referralPartner", "section": "identity", "showIf": { "field": "identityRoute", "in": ["PARTNER_REFERRAL", "REFER_ME"] }, "fields": [
+      { "id": "referralPartner", "type": "select", "required": true, "optionsSource": "referralPartners", "icon": "handshake" } ] },
+    { "id": "referralCode", "section": "identity", "showIf": { "field": "identityRoute", "in": ["PARTNER_REFERRAL"] }, "fields": [
+      { "id": "referralCode", "type": "text", "required": true, "maxLength": 64, "icon": "handshake" } ] },
+    { "id": "supportNeeded", "section": "support", "fields": [
+      { "id": "supportNeeded", "type": "radio", "required": true, "icon": "help", "options": [ { "value": "no" }, { "value": "yes" } ] } ] },
+    { "id": "supportCategory", "section": "support", "showIf": { "field": "supportNeeded", "in": ["yes"] }, "fields": [
+      { "id": "supportCategory", "type": "radio", "required": true, "icon": "help", "options": [
+        { "value": "REGISTRATION_HELP" }, { "value": "APPLICATION_HELP" }, { "value": "INTERVIEW_SUPPORT" },
+        { "value": "WORKPLACE_ADJUSTMENT" }, { "value": "TECHNOLOGY" }, { "value": "OTHER" } ] } ] },
+    { "id": "supportMessage", "section": "support", "showIf": { "field": "supportNeeded", "in": ["yes"] }, "fields": [
+      { "id": "supportMessage", "type": "textarea", "required": true, "maxLength": 2000, "sensitive": true, "icon": "message" } ] },
+    { "id": "supportContact", "section": "support", "showIf": { "field": "supportNeeded", "in": ["yes"] }, "fields": [
+      { "id": "supportContact", "type": "radio", "required": true, "icon": "contact", "options": [
+        { "value": "IN_APP" }, { "value": "PHONE" }, { "value": "SMS" }, { "value": "EMAIL" } ] } ] },
+    { "id": "workplaceSupport", "section": "support", "fields": [
+      { "id": "workplaceSupport", "type": "checkboxes", "optionsSource": "accommodations", "sensitive": true, "icon": "shield" } ] }
+  ]
+}

@@ -4,3 +4,7 @@ spring:
     url: ${DB_TEST_URL}
   flyway:
     clean-disabled: true
+accessflow:
+  storage-dir: ${java.io.tmpdir}/accessflow-test-storage
+  rate-limits:
+    registrations-per-ip-per-hour: 100000
