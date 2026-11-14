@@ -4,9 +4,12 @@
   "categories": { "correctness": "error" },
   "rules": {
     "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }],
     // <output> has inconsistent live-region support across screen readers;
     // an explicit role="status" is announced more reliably.
-    "jsx-a11y/prefer-tag-over-role": "off"
+    "jsx-a11y/prefer-tag-over-role": "off",
+    // Fast-refresh hint only (developer experience); not a correctness or accessibility issue.
+    "react/only-export-components": "off",
+    // Our labels wrap the control plus nested text spans; allow the nesting depth we use.
+    "jsx-a11y/label-has-associated-control": ["error", { "depth": 4 }]
   }
 }

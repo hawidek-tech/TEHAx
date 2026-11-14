@@ -49,6 +49,8 @@ public class AssistantController {
             @Size(max = 64) String fieldId,
             @Size(max = 300) String fieldLabel,
             @Size(max = 32) String topic,
+            /** Public content to explain (e.g. a job description). The UI never puts personal data here. */
+            @Size(max = 6000) String contextText,
             boolean allowExternalAi) {}
 
     public record AskResponse(String answer, String source, boolean aiAvailable, boolean uncertain,
@@ -73,7 +75,8 @@ public class AssistantController {
 
         if (provider != null && req.allowExternalAi()) {
             String context = "flow=" + safe(req.flowKey()) + ", field=" + safe(req.fieldId())
-                    + (req.fieldLabel() == null ? "" : ", question shown to user: \"" + req.fieldLabel() + "\"");
+                    + (req.fieldLabel() == null ? "" : ", question shown to user: \"" + req.fieldLabel() + "\"")
+                    + (req.contextText() == null ? "" : "\nPUBLIC TEXT THE USER WANTS EXPLAINED SIMPLY:\n" + PersonalDataRedactor.redact(req.contextText()));
             var answer = provider.answer(PersonalDataRedactor.redact(req.question()), context, req.locale(), articles);
             if (answer.isPresent()) {
                 return new AskResponse(answer.get(), "ai", true, articles.isEmpty(), dtos, "/support");

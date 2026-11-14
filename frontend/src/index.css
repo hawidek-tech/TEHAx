@@ -1,41 +1,127 @@
 @import 'tailwindcss';
 
 /*
- * Design tokens. Phase 2 extends these into the full preference system
- * (text size, high contrast, reduced motion, keyboard-first focus).
- * Colour pairs below meet WCAG 2.2 AA contrast (checked: text 15.9:1, accent 9.4:1).
+ * ACCESSFLOW design system tokens.
+ * Contrast ratios (computed with the WCAG 2.x relative-luminance formula; text needs 4.5:1, UI boundaries 3:1):
+ *   ink/bg 15.1   muted/surface 8.0   white on primary 8.2   primary/primary-soft 6.9
+ *   danger/surface 6.5   success/surface 6.5   warning-ink/warning-soft 7.1   accent/surface 6.8
+ *   field-border/surface 4.7 (form control boundaries)   --af-line is decorative only (dividers)
+ *   Focus indicator: ink outline (15:1) plus a yellow halo.
+ * High-contrast mode replaces these with a black/white/yellow palette (yellow on black 14.7).
  */
+@font-face {
+  font-family: 'Noto Sans Ethiopic';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./assets/fonts/noto-sans-ethiopic-ethiopic-400-normal.woff2') format('woff2');
+  /* Downloaded only when Ethiopic characters are on the page (Amharic, Tigrinya). */
+  unicode-range: U+1200-139F, U+2D80-2DDF, U+AB00-AB2F, U+1E7E0-1E7FF;
+}
+@font-face {
+  font-family: 'Noto Sans Ethiopic';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./assets/fonts/noto-sans-ethiopic-ethiopic-700-normal.woff2') format('woff2');
+  unicode-range: U+1200-139F, U+2D80-2DDF, U+AB00-AB2F, U+1E7E0-1E7FF;
+}
+
 @theme {
-  --color-surface: #ffffff;
-  --color-ink: #1a1a1a;
-  --color-accent: #0b3d2e;
-  --color-focus: #ffbf47;
-}
-
-html {
-  font-size: 100%; /* Respect the user's browser text-size setting. */
-}
-
-body {
-  background: var(--color-surface);
-  color: var(--color-ink);
-  font-family:
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    'Noto Sans',
-    'Noto Sans Ethiopic',
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Noto Sans Ethiopic', 'Nyala',
     sans-serif;
-  line-height: 1.6;
+  --color-bg: var(--af-bg);
+  --color-surface: var(--af-surface);
+  --color-surface-2: var(--af-surface-2);
+  --color-ink: var(--af-ink);
+  --color-muted: var(--af-muted);
+  --color-line: var(--af-line);
+  --color-field: var(--af-field-border);
+  --color-primary: var(--af-primary);
+  --color-primary-strong: var(--af-primary-strong);
+  --color-primary-soft: var(--af-primary-soft);
+  --color-on-primary: var(--af-on-primary);
+  --color-accent: var(--af-accent);
+  --color-accent-soft: var(--af-accent-soft);
+  --color-danger: var(--af-danger);
+  --color-danger-soft: var(--af-danger-soft);
+  --color-success: var(--af-success);
+  --color-success-soft: var(--af-success-soft);
+  --color-warning-ink: var(--af-warning-ink);
+  --color-warning-soft: var(--af-warning-soft);
+  --color-focus: var(--af-focus);
+  --radius-card: 1rem;
 }
 
-:focus-visible {
-  outline: 3px solid var(--color-ink);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 6px var(--color-focus);
+:root {
+  --af-bg: #f6f5f1;
+  --af-surface: #ffffff;
+  --af-surface-2: #eef2ef;
+  --af-ink: #17211d;
+  --af-muted: #48534e;
+  --af-line: #c9d1cc;
+  --af-field-border: #6b7570;
+  --af-primary: #0e5a48;
+  --af-primary-strong: #0a4538;
+  --af-primary-soft: #e1efe9;
+  --af-on-primary: #ffffff;
+  --af-accent: #9a3f12;
+  --af-accent-soft: #fbeee5;
+  --af-danger: #b3261e;
+  --af-danger-soft: #fdecea;
+  --af-success: #146c2e;
+  --af-success-soft: #e6f4ea;
+  --af-warning-ink: #7a4600;
+  --af-warning-soft: #fff4dc;
+  --af-focus: #ffbf47;
+  --af-focus-width: 3px;
+  --af-motion: 180ms;
+  color-scheme: light;
 }
 
+/* High contrast: maximum legibility, no reliance on subtle shades. */
+:root[data-contrast='high'] {
+  --af-bg: #000000;
+  --af-surface: #000000;
+  --af-surface-2: #121212;
+  --af-ink: #ffffff;
+  --af-muted: #ffffff;
+  --af-line: #ffffff;
+  --af-field-border: #ffffff;
+  --af-primary: #ffd400;
+  --af-primary-strong: #ffe766;
+  --af-primary-soft: #1d1a00;
+  --af-on-primary: #000000;
+  --af-accent: #7fe3ff;
+  --af-accent-soft: #001a22;
+  --af-danger: #ff8a80;
+  --af-danger-soft: #2a0000;
+  --af-success: #8cf5a5;
+  --af-success-soft: #002a10;
+  --af-warning-ink: #ffd400;
+  --af-warning-soft: #221c00;
+  --af-focus: #7fe3ff;
+  color-scheme: dark;
+}
+
+/* Keyboard-first: thicker, always-visible focus indicators. */
+:root[data-keyboard='true'] {
+  --af-focus-width: 5px;
+}
+
+/* Reduced motion: user setting OR operating-system setting. */
+:root[data-motion='reduced'] {
+  --af-motion: 0ms;
+}
+:root[data-motion='reduced'] *,
+:root[data-motion='reduced'] *::before,
+:root[data-motion='reduced'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -43,5 +129,82 @@ body {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+html {
+  /* Text size preference sets the root size; every rem-based size scales with it (100%–200%). */
+  font-size: calc(100% * var(--af-text-scale, 1));
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--af-bg);
+  color: var(--af-ink);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+}
+
+/* Ethiopic script needs a little more line height to stay readable. */
+:lang(am),
+:lang(ti) {
+  line-height: 1.85;
+}
+
+:focus-visible {
+  outline: var(--af-focus-width) solid var(--af-ink);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 calc(var(--af-focus-width) + 3px) var(--af-focus);
+  border-radius: 0.375rem;
+}
+
+/* Visible focus for programmatically focused headings (step changes). */
+[tabindex='-1']:focus {
+  outline: none;
+}
+[tabindex='-1']:focus-visible {
+  outline: var(--af-focus-width) solid var(--af-ink);
+}
+
+.af-transition {
+  transition:
+    background-color var(--af-motion) ease,
+    border-color var(--af-motion) ease,
+    color var(--af-motion) ease,
+    transform var(--af-motion) ease,
+    box-shadow var(--af-motion) ease;
+}
+
+.af-card {
+  background: var(--af-surface);
+  border: 1px solid var(--af-line);
+  border-radius: var(--radius-card);
+}
+:root[data-contrast='high'] .af-card {
+  border-width: 2px;
+}
+
+@keyframes af-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.af-enter {
+  animation: af-fade-up calc(var(--af-motion) * 1.5) ease-out;
+}
+
+@media print {
+  header,
+  nav,
+  footer,
+  .no-print {
+    display: none !important;
   }
 }
