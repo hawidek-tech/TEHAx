@@ -1,0 +1,6 @@
+# Tests run against a separate database so they never touch development data.
+spring:
+  datasource:
+    url: ${DB_TEST_URL}
+  flyway:
+    clean-disabled: true

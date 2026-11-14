@@ -1,0 +1,37 @@
+# --- Secrets & local environment (never commit) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+
+# --- OS / editors ---
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# --- Backend (Maven) ---
+backend/target/
+!backend/.mvn/wrapper/maven-wrapper.properties
+
+# --- Frontend (Node / Vite) ---
+node_modules/
+frontend/dist/
+frontend/coverage/
+*.tsbuildinfo
+npm-debug.log*
+
+# --- Tests & reports ---
+playwright-report/
+test-results/
+*.log
+
+# --- Local uploads (resumes are personal data) ---
+uploads/
+storage/

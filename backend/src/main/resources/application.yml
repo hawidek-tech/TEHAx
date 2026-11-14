@@ -1,0 +1,36 @@
+# Configuration values come from environment variables.
+# For local development, put them in backend/.env (gitignored). See backend/.env.example.
+spring:
+  application:
+    name: accessflow
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate   # Schema is owned by Flyway migrations only.
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-stacktrace: never
+    include-message: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+accessflow:
+  version: '@project.version@'
