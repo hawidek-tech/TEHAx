@@ -10,8 +10,13 @@ test('registration can be completed with the keyboard only', async ({ page }) =>
   await expect(page.getByRole('link', { name: 'Skip to main content' })).toBeFocused()
   await press('Enter')
 
-  const tabTo = async (name: RegExp | string, role: 'button' | 'textbox' | 'radio' | 'checkbox' = 'button', max = 40) => {
-    const target = role === 'textbox' ? page.getByRole('textbox', { name }) : page.getByRole(role, { name })
+  const tabTo = async (
+    name: RegExp | string,
+    role: 'button' | 'textbox' | 'radio' | 'checkbox' = 'button',
+    max = 40,
+  ) => {
+    const target =
+      role === 'textbox' ? page.getByRole('textbox', { name }) : page.getByRole(role, { name })
     for (let i = 0; i < max; i++) {
       if (await target.evaluate((el) => el === document.activeElement).catch(() => false)) return
       await press('Tab')

@@ -1,0 +1,50 @@
+# ACCESSFLOW - local / demo deployment.
+#   cp .env.example .env   # then set POSTGRES_PASSWORD (and optionally DEMO_ACCOUNTS_PASSWORD, ANTHROPIC_API_KEY)
+#   docker compose up --build
+#   docker compose --profile demo up --build   # also starts the demo partner site on :5500
+# NOTE: not yet executed in this project's environment (Docker was unavailable). See PROJECT_STATUS.md.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: accessflow
+      POSTGRES_USER: accessflow
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U accessflow -d accessflow"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/accessflow
+      DB_USERNAME: accessflow
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}          # true when served over HTTPS
+      DEMO_ACCOUNTS_PASSWORD: ${DEMO_ACCOUNTS_PASSWORD:-}  # leave empty in production
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}            # optional AI assistant
+    ports:
+      - "8080:8080"
+    volumes:
+      - uploads:/app/storage
+
+  demo-partner:
+    image: node:22-alpine
+    profiles: ["demo"]
+    working_dir: /site
+    command: ["node", "serve.mjs", "5500", "http://localhost:8080"]
+    volumes:
+      - ./demo-partner-site:/site:ro
+    ports:
+      - "5500:5500"
+
+volumes:
+  db-data:
+  uploads:

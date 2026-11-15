@@ -11,14 +11,19 @@ const base = process.env.E2E_BASE_URL ?? 'http://localhost:8081'
 
 test.beforeAll(async () => {
   for (const port of [5500, 5599]) {
-    const p = spawn('node', ['../demo-partner-site/serve.mjs', String(port), base], { stdio: 'ignore' })
+    const p = spawn('node', ['../demo-partner-site/serve.mjs', String(port), base], {
+      stdio: 'ignore',
+    })
     servers.push(p)
   }
   await new Promise((r) => setTimeout(r, 800))
 })
 test.afterAll(() => servers.forEach((s) => s.kill()))
 
-test('registered partner origin: sign up inside the frame without any cookies', async ({ page, context }) => {
+test('registered partner origin: sign up inside the frame without any cookies', async ({
+  page,
+  context,
+}) => {
   // Block ALL cookies for the ACCESSFLOW origin, simulating strict third-party cookie blocking.
   await context.route(`${base}/**`, async (route) => {
     const headers = { ...route.request().headers() }
@@ -29,7 +34,9 @@ test('registered partner origin: sign up inside the frame without any cookies', 
     await route.fulfill({ response, headers: respHeaders })
   })
   await page.goto('http://localhost:5500/')
-  await expect(page.getByRole('heading', { level: 1, name: 'Start your career journey' })).toBeVisible()
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Start your career journey' }),
+  ).toBeVisible()
   const frame = page.frameLocator('iframe[title="ACCESSFLOW: create your account"]')
   await expect(frame.getByRole('heading', { level: 1, name: 'Create your account' })).toBeVisible()
   await expect(frame.getByText('with Demo Learning Platform')).toBeVisible()
@@ -53,7 +60,9 @@ test('registered partner origin: sign up inside the frame without any cookies', 
   await expect(frame.getByRole('link', { name: /Open ACCESSFLOW in a new tab/ })).toBeVisible()
 })
 
-test('unregistered origin: the browser refuses to render the frame (frame-ancestors) and the fallback link remains', async ({ page }) => {
+test('unregistered origin: the browser refuses to render the frame (frame-ancestors) and the fallback link remains', async ({
+  page,
+}) => {
   const blocked: string[] = []
   page.on('console', (m) => m.text().includes('frame-ancestors') && blocked.push(m.text()))
   await page.goto('http://localhost:5599/')
@@ -62,6 +71,8 @@ test('unregistered origin: the browser refuses to render the frame (frame-ancest
   await page.waitForTimeout(2000)
   const frame = page.frameLocator('iframe[title="ACCESSFLOW: create your account"]')
   await expect(frame.getByRole('heading', { name: 'Create your account' })).toHaveCount(0)
-  await expect(page.getByRole('link', { name: 'Having trouble? Open ACCESSFLOW in a new tab' }).first()).toBeVisible()
+  await expect(
+    page.getByRole('link', { name: 'Having trouble? Open ACCESSFLOW in a new tab' }).first(),
+  ).toBeVisible()
   expect(blocked.length).toBeGreaterThan(0)
 })

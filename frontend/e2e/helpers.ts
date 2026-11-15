@@ -6,15 +6,23 @@ export const PASSWORD = 'my coffee is hot today'
 
 /** Runs axe-core with WCAG 2.0/2.1/2.2 A and AA rules; fails on any serious or critical violation. */
 export async function expectNoSeriousA11yViolations(page: Page, label: string) {
-  const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze()
-  const serious = results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical')
-  const summary = serious.map((v) => `${v.id} (${v.impact}): ${v.nodes.length} node(s) — ${v.nodes[0]?.target.join(' ')}`)
+  const results = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+    .analyze()
+  const serious = results.violations.filter(
+    (v) => v.impact === 'serious' || v.impact === 'critical',
+  )
+  const summary = serious.map(
+    (v) => `${v.id} (${v.impact}): ${v.nodes.length} node(s) — ${v.nodes[0]?.target.join(' ')}`,
+  )
   expect(summary, `axe serious/critical violations on ${label}`).toEqual([])
   return results
 }
 
 export async function next(page: Page) {
-  await page.getByRole('button', { name: /^(Next|Check my answers|Save and go back to my answers)$/ }).click()
+  await page
+    .getByRole('button', { name: /^(Next|Check my answers|Save and go back to my answers)$/ })
+    .click()
 }
 
 export async function currentQuestion(page: Page) {
@@ -53,7 +61,9 @@ export async function completeProfile(page: Page) {
   await next(page) // city (optional)
   await page.getByLabel('What kind of work are you looking for?').fill('Customer service')
   await next(page)
-  await page.getByLabel('Tell employers a little about yourself').fill('Three years helping customers by phone.')
+  await page
+    .getByLabel('Tell employers a little about yourself')
+    .fill('Three years helping customers by phone.')
   await next(page)
   await next(page) // experience (optional list)
   // Education: add one entry through the repeatable list
@@ -61,7 +71,9 @@ export async function completeProfile(page: Page) {
   await page.getByLabel('Level').selectOption({ label: 'Diploma' })
   await page.getByLabel('School or college').fill('Adama TVET College')
   await page.getByRole('button', { name: 'Save this entry' }).click()
-  await expect(page.getByRole('listitem').filter({ hasText: 'Diploma · Adama TVET College' })).toBeVisible()
+  await expect(
+    page.getByRole('listitem').filter({ hasText: 'Diploma · Adama TVET College' }),
+  ).toBeVisible()
   await next(page)
   await page.getByLabel('What are your skills?').fill('Typing, Amharic, English')
   await next(page)
@@ -76,7 +88,9 @@ export async function completeProfile(page: Page) {
   await next(page)
   await page.getByLabel('Interviews').check()
   await next(page)
-  await page.getByLabel('Tell us what would help you').fill('Please send interview questions in writing.')
+  await page
+    .getByLabel('Tell us what would help you')
+    .fill('Please send interview questions in writing.')
   await next(page)
   await page.getByLabel('Message in ACCESSFLOW').check()
   await next(page)

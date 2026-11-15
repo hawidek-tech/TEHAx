@@ -14,7 +14,9 @@ test.describe('accessibility preferences change the interface', () => {
   test('high contrast switches to the black/yellow palette', async ({ page }) => {
     await page.getByRole('switch', { name: /High contrast/ }).check()
     await expect(page.locator('html')).toHaveAttribute('data-contrast', 'high')
-    expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(0, 0, 0)')
+    expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe(
+      'rgb(0, 0, 0)',
+    )
   })
 
   test('simple words replace instructions with simplified text', async ({ page }) => {
@@ -28,7 +30,12 @@ test.describe('accessibility preferences change the interface', () => {
   })
 
   test('listen buttons can be hidden', async ({ page }) => {
-    await expect(page.getByRole('group', { name: 'Listen' }).or(page.getByText(/Listening is not available/)).first()).toBeVisible()
+    await expect(
+      page
+        .getByRole('group', { name: 'Listen' })
+        .or(page.getByText(/Listening is not available/))
+        .first(),
+    ).toBeVisible()
     await page.getByRole('switch', { name: /Listen buttons/ }).uncheck()
     await expect(page.getByRole('button', { name: 'Listen' })).toHaveCount(0)
     await expect(page.getByText(/Listening is not available/)).toHaveCount(0)
@@ -38,13 +45,22 @@ test.describe('accessibility preferences change the interface', () => {
     await page.getByRole('switch', { name: /Keyboard first/ }).check()
     await expect(page.locator('html')).toHaveAttribute('data-keyboard', 'true')
     await expect(page.getByRole('link', { name: 'Skip to main content' })).toBeVisible()
-    expect(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--af-focus-width').trim())).toBe('5px')
+    expect(
+      await page.evaluate(() =>
+        getComputedStyle(document.documentElement).getPropertyValue('--af-focus-width').trim(),
+      ),
+    ).toBe('5px')
   })
 
   test('reduce motion turns off transitions', async ({ page }) => {
     await page.getByRole('switch', { name: /Reduce motion/ }).check()
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'reduced')
-    const duration = await page.evaluate(() => getComputedStyle(document.querySelector('.af-transition')!).transitionDuration)
+    const duration = await page.evaluate(
+      () =>
+        getComputedStyle(document.querySelector('.af-transition')!).transitionDuration.split(
+          ',',
+        )[0],
+    )
     expect(parseFloat(duration)).toBeLessThan(0.01)
   })
 
@@ -58,7 +74,7 @@ test.describe('accessibility preferences change the interface', () => {
   test('language switch translates the whole interface and sets lang', async ({ page }) => {
     await page.getByRole('radio', { name: /Afaan Oromoo/ }).check()
     await expect(page.locator('html')).toHaveAttribute('lang', 'om')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Qindaa\'ina keessan yaalaa')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText("Qindaa'ina keessan yaalaa")
     await page.getByRole('radio', { name: /ትግርኛ/ }).check()
     await expect(page.locator('html')).toHaveAttribute('lang', 'ti')
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('ቅጥዕታትኩም ፈትኑ')
@@ -70,11 +86,15 @@ test.describe('accessibility preferences change the interface', () => {
     await page.getByLabel('What should we call you?').fill('Shared Phone')
     await page.getByRole('button', { name: 'Next' }).click()
     await page.waitForTimeout(1200)
-    const drafts = await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('af:draft:')))
+    const drafts = await page.evaluate(() =>
+      Object.keys(localStorage).filter((k) => k.startsWith('af:draft:')),
+    )
     expect(drafts).toEqual([])
   })
 
-  test('without shared device mode, passwords are still never stored on the device', async ({ page }) => {
+  test('without shared device mode, passwords are still never stored on the device', async ({
+    page,
+  }) => {
     await page.goto('/register')
     await page.getByLabel('What should we call you?').fill('Own Phone')
     await page.getByRole('button', { name: 'Next' }).click()

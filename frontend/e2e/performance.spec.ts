@@ -9,19 +9,34 @@ test('first visit on slow 3G stays within the low-data budget', async ({ page, b
   const cdp = await page.context().newCDPSession(page)
   await cdp.send('Network.enable')
   await cdp.send('Network.setCacheDisabled', { cacheDisabled: true })
-  await cdp.send('Network.emulateNetworkConditions', { offline: false, latency: 400, downloadThroughput: (400 * 1024) / 8, uploadThroughput: (400 * 1024) / 8 })
+  await cdp.send('Network.emulateNetworkConditions', {
+    offline: false,
+    latency: 400,
+    downloadThroughput: (400 * 1024) / 8,
+    uploadThroughput: (400 * 1024) / 8,
+  })
   await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 })
 
   let bytes = 0
-  cdp.on('Network.loadingFinished', (e: { encodedDataLength: number }) => (bytes += e.encodedDataLength))
+  cdp.on(
+    'Network.loadingFinished',
+    (e: { encodedDataLength: number }) => (bytes += e.encodedDataLength),
+  )
   const start = Date.now()
   await page.goto('/', { waitUntil: 'commit' })
   await expect(page.getByRole('radio', { name: /አማርኛ/ })).toBeVisible({ timeout: 30_000 })
   const usableMs = Date.now() - start
   await page.waitForLoadState('networkidle')
 
-  console.log(`slow-3G first visit: usable after ${usableMs} ms, ${Math.round(bytes / 1024)} KB transferred`)
-  test.info().annotations.push({ type: 'perf', description: `usable=${usableMs}ms transferred=${Math.round(bytes / 1024)}KB` })
+  console.log(
+    `slow-3G first visit: usable after ${usableMs} ms, ${Math.round(bytes / 1024)} KB transferred`,
+  )
+  test
+    .info()
+    .annotations.push({
+      type: 'perf',
+      description: `usable=${usableMs}ms transferred=${Math.round(bytes / 1024)}KB`,
+    })
   expect(bytes).toBeLessThan(200 * 1024) // whole first visit under 200 KB
   expect(usableMs).toBeLessThan(10_000)
 })

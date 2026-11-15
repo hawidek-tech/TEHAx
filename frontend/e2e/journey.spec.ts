@@ -1,22 +1,35 @@
 import { expect, test } from '@playwright/test'
-import { completeProfile, expectNoSeriousA11yViolations, next, register, uniqueEmail } from './helpers'
+import {
+  completeProfile,
+  expectNoSeriousA11yViolations,
+  next,
+  register,
+  uniqueEmail,
+} from './helpers'
 
 /** The main demonstration journey (spec §12), end to end against the real backend and database. */
-test('complete journey: language → preview → register → profile → find job → apply → track @mobile', async ({ page }) => {
+test('complete journey: language → preview → register → profile → find job → apply → track @mobile', async ({
+  page,
+}) => {
   // 1–2. Welcome and language selection
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   await page.getByRole('radio', { name: /አማርኛ/ }).check()
   await expect(page.locator('html')).toHaveAttribute('lang', 'am')
   await expect(page.getByRole('heading', { level: 1 })).toContainText('ይመዝገቡ')
-  await page.getByRole('radio', { name: /^English/ }).first().check()
+  await page
+    .getByRole('radio', { name: /^English/ })
+    .first()
+    .check()
   await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 
   // 3–4. Accessibility preview: settings change the page immediately
   await page.getByRole('link', { name: 'Start' }).click()
   await expect(page.getByRole('heading', { level: 1, name: 'Try your settings' })).toBeVisible()
   await page.getByRole('radio', { name: /150%/ }).check()
-  await expect.poll(() => page.evaluate(() => getComputedStyle(document.documentElement).fontSize)).toBe('24px')
+  await expect
+    .poll(() => page.evaluate(() => getComputedStyle(document.documentElement).fontSize))
+    .toBe('24px')
   await page.getByRole('radio', { name: /100%/ }).check()
   await page.getByRole('link', { name: 'Continue to create an account' }).click()
 
@@ -33,20 +46,32 @@ test('complete journey: language → preview → register → profile → find j
 
   // 8. Job discovery with the PRIVATE support filter (prefilled from the private profile choice)
   await page.goto('/jobs')
-  await expect(page.getByText('We used the private support choices from your profile.')).toBeVisible()
+  await expect(
+    page.getByText('We used the private support choices from your profile.'),
+  ).toBeVisible()
   await expect(page.getByRole('heading', { name: /jobs? found/ })).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Sign Language Health Educator', exact: true })).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Farm Records Assistant', exact: true })).toHaveCount(0)
+  await expect(
+    page.getByRole('link', { name: 'Sign Language Health Educator', exact: true }),
+  ).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Farm Records Assistant', exact: true })).toHaveCount(
+    0,
+  )
   // Clear the private filter, then search
   await page.getByRole('button', { name: 'Clear all filters' }).click()
   await page.getByLabel('Keywords').fill('customer support')
   await page.getByRole('button', { name: 'Search' }).click()
 
   // 9. Job details with employer accommodations
-  await page.getByRole('link', { name: 'Customer Support Agent (Amharic and English)', exact: true }).click()
-  await expect(page.getByRole('heading', { name: 'Support and accessibility at this job' })).toBeVisible()
+  await page
+    .getByRole('link', { name: 'Customer Support Agent (Amharic and English)', exact: true })
+    .click()
+  await expect(
+    page.getByRole('heading', { name: 'Support and accessibility at this job' }),
+  ).toBeVisible()
   await page.getByRole('button', { name: 'Show simple description' }).click()
-  await expect(page.getByText('You will help customers by answering their questions.')).toBeVisible()
+  await expect(
+    page.getByText('You will help customers by answering their questions.'),
+  ).toBeVisible()
   await page.getByRole('link', { name: 'Apply for this job' }).click()
 
   // 10. Application on the same engine, prefilled from the profile
@@ -56,7 +81,9 @@ test('complete journey: language → preview → register → profile → find j
   await next(page)
   await page.getByLabel('Why do you want this job?').fill('I enjoy helping people solve problems.')
   await next(page)
-  await expect(page.getByLabel('What experience do you have for this job?')).toHaveValue('Three years helping customers by phone.')
+  await expect(page.getByLabel('What experience do you have for this job?')).toHaveValue(
+    'Three years helping customers by phone.',
+  )
   await next(page)
   await page.getByLabel('In two weeks').check()
   await next(page)
@@ -70,7 +97,9 @@ test('complete journey: language → preview → register → profile → find j
 
   // 11. Review: what the employer will see
   await expect(page.getByRole('heading', { name: 'Check your answers' })).toBeVisible()
-  await expect(page.getByText('Your support needs stay private. They are not shared.')).toBeVisible()
+  await expect(
+    page.getByText('Your support needs stay private. They are not shared.'),
+  ).toBeVisible()
   // Explicit confirmation is required
   await page.getByRole('button', { name: 'Send my application' }).click()
   await expect(page.getByText('Please tick the box to confirm before sending.')).toBeVisible()
@@ -84,7 +113,9 @@ test('complete journey: language → preview → register → profile → find j
   await expectNoSeriousA11yViolations(page, 'application confirmation')
 })
 
-test('save and resume: a half-finished profile is restored after signing out and in', async ({ page }) => {
+test('save and resume: a half-finished profile is restored after signing out and in', async ({
+  page,
+}) => {
   const email = uniqueEmail()
   await register(page, email)
   await page.getByLabel('What is your first name?').fill('Saba')
@@ -101,7 +132,7 @@ test('save and resume: a half-finished profile is restored after signing out and
   await expect(page.getByRole('heading', { level: 1, name: /^Hello,/ })).toBeVisible()
   await page.goto('/onboarding')
   await expect(page.getByText('We kept your answers')).toBeVisible()
-  await expect(page.getByRole('heading', { level: 2 })).toContainText("grandfather")
+  await expect(page.getByRole('heading', { level: 2 })).toContainText('grandfather')
   await page.getByRole('button', { name: 'Back' }).click()
   await expect(page.getByLabel("What is your father's name?")).toHaveValue('Haile')
 })

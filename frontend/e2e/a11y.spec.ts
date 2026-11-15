@@ -2,8 +2,19 @@ import { expect, test } from '@playwright/test'
 import { expectNoSeriousA11yViolations, next, register, uniqueEmail } from './helpers'
 
 /** Automated WCAG 2.2 A/AA checks (axe-core). Zero serious or critical issues is a release gate. */
-const PUBLIC_PAGES = ['/', '/preview', '/register', '/sign-in', '/jobs', '/jobs/0c000000-0000-4000-8000-000000000001',
-  '/help', '/privacy', '/accessibility', '/developers', '/does-not-exist']
+const PUBLIC_PAGES = [
+  '/',
+  '/preview',
+  '/register',
+  '/sign-in',
+  '/jobs',
+  '/jobs/0c000000-0000-4000-8000-000000000001',
+  '/help',
+  '/privacy',
+  '/accessibility',
+  '/developers',
+  '/does-not-exist',
+]
 
 for (const path of PUBLIC_PAGES) {
   test(`axe: ${path}`, async ({ page }) => {
@@ -43,7 +54,17 @@ test('axe: every registration step, the review step, and signed-in pages', async
   // Signed in: profile flow first steps, dashboard, profile, support, applications
   await register(page, uniqueEmail())
   await expectNoSeriousA11yViolations(page, 'profile flow step 1')
-  for (const path of ['/dashboard', '/profile', '/support', '/support/new', '/identity', '/applications', '/settings', '/account', '/saved']) {
+  for (const path of [
+    '/dashboard',
+    '/profile',
+    '/support',
+    '/support/new',
+    '/identity',
+    '/applications',
+    '/settings',
+    '/account',
+    '/saved',
+  ]) {
     await page.goto(path)
     await expect(page.locator('[data-page-heading]').first()).toBeVisible()
     await expectNoSeriousA11yViolations(page, path)
