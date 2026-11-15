@@ -4,3 +4,4 @@
 *.woff2 binary
 mvnw text eol=lf
 *.cmd text eol=crlf
+savanna/** -text
