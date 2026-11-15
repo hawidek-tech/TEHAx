@@ -1,27 +1,54 @@
 /**
- * accessflow.js - drop-in Web Components for partner websites.
+ * db-signup.js (also published as accessflow.js) - ACCESSFLOW as a one-script, drop-in module.
  *
- *   <script src="https://ACCESSFLOW-HOST/accessflow.js" defer></script>
- *   <accessflow-signup partner-key="pk_..." locale="am"></accessflow-signup>
+ *   <script src="https://MODULE-HOST/db-signup.js" defer></script>
+ *   <db-signup lang="am" api="https://MODULE-HOST" theme="auto"></db-signup>
+ *   <script>
+ *     document.addEventListener('db-signup:done', (e) => console.log(e.detail))
+ *   </script>
  *
- * Each element renders an isolated iframe served from the ACCESSFLOW origin, so the host page cannot read
- * what people type (passwords, ID numbers, support needs). Authentication inside the frame uses an
- * in-memory token, never third-party cookies. A full-page link is always shown as a fallback.
+ * Design:
+ * - Each element renders, inside its own Shadow DOM, an iframe served from the ACCESSFLOW origin. Host CSS (Bootstrap,
+ *   Savanna, anything) cannot reach the form, and the module never touches host styles, <body> or other DOM.
+ * - No global variables: everything lives inside this module's closure.
+ * - Sign-in inside the frame uses a short-lived bearer token, never third-party cookies. A full-page link is always shown.
+ * - Events (bubbling, composed) carry no personal data:
+ *     db-signup:ready    { view }
+ *     db-signup:step     { view, step, index, total, section }
+ *     db-signup:support  { view, requested: true }
+ *     db-signup:done     { view, reference }
  */
+type View = 'signup' | 'profile' | 'jobs' | 'job-application'
+
 const script = document.currentScript as HTMLScriptElement | null
-const BASE = script ? new URL(script.src).origin : window.location.origin
+const SCRIPT_ORIGIN = script ? new URL(script.src).origin : window.location.origin
 
 const STYLE = `
-:host { display: block; }
-.frame { width: 100%; min-height: 420px; border: 0; display: block; }
-.fallback { font: inherit; margin: .5rem 0 0; }
-.fallback a { display: inline-flex; min-height: 44px; align-items: center; font-weight: 600; }
+:host { display: block; contain: content; }
+.frame { display: block; width: 100%; min-height: 420px; border: var(--db-signup-border, 1px solid #c9d1cc);
+  border-radius: var(--db-signup-radius, 12px); background: var(--db-signup-background, #f6f5f1); }
+.fallback { margin: .5rem 0 0; font: inherit; }
+.fallback a { display: inline-flex; min-height: 44px; align-items: center; font-weight: 600;
+  color: var(--db-signup-link-color, inherit); }
 `
 
-abstract class AccessflowElement extends HTMLElement {
-  static observedAttributes = ['partner-key', 'locale', 'job-id']
-  protected abstract readonly component: 'signup' | 'profile' | 'job-application'
+/** Origin of the API/frame host: the `api` attribute if given (scheme+host+port only), otherwise the script's origin. */
+function hostOrigin(api: string | null): string {
+  if (!api) return SCRIPT_ORIGIN
+  try {
+    const u = new URL(api, window.location.href)
+    return u.protocol === 'https:' || u.protocol === 'http:' ? u.origin : SCRIPT_ORIGIN
+  } catch {
+    return SCRIPT_ORIGIN
+  }
+}
+
+abstract class ModuleElement extends HTMLElement {
+  static observedAttributes = ['lang', 'locale', 'api', 'theme', 'view', 'job-id', 'partner-key']
+  protected abstract readonly eventPrefix: string
+  protected abstract defaultView(): View
   private iframe?: HTMLIFrameElement
+  private origin = SCRIPT_ORIGIN
   private readonly onMessage = (e: MessageEvent) => this.handle(e)
 
   connectedCallback() {
@@ -37,20 +64,34 @@ abstract class AccessflowElement extends HTMLElement {
     if (this.isConnected) this.render()
   }
 
-  private render() {
-    const key = this.getAttribute('partner-key') ?? ''
-    const locale = this.getAttribute('locale') ?? 'en'
-    const job = this.getAttribute('job-id') ?? ''
-    const root = this.shadowRoot ?? this.attachShadow({ mode: 'open' })
-    const q = new URLSearchParams({ key, locale, origin: window.location.origin })
-    if (job) q.set('job', job)
+  protected view(): View {
+    const v = this.getAttribute('view')
+    return v === 'signup' || v === 'profile' || v === 'jobs' || v === 'job-application'
+      ? v
+      : this.defaultView()
+  }
 
+  private render() {
+    const view = this.view()
+    const lang = this.getAttribute('lang') ?? this.getAttribute('locale') ?? 'en'
+    const theme = this.getAttribute('theme') ?? 'auto'
+    const key = this.getAttribute('partner-key')
+    const job = this.getAttribute('job-id')
+    this.origin = hostOrigin(this.getAttribute('api'))
+    // Host design tokens (CSS custom properties) are passed to the frame; the frame ignores unreadable values.
+    const accent = getComputedStyle(this).getPropertyValue('--db-signup-accent').trim()
+
+    const q = new URLSearchParams({ origin: window.location.origin, lang, theme })
+    if (key) q.set('key', key)
+    if (job) q.set('job', job)
+    if (/^#[0-9a-fA-F]{6}$/.test(accent)) q.set('accent', accent)
+
+    const root = this.shadowRoot ?? this.attachShadow({ mode: 'open' })
     const iframe = document.createElement('iframe')
     iframe.className = 'frame'
-    iframe.src = `${BASE}/embed/${this.component}?${q.toString()}`
-    iframe.title =
-      this.getAttribute('frame-title') ?? `ACCESSFLOW ${this.component.replace('-', ' ')}`
-    iframe.setAttribute('allow', 'microphone') // voice input inside the frame (asked only when the user presses the button)
+    iframe.src = `${this.origin}/embed/${view}?${q.toString()}`
+    iframe.title = this.getAttribute('frame-title') ?? `ACCESSFLOW: ${view.replace('-', ' ')}`
+    iframe.setAttribute('allow', 'microphone; camera') // asked only when the user presses the voice or camera button
     iframe.setAttribute(
       'sandbox',
       'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox',
@@ -59,15 +100,17 @@ abstract class AccessflowElement extends HTMLElement {
     iframe.loading = 'lazy'
 
     const route =
-      this.component === 'job-application' && job
+      view === 'job-application' && job
         ? `/jobs/${encodeURIComponent(job)}/apply`
-        : this.component === 'profile'
-          ? '/profile'
-          : '/preview'
+        : view === 'jobs'
+          ? '/jobs'
+          : view === 'profile'
+            ? '/profile'
+            : '/preview'
     const fallback = document.createElement('p')
     fallback.className = 'fallback'
     const link = document.createElement('a')
-    link.href = `${BASE}${route}?partner=${encodeURIComponent(key)}`
+    link.href = `${this.origin}${route}`
     link.target = '_blank'
     link.rel = 'noopener'
     link.textContent =
@@ -80,47 +123,90 @@ abstract class AccessflowElement extends HTMLElement {
     this.iframe = iframe
   }
 
-  /** Accept messages only from the ACCESSFLOW origin AND from this element's own iframe. */
+  private emit(type: string, detail: Record<string, unknown>) {
+    this.dispatchEvent(
+      new CustomEvent(`${this.eventPrefix}:${type}`, { bubbles: true, composed: true, detail }),
+    )
+  }
+
+  /** Accept messages only from the module origin AND this element's own iframe. */
   private handle(e: MessageEvent) {
-    if (e.origin !== BASE || !this.iframe || e.source !== this.iframe.contentWindow) return
-    const data = e.data as { source?: string; type?: string; height?: number; reference?: string }
-    if (!data || data.source !== 'accessflow') return
-    if (data.type === 'resize' && typeof data.height === 'number') {
-      this.iframe.style.height = `${Math.min(6000, Math.max(300, Math.round(data.height)))}px`
-    } else if (data.type === 'ready') {
-      this.dispatchEvent(
-        new CustomEvent('accessflow:ready', {
-          bubbles: true,
-          composed: true,
-          detail: { component: this.component },
-        }),
-      )
-    } else if (data.type === 'completed') {
-      const reference = typeof data.reference === 'string' ? data.reference.slice(0, 64) : undefined
-      this.dispatchEvent(
-        new CustomEvent('accessflow:completed', {
-          bubbles: true,
-          composed: true,
-          detail: { component: this.component, reference },
-        }),
-      )
+    if (e.origin !== this.origin || !this.iframe || e.source !== this.iframe.contentWindow) return
+    const d = e.data as {
+      source?: string
+      type?: string
+      height?: number
+      reference?: unknown
+      stepId?: unknown
+      index?: unknown
+      total?: unknown
+      section?: unknown
+    }
+    if (!d || d.source !== 'accessflow') return
+    const view = this.view()
+    const str = (v: unknown) => (typeof v === 'string' ? v.slice(0, 64) : undefined)
+    const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : undefined)
+    switch (d.type) {
+      case 'resize':
+        if (typeof d.height === 'number')
+          this.iframe.style.height = `${Math.min(8000, Math.max(300, Math.round(d.height)))}px`
+        break
+      case 'ready':
+        this.emit('ready', { view })
+        break
+      case 'step':
+        this.emit('step', {
+          view,
+          step: str(d.stepId),
+          index: num(d.index),
+          total: num(d.total),
+          section: str(d.section),
+        })
+        break
+      case 'support':
+        this.emit('support', { view, requested: true })
+        break
+      case 'completed':
+        this.emit(this.eventPrefix === 'db-signup' ? 'done' : 'completed', {
+          view,
+          reference: str(d.reference),
+        })
+        break
     }
   }
 }
 
-class SignupElement extends AccessflowElement {
-  protected readonly component = 'signup' as const
-}
-class ProfileElement extends AccessflowElement {
-  protected readonly component = 'profile' as const
-}
-class JobApplicationElement extends AccessflowElement {
-  protected readonly component = 'job-application' as const
+/** Track 1 contract element. */
+class DbSignup extends ModuleElement {
+  protected readonly eventPrefix = 'db-signup'
+  protected defaultView(): View {
+    return 'signup'
+  }
 }
 
-if (!customElements.get('accessflow-signup'))
-  customElements.define('accessflow-signup', SignupElement)
-if (!customElements.get('accessflow-profile'))
-  customElements.define('accessflow-profile', ProfileElement)
-if (!customElements.get('accessflow-job-application'))
-  customElements.define('accessflow-job-application', JobApplicationElement)
+/** Earlier ACCESSFLOW element names (kept for compatibility); events are prefixed "accessflow:". */
+class AccessflowSignup extends ModuleElement {
+  protected readonly eventPrefix = 'accessflow'
+  protected defaultView(): View {
+    return 'signup'
+  }
+}
+class AccessflowProfile extends ModuleElement {
+  protected readonly eventPrefix = 'accessflow'
+  protected defaultView(): View {
+    return 'profile'
+  }
+}
+class AccessflowJobApplication extends ModuleElement {
+  protected readonly eventPrefix = 'accessflow'
+  protected defaultView(): View {
+    return 'job-application'
+  }
+}
+
+const define = (name: string, ctor: CustomElementConstructor) =>
+  customElements.get(name) || customElements.define(name, ctor)
+define('db-signup', DbSignup)
+define('accessflow-signup', AccessflowSignup)
+define('accessflow-profile', AccessflowProfile)
+define('accessflow-job-application', AccessflowJobApplication)

@@ -28,6 +28,7 @@ export interface Preferences {
   readAloud: boolean
   reducedMotion: boolean
   sharedDevice: boolean
+  audioGuide: boolean
 }
 
 export interface FileInfo {

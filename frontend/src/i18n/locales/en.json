@@ -240,9 +240,16 @@
     "progressTitle": "Your progress",
     "progressLabel": "{{done}} of {{total}} steps completed",
     "nextAction": "Recommended next step",
-    "state": { "done": "completed", "current": "in progress", "todo": "not started" },
+    "state": {
+      "done": "completed",
+      "current": "in progress",
+      "todo": "not started"
+    },
     "steps": {
-      "account": { "title": "Create an account", "done": "Your account is ready." },
+      "account": {
+        "title": "Create an account",
+        "done": "Your account is ready."
+      },
       "preferences": {
         "title": "Choose accessibility settings",
         "done": "Your settings are saved and used on every page.",
@@ -481,7 +488,11 @@
     "myRequests": "My requests",
     "noRequests": "You have not asked for support yet.",
     "staffReply": "Reply from our support team",
-    "status": { "OPEN": "Received", "IN_PROGRESS": "Being handled", "RESOLVED": "Answered" },
+    "status": {
+      "OPEN": "Received",
+      "IN_PROGRESS": "Being handled",
+      "RESOLVED": "Answered"
+    },
     "whoCanSeeTitle": "Who can see your request",
     "whoCanSee": "Only trained ACCESSFLOW support staff. Employers and partner websites cannot see it. We only share it if you agree.",
     "humanTitle": "Talk to a person",
@@ -572,7 +583,11 @@
       "accommodations": "Support types",
       "actions": "Actions"
     },
-    "status": { "DRAFT": "Draft", "PUBLISHED": "Published", "CLOSED": "Closed" },
+    "status": {
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published",
+      "CLOSED": "Closed"
+    },
     "viewApplications": "View applications",
     "formLead": "Clear job information and honest support details help more people apply.",
     "sectionJob": "About the job",
@@ -751,7 +766,8 @@
     "titles": {
       "signup": "Create your account",
       "profile": "Your profile",
-      "job-application": "Apply for a job"
+      "job-application": "Apply for a job",
+      "jobs": "Find and apply for jobs"
     },
     "problemTitle": "This form cannot be shown here",
     "fallbackLead": "Having trouble?",
@@ -762,9 +778,15 @@
     "profileReadyTitle": "Your profile is ready",
     "profileReady": "You can now apply for jobs.",
     "profileComplete": "Your profile is complete.",
-    "profileIncomplete": "Your profile is not complete yet. Open ACCESSFLOW in a new tab to finish it."
+    "profileIncomplete": "Your profile is not complete yet. Open ACCESSFLOW in a new tab to finish it.",
+    "signedInAs": "Signed in as {{name}}",
+    "backToJobs": "Back to jobs",
+    "signInToApply": "Sign in or create an account below to apply."
   },
-  "notFound": { "title": "Page not found", "lead": "We could not find this page." },
+  "notFound": {
+    "title": "Page not found",
+    "lead": "We could not find this page."
+  },
   "regions": {
     "ADDIS_ABABA": "Addis Ababa",
     "AFAR": "Afar",
@@ -835,9 +857,15 @@
       "required": "Please sign in to continue.",
       "csrfInvalid": "Your session expired. Please reload the page and try again."
     },
-    "contact": { "required": "Please give a phone number or an email address." },
-    "email": { "invalid": "This does not look like an email address." },
-    "phone": { "invalid": "Please enter an Ethiopian mobile number, for example 0911 234 567." },
+    "contact": {
+      "required": "Please give a phone number or an email address."
+    },
+    "email": {
+      "invalid": "This does not look like an email address."
+    },
+    "phone": {
+      "invalid": "Please enter an Ethiopian mobile number, for example 0911 234 567."
+    },
     "error": {
       "notFound": "We could not find this.",
       "forbidden": "You do not have permission to do this.",
@@ -870,8 +898,12 @@
       "routeRequired": "Please choose a way to verify your identity.",
       "invalidDecision": "This decision is not allowed."
     },
-    "support": { "invalidStatus": "This status is not allowed." },
-    "job": { "radioNeedsOptions": "A choice question needs at least two options." },
+    "support": {
+      "invalidStatus": "This status is not allowed."
+    },
+    "job": {
+      "radioNeedsOptions": "A choice question needs at least two options."
+    },
     "embed": {
       "unknownPartner": "This partner website is not registered with ACCESSFLOW.",
       "originNotAllowed": "This website is not allowed to show ACCESSFLOW. Please use the link below to open it directly.",
@@ -880,7 +912,9 @@
   },
   "flows": {
     "registration": {
-      "sections": { "account": "Your account" },
+      "sections": {
+        "account": "Your account"
+      },
       "displayName": {
         "label": "What should we call you?",
         "hint": "This is the name we use in messages to you.",
@@ -890,7 +924,10 @@
       "contactMethod": {
         "label": "How do you want to sign in?",
         "why": "You will use this to sign in. We also use it to send you important updates about your applications.",
-        "options": { "phone": "With my phone number", "email": "With my email address" }
+        "options": {
+          "phone": "With my phone number",
+          "email": "With my email address"
+        }
       },
       "phone": {
         "label": "What is your mobile phone number?",
@@ -971,9 +1008,18 @@
         "hint": "Paid work, volunteering or family business all count. You can skip this.",
         "why": "Employers want to know what you have done before.",
         "items": {
-          "title": { "label": "Job title", "example": "Shop assistant" },
-          "organization": { "label": "Where did you work?", "example": "Family shop in Adama" },
-          "startYear": { "label": "Year you started", "example": "2021" },
+          "title": {
+            "label": "Job title",
+            "example": "Shop assistant"
+          },
+          "organization": {
+            "label": "Where did you work?",
+            "example": "Family shop in Adama"
+          },
+          "startYear": {
+            "label": "Year you started",
+            "example": "2021"
+          },
           "endYear": {
             "label": "Year you finished",
             "hint": "Leave empty if you still work there."
@@ -1002,9 +1048,18 @@
               "OTHER": "Other"
             }
           },
-          "institution": { "label": "School or college", "example": "Adama TVET College" },
-          "field": { "label": "Subject", "example": "Accounting" },
-          "yearCompleted": { "label": "Year finished (or expected)", "example": "2022" }
+          "institution": {
+            "label": "School or college",
+            "example": "Adama TVET College"
+          },
+          "field": {
+            "label": "Subject",
+            "example": "Accounting"
+          },
+          "yearCompleted": {
+            "label": "Year finished (or expected)",
+            "example": "2022"
+          }
         }
       },
       "skills": {
@@ -1070,7 +1125,10 @@
         "label": "Would you like private support from our team?",
         "hint": "For example help with registration, applications or interviews.",
         "why": "This is private. You do not need medical proof and you do not have to say why.",
-        "options": { "no": "No, not now", "yes": "Yes, please" }
+        "options": {
+          "no": "No, not now",
+          "yes": "Yes, please"
+        }
       },
       "supportCategory": {
         "label": "What would you like help with?",
@@ -1105,7 +1163,11 @@
       }
     },
     "job-application": {
-      "sections": { "contact": "Contact", "answers": "Your answers", "sharing": "What you share" },
+      "sections": {
+        "contact": "Contact",
+        "answers": "Your answers",
+        "sharing": "What you share"
+      },
       "contactPhone": {
         "label": "Which phone number can the employer call?",
         "hint": "Give a phone number, an email address, or both.",
@@ -1156,7 +1218,10 @@
         "label": "Do you want to tell this employer about support you need?",
         "hint": "Your private support choices are not shared. Only a note you write now, if you choose.",
         "why": "Some people like the employer to prepare support in advance. It is your choice.",
-        "options": { "no": "No, keep it private", "yes": "Yes, write a note to this employer" }
+        "options": {
+          "no": "No, keep it private",
+          "yes": "Yes, write a note to this employer"
+        }
       },
       "accommodationNote": {
         "label": "Write a note about the support you need",
@@ -1166,7 +1231,9 @@
       }
     },
     "support-request": {
-      "sections": { "support": "Support" },
+      "sections": {
+        "support": "Support"
+      },
       "supportCategory": {
         "label": "What would you like help with?",
         "options": {
@@ -1205,11 +1272,18 @@
     },
     "flows": {
       "registration": {
-        "password": { "hint": "Use 8 letters or more. You can use a short sentence." }
+        "password": {
+          "hint": "Use 8 letters or more. You can use a short sentence."
+        }
       },
       "profile": {
-        "fatherName": { "hint": "Your father's first name." },
-        "summary": { "label": "Say something about you", "hint": "Two short sentences." },
+        "fatherName": {
+          "hint": "Your father's first name."
+        },
+        "summary": {
+          "label": "Say something about you",
+          "hint": "Two short sentences."
+        },
         "identityRoute": {
           "label": "How can we check who you are?",
           "hint": "Choose what you have. A national ID is not needed."
@@ -1224,7 +1298,10 @@
         }
       },
       "job-application": {
-        "motivation": { "label": "Why do you want this job?", "hint": "One or two sentences." },
+        "motivation": {
+          "label": "Why do you want this job?",
+          "hint": "One or two sentences."
+        },
         "shareSections": {
           "label": "What can the employer see?",
           "hint": "Remove the tick for things you want to keep private."
@@ -1240,5 +1317,69 @@
         "phone": "Use a phone number like 0911 234 567."
       }
     }
+  },
+  "audio": {
+    "toggle": "Audio guide",
+    "activateTitle": "Audio accessibility",
+    "activateButton": "Activate Audio Accessibility",
+    "activeButton": "Audio accessibility is on — read this page again",
+    "activateHint": "Turns on spoken guidance for every page and question. If you already use a screen reader, you may not need it.",
+    "activated": "Audio accessibility is on. I will read each page and question to you.",
+    "pageHelp": "Press Tab to move to the next item. For more instructions, press Help in the audio bar at the bottom of the screen.",
+    "navigationHelp": "How to move around: press Tab to go to the next item and Shift and Tab to go back. Press Enter to use a button or link. Press Space to tick a box. Use the arrow keys to choose between options. On a phone, swipe right or left to move and double tap to choose. Each question has Back and Next buttons, and nothing has a time limit. Your answers are saved as you go.",
+    "welcomeHelp": "First choose your language. Then press Start.",
+    "barLabel": "Audio guidance",
+    "barTitle": "Audio guide",
+    "speaking": "speaking",
+    "ready": "on. Press Repeat to hear it again.",
+    "needsGesture": "press Continue to hear the guidance.",
+    "noVoice": "this device has no voice for this language, so the text is shown here instead.",
+    "noSpeech": "this browser cannot speak, so the text is shown here instead.",
+    "continue": "Continue",
+    "repeat": "Repeat",
+    "help": "Help",
+    "turnOff": "Turn off audio",
+    "choices": "Choices",
+    "selectInstructions": "Open the list to choose from {{count}} options.",
+    "how": {
+      "text": "Type your answer, or press Speak your answer. Then press Next.",
+      "radio": "Use the arrow keys to choose one option. Then press Next.",
+      "checkboxes": "Press Space to tick each option you want. Then press Next.",
+      "consent": "Press Space to tick the box. Then press Next.",
+      "list": "Press Add to add an entry, or press Next to skip.",
+      "file": "Press Choose a file to add a document, or press Next to skip."
+    },
+    "reviewInstructions": "Check each answer. Press Change to fix one, or press {{button}} at the bottom when you are ready.",
+    "jobsHelp": "Press Tab to move through the jobs. Press Enter on a job title to open it."
+  },
+  "sign": {
+    "open": "Sign or choose phrases",
+    "title": "Sign language and phrases",
+    "cameraTitle": "Camera (optional)",
+    "privacy": "The camera only turns on when you press the button. Video stays on this device: nothing is recorded or uploaded.",
+    "noRecognizer": "Automatic sign recognition is not available yet. There is no tested model for Ethiopian Sign Language, so ACCESSFLOW will not guess what you sign. Please use the phrases below or type.",
+    "startCamera": "Turn on camera",
+    "stopCamera": "Turn off camera",
+    "cameraOnIndicator": "Camera is on",
+    "cameraOnAnnounce": "Camera is on. Press Turn off camera to stop it.",
+    "cameraOffAnnounce": "Camera is off.",
+    "cameraDenied": "The camera could not be used. You can allow it in your browser settings, or use the phrases below.",
+    "cameraUnsupported": "This browser cannot use the camera. Please use the phrases below.",
+    "previewLabel": "Your camera preview",
+    "phrasesTitle": "Choose phrases",
+    "phrases": {
+      "yes": "Yes.",
+      "no": "No.",
+      "needHelp": "I need help.",
+      "useSignLanguage": "I use Ethiopian Sign Language.",
+      "interpreter": "Please provide a sign language interpreter.",
+      "contactSms": "Please contact me by SMS.",
+      "contactEmail": "Please contact me by email.",
+      "noCall": "Please do not call me by phone."
+    },
+    "added": "Added: {{phrase}}",
+    "messageLabel": "Your message",
+    "messageHint": "Check and change the message before using it.",
+    "useMessage": "Use this message"
   }
 }

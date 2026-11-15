@@ -39,6 +39,7 @@ export default function ApplicationDetailPage() {
           <div className="flex flex-col gap-6">
             {params.get('submitted') && (
               <section
+                data-announce
                 aria-labelledby="confirm-title"
                 className="rounded-2xl border-2 border-success bg-success-soft p-6"
               >
@@ -81,7 +82,7 @@ export default function ApplicationDetailPage() {
                 </span>
               }
               actions={
-                <Badge tone={statusTone(a.summary.status)}>
+                <Badge tone={statusTone(a.summary.status)} announce>
                   {t('applications.currentStatus')}: {t(`applications.status.${a.summary.status}`)}
                 </Badge>
               }

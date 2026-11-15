@@ -240,9 +240,16 @@
     "progressTitle": "Horumarkaaga",
     "progressLabel": "{{done}} ka mid ah {{total}} tallaabo ayaa la dhammeeyay",
     "nextAction": "Tallaabada xigta ee lagu taliyay",
-    "state": { "done": "la dhammeeyay", "current": "socota", "todo": "lama bilaabin" },
+    "state": {
+      "done": "la dhammeeyay",
+      "current": "socota",
+      "todo": "lama bilaabin"
+    },
     "steps": {
-      "account": { "title": "Samee akoon", "done": "Akoonkaagu waa diyaar." },
+      "account": {
+        "title": "Samee akoon",
+        "done": "Akoonkaagu waa diyaar."
+      },
       "preferences": {
         "title": "Dooro dejinta helitaanka",
         "done": "Dejintaada waa la kaydiyay waxaana lagu isticmaalaa bog kasta.",
@@ -481,7 +488,11 @@
     "myRequests": "Codsiyadayda",
     "noRequests": "Weli ma codsan taageero.",
     "staffReply": "Jawaabta kooxdayada taageerada",
-    "status": { "OPEN": "La helay", "IN_PROGRESS": "Waa la qabanayaa", "RESOLVED": "La jawaabay" },
+    "status": {
+      "OPEN": "La helay",
+      "IN_PROGRESS": "Waa la qabanayaa",
+      "RESOLVED": "La jawaabay"
+    },
     "whoCanSeeTitle": "Cidda arki karta codsigaaga",
     "whoCanSee": "Shaqaalaha taageerada ACCESSFLOW ee tababaran oo kaliya. Loo shaqeeyayaasha iyo website-yada la-shaqeeyayaasha ma arki karaan. Waxaan wadaagnaa oo kaliya haddii aad ogolaato.",
     "humanTitle": "La hadal qof",
@@ -572,7 +583,11 @@
       "accommodations": "Noocyada taageerada",
       "actions": "Ficillada"
     },
-    "status": { "DRAFT": "Qabyo", "PUBLISHED": "La daabacay", "CLOSED": "La xiray" },
+    "status": {
+      "DRAFT": "Qabyo",
+      "PUBLISHED": "La daabacay",
+      "CLOSED": "La xiray"
+    },
     "viewApplications": "Eeg codsiyada",
     "formLead": "Macluumaad shaqo oo cad iyo faahfaahin taageero oo daacad ah ayaa dad badan ka caawiya inay codsadaan.",
     "sectionJob": "Ku saabsan shaqada",
@@ -751,7 +766,8 @@
     "titles": {
       "signup": "Samee akoonkaaga",
       "profile": "Astaantaada",
-      "job-application": "Codso shaqo"
+      "job-application": "Codso shaqo",
+      "jobs": "Raadi oo codso shaqooyin"
     },
     "problemTitle": "Foomkan halkan laguma muujin karo",
     "fallbackLead": "Dhibaato ma qabtaa?",
@@ -762,9 +778,15 @@
     "profileReadyTitle": "Astaantaadu waa diyaar",
     "profileReady": "Hadda waad codsan kartaa shaqooyin.",
     "profileComplete": "Astaantaadu waa dhammaystiran tahay.",
-    "profileIncomplete": "Astaantaadu weli ma dhammaystirna. Ku fur ACCESSFLOW tab cusub si aad u dhammaystirto."
+    "profileIncomplete": "Astaantaadu weli ma dhammaystirna. Ku fur ACCESSFLOW tab cusub si aad u dhammaystirto.",
+    "signedInAs": "Waxaad u gashay sida {{name}}",
+    "backToJobs": "Ku noqo shaqooyinka",
+    "signInToApply": "Si aad u codsato, hoos ka gal ama samee akoon."
   },
-  "notFound": { "title": "Bogga lama helin", "lead": "Ma helin boggan." },
+  "notFound": {
+    "title": "Bogga lama helin",
+    "lead": "Ma helin boggan."
+  },
   "regions": {
     "ADDIS_ABABA": "Addis Ababa",
     "AFAR": "Canfar",
@@ -835,9 +857,15 @@
       "required": "Fadlan gal si aad u sii wadato.",
       "csrfInvalid": "Fadhigaaga wuu dhacay. Fadlan dib u rar bogga oo isku day mar kale."
     },
-    "contact": { "required": "Fadlan bixi lambar taleefan ama cinwaan email." },
-    "email": { "invalid": "Tani uma eka cinwaan email." },
-    "phone": { "invalid": "Fadlan geli lambar mobile oo Itoobiya ah, tusaale ahaan 0911 234 567." },
+    "contact": {
+      "required": "Fadlan bixi lambar taleefan ama cinwaan email."
+    },
+    "email": {
+      "invalid": "Tani uma eka cinwaan email."
+    },
+    "phone": {
+      "invalid": "Fadlan geli lambar mobile oo Itoobiya ah, tusaale ahaan 0911 234 567."
+    },
     "error": {
       "notFound": "Ma helin tan.",
       "forbidden": "Uma haysatid oggolaansho inaad tan samayso.",
@@ -870,7 +898,9 @@
       "routeRequired": "Fadlan dooro hab aad ku xaqiijiso aqoonsigaaga.",
       "invalidDecision": "Go'aankan lama oggola."
     },
-    "support": { "invalidStatus": "Xaaladdan lama oggola." },
+    "support": {
+      "invalidStatus": "Xaaladdan lama oggola."
+    },
     "job": {
       "radioNeedsOptions": "Su'aal doorasho ah waxay u baahan tahay ugu yaraan laba doorasho."
     },
@@ -882,7 +912,9 @@
   },
   "flows": {
     "registration": {
-      "sections": { "account": "Akoonkaaga" },
+      "sections": {
+        "account": "Akoonkaaga"
+      },
       "displayName": {
         "label": "Maxaan kuugu yeernaa?",
         "hint": "Kani waa magaca aan ku isticmaalno fariimaha aan kuu dirno.",
@@ -892,7 +924,10 @@
       "contactMethod": {
         "label": "Sidee ayaad rabtaa inaad u gasho?",
         "why": "Tan ayaad u isticmaali doontaa inaad gasho. Sidoo kale waxaan u isticmaalnaa inaan kuu dirno war muhiim ah oo ku saabsan codsiyadaada.",
-        "options": { "phone": "Lambarka taleefankayga", "email": "Cinwaanka email-kayga" }
+        "options": {
+          "phone": "Lambarka taleefankayga",
+          "email": "Cinwaanka email-kayga"
+        }
       },
       "phone": {
         "label": "Waa maxay lambarka taleefankaaga gacanta?",
@@ -973,12 +1008,18 @@
         "hint": "Shaqo lacag leh, iskaa-wax-u-qabso ama ganacsi qoys dhammaan way tirsan yihiin. Waad ka boodi kartaa tan.",
         "why": "Loo shaqeeyayaashu waxay rabaan inay ogaadaan waxa aad hore u qabatay.",
         "items": {
-          "title": { "label": "Magaca shaqada", "example": "Shaqaale dukaan" },
+          "title": {
+            "label": "Magaca shaqada",
+            "example": "Shaqaale dukaan"
+          },
           "organization": {
             "label": "Xagee ka shaqaysay?",
             "example": "Dukaanka qoyska ee Jigjiga"
           },
-          "startYear": { "label": "Sannadka aad bilowday", "example": "2021" },
+          "startYear": {
+            "label": "Sannadka aad bilowday",
+            "example": "2021"
+          },
           "endYear": {
             "label": "Sannadka aad dhammaysay",
             "hint": "Banaan uga tag haddii aad weli halkaas ka shaqayso."
@@ -1007,9 +1048,18 @@
               "OTHER": "Kale"
             }
           },
-          "institution": { "label": "Dugsi ama kulliyad", "example": "Kulliyadda TVET ee Jigjiga" },
-          "field": { "label": "Maaddada", "example": "Xisaabaadka" },
-          "yearCompleted": { "label": "Sannadka la dhammeeyay (ama la filayo)", "example": "2022" }
+          "institution": {
+            "label": "Dugsi ama kulliyad",
+            "example": "Kulliyadda TVET ee Jigjiga"
+          },
+          "field": {
+            "label": "Maaddada",
+            "example": "Xisaabaadka"
+          },
+          "yearCompleted": {
+            "label": "Sannadka la dhammeeyay (ama la filayo)",
+            "example": "2022"
+          }
         }
       },
       "skills": {
@@ -1075,7 +1125,10 @@
         "label": "Ma rabtaa taageero gaar ah oo ka timaada kooxdayada?",
         "hint": "Tusaale ahaan caawimaad diiwaangelinta, codsiyada ama waraysiyada.",
         "why": "Tani waa gaar. Uma baahnid caddayn caafimaad, mana aha inaad sheegto sababta.",
-        "options": { "no": "Maya, hadda maya", "yes": "Haa, fadlan" }
+        "options": {
+          "no": "Maya, hadda maya",
+          "yes": "Haa, fadlan"
+        }
       },
       "supportCategory": {
         "label": "Maxaad u baahan tahay in lagaa caawiyo?",
@@ -1165,7 +1218,10 @@
         "label": "Ma rabtaa inaad u sheegto loo shaqeeyahan taageerada aad u baahan tahay?",
         "hint": "Doorashooyinkaaga taageerada gaarka ah lama wadaago. Kaliya qoraal aad hadda qorto, haddii aad doorato.",
         "why": "Dadka qaarkood waxay jecel yihiin in loo shaqeeyuhu horay u diyaariyo taageerada. Doorashadu waa taada.",
-        "options": { "no": "Maya, ha ahaato sir", "yes": "Haa, u qor qoraal loo shaqeeyahan" }
+        "options": {
+          "no": "Maya, ha ahaato sir",
+          "yes": "Haa, u qor qoraal loo shaqeeyahan"
+        }
       },
       "accommodationNote": {
         "label": "Qor qoraal ku saabsan taageerada aad u baahan tahay",
@@ -1175,7 +1231,9 @@
       }
     },
     "support-request": {
-      "sections": { "support": "Taageero" },
+      "sections": {
+        "support": "Taageero"
+      },
       "supportCategory": {
         "label": "Maxaad u baahan tahay in lagaa caawiyo?",
         "options": {
@@ -1214,5 +1272,69 @@
         "required": "Fadlan ka jawaab."
       }
     }
+  },
+  "audio": {
+    "toggle": "Hagaha codka",
+    "activateTitle": "Helitaanka codka",
+    "activateButton": "Shid Helitaanka Codka",
+    "activeButton": "Helitaanka codku waa shidan yahay — mar kale akhri boggan",
+    "activateHint": "Waxay shidaysaa hagitaan cod ah bog kasta iyo su'aal kasta. Haddii aad hore u isticmaasho akhriye shaashad, waxaa laga yaabaa inaadan u baahnayn.",
+    "activated": "Helitaanka codku waa shidan yahay. Waxaan kuu akhriyi doonaa bog kasta iyo su'aal kasta.",
+    "pageHelp": "Riix Tab si aad ugu gudubto shayga xiga. Tilmaamo dheeraad ah, riix \"Caawimaad\" ee ku jira xariiqda codka ee hoose.",
+    "navigationHelp": "Sida loo dhaqaaqo: riix Tab si aad u gudubto, Shift iyo Tab si aad dib ugu noqoto. Riix Enter si aad u isticmaasho badhan ama link. Riix Space si aad u calaamadeyso sanduuq. Isticmaal furayaasha fallaarta si aad u doorato. Taleefanka, u dhaqaaji midig ama bidix, oo laba jeer taabo si aad u doorato. Su'aal kastaa waxay leedahay badhamada \"Dib u noqo\" iyo \"Xiga\", mana jiro xad wakhti. Jawaabahaaga waa la kaydiyaa.",
+    "welcomeHelp": "Marka hore dooro luqaddaada. Kadib riix \"Bilow\".",
+    "barLabel": "Hagitaanka codka",
+    "barTitle": "Hagaha codka",
+    "speaking": "wuu hadlayaa",
+    "ready": "waa shidan yahay. Riix \"Ku celi\" si aad mar kale u maqasho.",
+    "needsGesture": "riix \"Sii wad\" si aad u maqasho hagitaanka.",
+    "noVoice": "qalabkani cod uma laha luqaddan, sidaas darteed qoraalka halkan ayuu ka muuqdaa.",
+    "noSpeech": "browser-kani ma hadli karo, sidaas darteed qoraalka halkan ayuu ka muuqdaa.",
+    "continue": "Sii wad",
+    "repeat": "Ku celi",
+    "help": "Caawimaad",
+    "turnOff": "Dami codka",
+    "choices": "Doorashooyinka",
+    "selectInstructions": "Fur liiska si aad uga doorato {{count}} doorasho.",
+    "how": {
+      "text": "Qor jawaabtaada, ama riix \"Ku hadal jawaabtaada\". Kadib riix \"Xiga\".",
+      "radio": "Isticmaal furayaasha fallaarta si aad u doorato hal doorasho. Kadib riix \"Xiga\".",
+      "checkboxes": "Riix Space si aad u calaamadeyso doorasho kasta oo aad rabto. Kadib riix \"Xiga\".",
+      "consent": "Riix Space si aad u calaamadeyso sanduuqa. Kadib riix \"Xiga\".",
+      "list": "Riix \"Ku dar\" si aad gelin ugu darto, ama \"Xiga\" si aad uga booddo.",
+      "file": "Riix \"Dooro fayl\" si aad dukumeenti ugu darto, ama \"Xiga\" si aad uga booddo."
+    },
+    "reviewInstructions": "Hubi jawaab kasta. Riix \"Beddel\" si aad mid u saxdo, ama riix \"{{button}}\" ee hoose marka aad diyaar tahay.",
+    "jobsHelp": "Riix Tab si aad ugu dhex socoto shaqooyinka. Riix Enter magaca shaqada si aad u furto."
+  },
+  "sign": {
+    "open": "Calaamadee ama dooro weedho",
+    "title": "Luqadda calaamadaha iyo weedhaha",
+    "cameraTitle": "Kamarad (ikhtiyaari)",
+    "privacy": "Kamaradu waxay shidantaa oo kaliya marka aad riixdo badhanka. Fiidiyowgu qalabkan ayuu ku jiraa: waxba lama duubo lamana diro.",
+    "noRecognizer": "Aqoonsiga tooska ah ee calaamadaha weli lama helo. Ma jiro model la tijaabiyay oo loogu talagalay Luqadda Calaamadaha Itoobiya, sidaas darteed ACCESSFLOW ma qiyaasi doono waxa aad calaamadeyso. Fadlan isticmaal weedhaha hoose ama qor.",
+    "startCamera": "Shid kamaradda",
+    "stopCamera": "Dami kamaradda",
+    "cameraOnIndicator": "Kamaradu waa shidan tahay",
+    "cameraOnAnnounce": "Kamaradu waa shidan tahay. Riix \"Dami kamaradda\" si aad u joojiso.",
+    "cameraOffAnnounce": "Kamaradu waa dansan tahay.",
+    "cameraDenied": "Kamaradda lama isticmaali karin. Waad u oggolaan kartaa dejinta browser-ka, ama isticmaal weedhaha hoose.",
+    "cameraUnsupported": "Browser-kani ma isticmaali karo kamarad. Fadlan isticmaal weedhaha hoose.",
+    "previewLabel": "Horudhaca kamaraddaada",
+    "phrasesTitle": "Dooro weedho",
+    "phrases": {
+      "yes": "Haa.",
+      "no": "Maya.",
+      "needHelp": "Caawimaad ayaan u baahanahay.",
+      "useSignLanguage": "Waxaan isticmaalaa Luqadda Calaamadaha Itoobiya.",
+      "interpreter": "Fadlan ii keena turjubaan luqadda calaamadaha.",
+      "contactSms": "Fadlan iigu soo xiriir SMS.",
+      "contactEmail": "Fadlan iigu soo xiriir email.",
+      "noCall": "Fadlan ha ii soo wicin taleefan."
+    },
+    "added": "Waa lagu daray: {{phrase}}",
+    "messageLabel": "Fariintaada",
+    "messageHint": "Hubi oo beddel fariinta ka hor intaadan isticmaalin.",
+    "useMessage": "Isticmaal fariintan"
   }
 }

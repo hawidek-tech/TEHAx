@@ -240,9 +240,16 @@
     "progressTitle": "Guddina keessan",
     "progressLabel": "Sadarkaalee {{total}} keessaa {{done}} xumuramaniiru",
     "nextAction": "Tarkaanfii itti aanu kan gorfamu",
-    "state": { "done": "xumurameera", "current": "adeemsa irra", "todo": "hin jalqabamne" },
+    "state": {
+      "done": "xumurameera",
+      "current": "adeemsa irra",
+      "todo": "hin jalqabamne"
+    },
     "steps": {
-      "account": { "title": "Herrega uumaa", "done": "Herregni keessan qophaa'eera." },
+      "account": {
+        "title": "Herrega uumaa",
+        "done": "Herregni keessan qophaa'eera."
+      },
       "preferences": {
         "title": "Qindaa'ina dhaqqabummaa filadhaa",
         "done": "Qindaa'inni keessan olkaa'amee fuula hunda irratti hojjeta.",
@@ -481,7 +488,11 @@
     "myRequests": "Gaaffiiwwan koo",
     "noRequests": "Ammayyuu deeggarsa hin gaafanne.",
     "staffReply": "Deebii garee deeggarsa keenyaa",
-    "status": { "OPEN": "Argameera", "IN_PROGRESS": "Hojjetamaa jira", "RESOLVED": "Deebi'eera" },
+    "status": {
+      "OPEN": "Argameera",
+      "IN_PROGRESS": "Hojjetamaa jira",
+      "RESOLVED": "Deebi'eera"
+    },
     "whoCanSeeTitle": "Gaaffii keessan eenyutu arguu danda'a",
     "whoCanSee": "Hojjettoota deeggarsaa ACCESSFLOW leenji'an qofa. Qacaroonnii fi marsariitiiwwan michuu arguu hin danda'an. Kan qoodnu yoo isin waliigaltan qofa.",
     "humanTitle": "Nama waliin haasa'aa",
@@ -572,7 +583,11 @@
       "accommodations": "Gosoota deeggarsaa",
       "actions": "Gochoota"
     },
-    "status": { "DRAFT": "Wixinee", "PUBLISHED": "Maxxanfameera", "CLOSED": "Cufameera" },
+    "status": {
+      "DRAFT": "Wixinee",
+      "PUBLISHED": "Maxxanfameera",
+      "CLOSED": "Cufameera"
+    },
     "viewApplications": "Iyyannoowwan ilaali",
     "formLead": "Odeeffannoon hojii ifa ta'ee fi ibsi deeggarsaa dhugaa ta'e namoonni baay'een akka iyyatan gargaara.",
     "sectionJob": "Waa'ee hojii",
@@ -751,7 +766,8 @@
     "titles": {
       "signup": "Herrega keessan uumaa",
       "profile": "Piroofaayilii keessan",
-      "job-application": "Hojiif iyyadhaa"
+      "job-application": "Hojiif iyyadhaa",
+      "jobs": "Hojii barbaadaatii iyyadhaa"
     },
     "problemTitle": "Unkaan kun asitti mul'achuu hin danda'u",
     "fallbackLead": "Rakkoon isin mudateeraa?",
@@ -762,9 +778,15 @@
     "profileReadyTitle": "Piroofaayiliin keessan qophaa'eera",
     "profileReady": "Amma hojiif iyyachuu dandeessu.",
     "profileComplete": "Piroofaayiliin keessan xumurameera.",
-    "profileIncomplete": "Piroofaayiliin keessan ammayyuu hin xumuramne. Xumuruuf ACCESSFLOW tarree haaraa keessatti banaa."
+    "profileIncomplete": "Piroofaayiliin keessan ammayyuu hin xumuramne. Xumuruuf ACCESSFLOW tarree haaraa keessatti banaa.",
+    "signedInAs": "Akka {{name}}tti seentaniittu",
+    "backToJobs": "Gara hojiiwwaniitti deebi'i",
+    "signInToApply": "Iyyachuuf armaan gaditti seenaa ykn herrega uumaa."
   },
-  "notFound": { "title": "Fuulli hin argamne", "lead": "Fuula kana argachuu hin dandeenye." },
+  "notFound": {
+    "title": "Fuulli hin argamne",
+    "lead": "Fuula kana argachuu hin dandeenye."
+  },
   "regions": {
     "ADDIS_ABABA": "Finfinnee (Addis Ababa)",
     "AFAR": "Affaar",
@@ -835,8 +857,12 @@
       "required": "Itti fufuuf maaloo seenaa.",
       "csrfInvalid": "Yeroon seensa keessanii darbeera. Maaloo fuula irra deebi'aa fe'aatii yaalaa."
     },
-    "contact": { "required": "Maaloo lakkoofsa bilbilaa ykn teessoo imeelii kennaa." },
-    "email": { "invalid": "Kun teessoo imeelii hin fakkaatu." },
+    "contact": {
+      "required": "Maaloo lakkoofsa bilbilaa ykn teessoo imeelii kennaa."
+    },
+    "email": {
+      "invalid": "Kun teessoo imeelii hin fakkaatu."
+    },
     "phone": {
       "invalid": "Maaloo lakkoofsa bilbila harkaa Itoophiyaa galchaa, fakkeenyaaf 0911 234 567."
     },
@@ -872,8 +898,12 @@
       "routeRequired": "Maaloo karaa ittiin eenyummaa keessan mirkaneessitan filadhaa.",
       "invalidDecision": "Murtoon kun hin hayyamamu."
     },
-    "support": { "invalidStatus": "Haalli kun hin hayyamamu." },
-    "job": { "radioNeedsOptions": "Gaaffiin filannoo yoo xiqqaate filannoo lama barbaada." },
+    "support": {
+      "invalidStatus": "Haalli kun hin hayyamamu."
+    },
+    "job": {
+      "radioNeedsOptions": "Gaaffiin filannoo yoo xiqqaate filannoo lama barbaada."
+    },
     "embed": {
       "unknownPartner": "Marsariitiin michuu kun ACCESSFLOW irratti hin galmoofne.",
       "originNotAllowed": "Marsariitiin kun ACCESSFLOW agarsiisuuf hin hayyamamne. Maaloo kallattiin banuuf hidhaa armaan gadii fayyadamaa.",
@@ -882,7 +912,9 @@
   },
   "flows": {
     "registration": {
-      "sections": { "account": "Herrega keessan" },
+      "sections": {
+        "account": "Herrega keessan"
+      },
       "displayName": {
         "label": "Maqaa kamiin isin waamnu?",
         "hint": "Kun maqaa ergaawwan isiniif erginu keessatti fayyadamnu dha.",
@@ -892,7 +924,10 @@
       "contactMethod": {
         "label": "Akkamitti seenuu barbaaddu?",
         "why": "Seenuuf kana fayyadamtu. Waa'ee iyyannoowwan keessanii odeeffannoo barbaachisaa isiniif erguufis itti fayyadamna.",
-        "options": { "phone": "Lakkoofsa bilbila kootiin", "email": "Teessoo imeelii kootiin" }
+        "options": {
+          "phone": "Lakkoofsa bilbila kootiin",
+          "email": "Teessoo imeelii kootiin"
+        }
       },
       "phone": {
         "label": "Lakkoofsi bilbila harkaa keessanii meeqa?",
@@ -973,12 +1008,18 @@
         "hint": "Hojiin kaffaltii qabu, hojiin tola ooltummaa ykn daldalli maatii hundi ni lakkaa'amu. Kana dabruu dandeessu.",
         "why": "Qacaroonni waan duraan hojjettan beekuu barbaadu.",
         "items": {
-          "title": { "label": "Maqaa hojii", "example": "Hojjetaa suuqii" },
+          "title": {
+            "label": "Maqaa hojii",
+            "example": "Hojjetaa suuqii"
+          },
           "organization": {
             "label": "Eessa hojjettan?",
             "example": "Suuqii maatii Adaamaa keessatti"
           },
-          "startYear": { "label": "Bara jalqabdan", "example": "2021" },
+          "startYear": {
+            "label": "Bara jalqabdan",
+            "example": "2021"
+          },
           "endYear": {
             "label": "Bara xumurtan",
             "hint": "Yoo ammallee achi hojjettan duwwaa dhiisaa."
@@ -1011,8 +1052,14 @@
             "label": "Mana barumsaa ykn kolleejjii",
             "example": "Kolleejjii Teeknikaa fi Ogummaa Adaamaa"
           },
-          "field": { "label": "Gosa barnootaa", "example": "Herrega (Accounting)" },
-          "yearCompleted": { "label": "Bara xumurtan (ykn eegamu)", "example": "2022" }
+          "field": {
+            "label": "Gosa barnootaa",
+            "example": "Herrega (Accounting)"
+          },
+          "yearCompleted": {
+            "label": "Bara xumurtan (ykn eegamu)",
+            "example": "2022"
+          }
         }
       },
       "skills": {
@@ -1078,7 +1125,10 @@
         "label": "Garee keenya irraa deeggarsa dhuunfaa barbaadduu?",
         "hint": "Fakkeenyaaf galmee, iyyata ykn af-gaaffii irratti gargaarsa.",
         "why": "Kun dhuunfaa dha. Ragaa yaalaa isin hin barbaachisu, maaliif akka ta'es himuu hin qabdan.",
-        "options": { "no": "Lakki, amma miti", "yes": "Eeyyee, maaloo" }
+        "options": {
+          "no": "Lakki, amma miti",
+          "yes": "Eeyyee, maaloo"
+        }
       },
       "supportCategory": {
         "label": "Maal irratti gargaarsa barbaaddu?",
@@ -1181,7 +1231,9 @@
       }
     },
     "support-request": {
-      "sections": { "support": "Deeggarsa" },
+      "sections": {
+        "support": "Deeggarsa"
+      },
       "supportCategory": {
         "label": "Maal irratti gargaarsa barbaaddu?",
         "options": {
@@ -1220,5 +1272,69 @@
         "required": "Maaloo deebisaa."
       }
     }
+  },
+  "audio": {
+    "toggle": "Qajeelfama sagalee",
+    "activateTitle": "Dhaqqabummaa sagalee",
+    "activateButton": "Dhaqqabummaa Sagalee Banuu",
+    "activeButton": "Dhaqqabummaan sagalee banaa dha — fuula kana irra deebi'ii dubbisi",
+    "activateHint": "Fuula fi gaaffii hundaaf qajeelfama sagaleen dubbifamu bana. Yoo dubbisaa iskiriinii fayyadamtan, isin hin barbaachisu ta'a.",
+    "activated": "Dhaqqabummaan sagalee baneera. Fuula fi gaaffii tokkoon tokkoon isaa isiniif nan dubbisa.",
+    "pageHelp": "Gara kan itti aanutti deemuuf Tab tuqaa. Qajeelfama dabalataaf, sarara sagalee jala jiru irratti \"Gargaarsa\" tuqaa.",
+    "navigationHelp": "Akkamitti sochootan: kan itti aanuuf Tab, duubatti deebi'uuf Shift fi Tab tuqaa. Qabduu ykn hidhaa fayyadamuuf Enter tuqaa. Saanduqa mallatteessuuf Space tuqaa. Filannoo gidduu filachuuf furtuuwwan xiyyaa fayyadamaa. Bilbila irratti sochootuuf mirgaa ykn bitaatti harkisaa, filachuuf al lama tuqaa. Gaaffiin hundi qabduu \"Duubatti\" fi \"Itti aanu\" qaba, daangaan yeroos hin jiru. Deebiin keessan otoo hojjettanuu olkaa'ama.",
+    "welcomeHelp": "Dura afaan keessan filadhaa. Itti aansuun \"Jalqabi\" tuqaa.",
+    "barLabel": "Qajeelfama sagalee",
+    "barTitle": "Qajeelfama sagalee",
+    "speaking": "dubbachaa jira",
+    "ready": "banaa dha. Irra deebi'uuf \"Irra deebi'i\" tuqaa.",
+    "needsGesture": "qajeelfama dhaggeeffachuuf \"Itti fufi\" tuqaa.",
+    "noVoice": "meeshaan kun afaan kanaaf sagalee hin qabu, kanaaf barreeffamni asitti mul'ata.",
+    "noSpeech": "biraawzarri kun dubbachuu hin danda'u, kanaaf barreeffamni asitti mul'ata.",
+    "continue": "Itti fufi",
+    "repeat": "Irra deebi'i",
+    "help": "Gargaarsa",
+    "turnOff": "Sagalee dhaamsi",
+    "choices": "Filannoowwan",
+    "selectInstructions": "Filannoo {{count}} keessaa filachuuf tarree bani.",
+    "how": {
+      "text": "Deebii keessan barreessaa, ykn \"Deebii keessan dubbadhaa\" tuqaa. Itti aansuun \"Itti aanu\" tuqaa.",
+      "radio": "Filannoo tokko filachuuf furtuuwwan xiyyaa fayyadamaa. Itti aansuun \"Itti aanu\" tuqaa.",
+      "checkboxes": "Filannoo barbaaddan hunda mallatteessuuf Space tuqaa. Itti aansuun \"Itti aanu\" tuqaa.",
+      "consent": "Saanduqa mallatteessuuf Space tuqaa. Itti aansuun \"Itti aanu\" tuqaa.",
+      "list": "Galmee dabaluuf \"Dabali\", dabruuf \"Itti aanu\" tuqaa.",
+      "file": "Sanada dabaluuf \"Faayilii filadhu\", dabruuf \"Itti aanu\" tuqaa."
+    },
+    "reviewInstructions": "Deebii hunda mirkaneessaa. Sirreessuuf \"Jijjiiri\" tuqaa, yeroo qophooftan \"{{button}}\" gadii tuqaa.",
+    "jobsHelp": "Hojiiwwan gidduu sochootuuf Tab tuqaa. Hojii banuuf mata-duree irratti Enter tuqaa."
+  },
+  "sign": {
+    "open": "Mallattoo ykn hima filadhu",
+    "title": "Afaan mallattoo fi himoota",
+    "cameraTitle": "Kaameraa (filannoo)",
+    "privacy": "Kaamerichi kan banamu yeroo qabduu tuqxan qofa. Viidiyoon meeshaa kana irra hafa: homtuu hin waraabamu, hin ergamus.",
+    "noRecognizer": "Adda baasuun mallattoo ofumaan ammallee hin jiru. Afaan Mallattoo Itoophiyaaf moodeelli qorame waan hin jirreef, ACCESSFLOW mallattoo isin agarsiiftan hin tilmaamu. Maaloo himoota armaan gadii fayyadamaa ykn barreessaa.",
+    "startCamera": "Kaameraa bani",
+    "stopCamera": "Kaameraa cufi",
+    "cameraOnIndicator": "Kaamerichi banaa dha",
+    "cameraOnAnnounce": "Kaamerichi banaa dha. Dhaabuuf \"Kaameraa cufi\" tuqaa.",
+    "cameraOffAnnounce": "Kaamerichi cufameera.",
+    "cameraDenied": "Kaameraa fayyadamuun hin danda'amne. Qindaa'ina biraawzaraa keessatti hayyamuu ykn himoota armaan gadii fayyadamuu dandeessu.",
+    "cameraUnsupported": "Biraawzarri kun kaameraa fayyadamuu hin danda'u. Maaloo himoota armaan gadii fayyadamaa.",
+    "previewLabel": "Durargii kaameraa keessanii",
+    "phrasesTitle": "Himoota filadhaa",
+    "phrases": {
+      "yes": "Eeyyee.",
+      "no": "Lakki.",
+      "needHelp": "Gargaarsa nan barbaada.",
+      "useSignLanguage": "Afaan Mallattoo Itoophiyaa nan fayyadama.",
+      "interpreter": "Maaloo hiikaa afaan mallattoo naaf dhiyeessaa.",
+      "contactSms": "Maaloo SMS'n na quunnamaa.",
+      "contactEmail": "Maaloo imeeliin na quunnamaa.",
+      "noCall": "Maaloo bilbilaan na hin waamina."
+    },
+    "added": "Dabalameera: {{phrase}}",
+    "messageLabel": "Ergaa keessan",
+    "messageHint": "Otoo hin fayyadamin dura ergaa mirkaneessaa jijjiiraa.",
+    "useMessage": "Ergaa kana fayyadami"
   }
 }

@@ -1,6 +1,7 @@
 import { Lock, Search } from 'lucide-react'
 import { useEffect, useId, useMemo, useState, type FormEvent } from 'react'
 import { useAnnounce } from '../../a11y/announcer'
+import { useAudioGuide } from '../../a11y/audioGuide'
 import { Button } from '../../design-system/Button'
 import { inputClass } from '../../design-system/Field'
 import { Card, EmptyState, PageHeader } from '../../design-system/Layout'
@@ -52,6 +53,7 @@ export default function JobsPage() {
   const t = useT()
   const id = useId()
   const announce = useAnnounce()
+  const guide = useAudioGuide()
   const { me } = useSession()
   const profile = useApi<Profile>(me ? '/api/v1/profile' : null)
   const [form, setForm] = useState({ q: '', region: '', workMode: '', type: '' })
@@ -77,7 +79,16 @@ export default function JobsPage() {
   const toggleSave = useSaveToggle(jobs.reload)
 
   useEffect(() => {
-    if (jobs.data && !jobs.loading) announce(t('jobs.results', { count: jobs.data.length }))
+    if (jobs.data && !jobs.loading) {
+      announce(t('jobs.results', { count: jobs.data.length }))
+      guide.say(
+        `${t('jobs.results', { count: jobs.data.length })}. ${jobs.data
+          .slice(0, 5)
+          .map((j) => `${j.title}, ${j.organizationName}`)
+          .join('. ')}. ${t('audio.jobsHelp')}`,
+      )
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobs.data, jobs.loading, announce, t])
 
   const submit = (e: FormEvent) => {

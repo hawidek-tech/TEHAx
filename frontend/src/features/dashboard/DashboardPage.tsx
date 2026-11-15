@@ -155,7 +155,7 @@ export default function DashboardPage() {
             ))}
           </ol>
           {nextStep?.action && (
-            <div className="mt-5 flex flex-col gap-2 rounded-xl bg-surface-2 p-4">
+            <div data-announce className="mt-5 flex flex-col gap-2 rounded-xl bg-surface-2 p-4">
               <p className="font-bold">
                 {t('dashboard.nextAction')}: {t(`dashboard.steps.${nextStep.key}.title`)}
               </p>

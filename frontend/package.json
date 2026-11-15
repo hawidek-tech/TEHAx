@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && vite build -c vite.embed.config.ts",
+    "build": "tsc -b && vite build && vite build -c vite.embed.config.ts && cp dist/db-signup.js dist/accessflow.js",
     "lint": "oxlint --deny-warnings src",
     "preview": "vite preview",
     "test": "node scripts/check-i18n.mjs && vitest run",

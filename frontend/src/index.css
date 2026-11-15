@@ -112,6 +112,32 @@
   color-scheme: dark;
 }
 
+/* Dark theme (embedded theme="dark", or theme="auto" with a dark host preference). All text pairs >= 7:1 except
+   form-field borders (5.4:1). High contrast, when also on, takes precedence because it is declared later. */
+:root[data-theme='dark']:not([data-contrast='high']) {
+  --af-bg: #121816;
+  --af-surface: #1b2320;
+  --af-surface-2: #24302b;
+  --af-ink: #eef3f0;
+  --af-muted: #b5c2bc;
+  --af-line: #3a4a43;
+  --af-field-border: #8a9a93;
+  --af-primary: #7fd6b8;
+  --af-primary-strong: #a6e6cf;
+  --af-primary-soft: #17352b;
+  --af-on-primary: #0b1f18;
+  --af-accent: #ffb38a;
+  --af-accent-soft: #3a2416;
+  --af-danger: #ff9a8f;
+  --af-danger-soft: #3a1714;
+  --af-success: #8fe0a3;
+  --af-success-soft: #163220;
+  --af-warning-ink: #ffd27a;
+  --af-warning-soft: #33270b;
+  --af-focus: #ffd27a;
+  color-scheme: dark;
+}
+
 /* Keyboard-first: thicker, always-visible focus indicators. */
 :root[data-keyboard='true'] {
   --af-focus-width: 5px;

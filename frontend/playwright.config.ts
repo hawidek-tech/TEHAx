@@ -15,7 +15,14 @@ export default defineConfig({
   reporter: [['list'], ['json', { outputFile: 'test-results/e2e-results.json' }]],
   use: { baseURL, trace: 'retain-on-failure', locale: 'en-GB' },
   projects: [
-    { name: 'desktop-chromium', use: { ...devices['Desktop Chrome'] } },
+    {
+      name: 'desktop-chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        // Fake camera/microphone so camera-permission and cleanup can be tested without hardware.
+        launchOptions: { args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'] },
+      },
+    },
     // Low-cost Android profile (small screen, touch) for the core journey and reflow checks.
     { name: 'android-chromium', use: { ...devices['Pixel 5'] }, grep: /@mobile/ },
   ],

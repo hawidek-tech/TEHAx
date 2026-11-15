@@ -1,7 +1,8 @@
 /**
  * Safe wrappers around localStorage. Storage may be unavailable (private mode, blocked storage,
  * some embedded contexts); every call degrades gracefully.
- * NEVER store passwords, identity numbers, support/accommodation details or tokens here.
+ * NEVER store passwords, identity numbers, support/accommodation details or tokens here (localStorage).
+ * (The embed frame keeps its short-lived token in per-tab sessionStorage only - see api.ts.)
  */
 const PREFIX = 'af:'
 

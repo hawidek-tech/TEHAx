@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight, Check, CloudOff, Loader2, Save } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useAnnounce } from '../a11y/announcer'
+import { useAudioGuide } from '../a11y/audioGuide'
 import { usePreferences } from '../a11y/preferences'
 import { Alert } from '../design-system/Alert'
 import { Button } from '../design-system/Button'
@@ -40,6 +41,8 @@ export interface FlowRunnerProps {
   /** Extra content on the review screen, computed from the current answers. */
   reviewExtra?: (data: FlowData) => ReactNode
   onSubmit: (data: FlowData) => Promise<void>
+  /** Called when the visible step changes (used by embedded components to emit a non-personal step event). */
+  onStepChange?: (info: { stepId: string; index: number; total: number; section?: string }) => void
 }
 
 type SyncState = 'idle' | 'saving' | 'saved' | 'local' | 'error'
@@ -99,6 +102,7 @@ export function FlowRunner(props: FlowRunnerProps) {
           steps.findIndex((s) => s.id === stepId),
         )
   const step = steps[index]
+  const total = steps.length
   const draftUrl = `/api/v1/drafts/${flowKey}?context=${encodeURIComponent(context)}`
 
   // ---- Load: server draft (signed in) and/or local draft ---------------------------------------------------------
@@ -236,6 +240,54 @@ export function FlowRunner(props: FlowRunnerProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stepId])
 
+  // ---- Step events and audio guidance ------------------------------------------------------------------------
+  const guide = useAudioGuide()
+  const describeStep = useCallback((): string => {
+    if (stepId === REVIEW)
+      return `${t('flow.reviewTitle')}. ${t('flow.reviewLead')} ${t('audio.reviewInstructions', { button: submitLabel })}`
+    if (!step) return ''
+    return step.fields
+      .map((f) => {
+        const tx = fieldText(f)
+        const parts = [t('flow.stepOf', { current: index + 1, total }), tx.label]
+        if (!f.required && f.type !== 'consent') parts.push(t('flow.optionalQuestion'))
+        if (tx.hint) parts.push(tx.hint)
+        if (tx.example) parts.push(`${t('flow.example')}: ${tx.example}`)
+        if (f.options?.length && f.type !== 'select')
+          parts.push(`${t('audio.choices')}: ${f.options.map((o) => tx.option(o)).join(', ')}`)
+        if (f.options?.length && f.type === 'select')
+          parts.push(t('audio.selectInstructions', { count: f.options.length }))
+        const how =
+          f.type === 'radio'
+            ? 'radio'
+            : f.type === 'checkboxes'
+              ? 'checkboxes'
+              : f.type === 'consent'
+                ? 'consent'
+                : f.type === 'list'
+                  ? 'list'
+                  : f.type === 'file'
+                    ? 'file'
+                    : 'text'
+        parts.push(t(`audio.how.${how}`))
+        return parts.join('. ')
+      })
+      .join('. ')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stepId, step, index, total, t, fieldText, submitLabel])
+
+  useEffect(() => {
+    if (!loaded) return
+    props.onStepChange?.({
+      stepId,
+      index: stepId === REVIEW ? total : index + 1,
+      total,
+      section: step?.section,
+    })
+    guide.say(describeStep())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stepId, loaded, guide.active])
+
   // ---- Navigation ------------------------------------------------------------------------------------------------
   const change = (id: string, value: unknown) => {
     dirty.current = true
@@ -247,6 +299,17 @@ export function FlowRunner(props: FlowRunnerProps) {
   const showErrors = (e: Record<string, string>) => {
     setErrors(e)
     window.requestAnimationFrame(() => summaryRef.current?.focus())
+    const all = def.steps.flatMap((s) => s.fields)
+    guide.say(
+      `${t('flow.errorSummaryTitle')}. ${Object.entries(e)
+        .map(([fid, code]) =>
+          errText(
+            code,
+            all.find((f) => f.id === fid),
+          ),
+        )
+        .join('. ')}`,
+    )
   }
 
   const next = () => {
@@ -327,10 +390,9 @@ export function FlowRunner(props: FlowRunnerProps) {
   // ---- Render ----------------------------------------------------------------------------------------------------
   const sectionIndex = step ? def.sections.indexOf(step.section) : def.sections.length
   const errorEntries = Object.entries(errors)
-  const total = steps.length
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5" data-flow={flowKey}>
       {/* Progress: text + bar + sections, so it is never conveyed by colour or shape alone */}
       <div className="flex flex-col gap-3">
         <p className="text-base font-semibold" aria-live="off">

@@ -1,4 +1,6 @@
-import { MessageCircleQuestion } from 'lucide-react'
+import { Hand, MessageCircleQuestion } from 'lucide-react'
+import { useState } from 'react'
+import { SignLanguageDialog } from '../a11y/sign/SignLanguageDialog'
 import type { RefObject } from 'react'
 import { ReadAloud } from '../a11y/ReadAloud'
 import { VoiceInput } from '../a11y/VoiceInput'
@@ -31,6 +33,7 @@ interface Props {
 export function QuestionStep({ field, ns, data, error, onChange, headingRef, onHelp }: Props) {
   const t = useT()
   const { prefs } = usePreferences()
+  const [signOpen, setSignOpen] = useState(false)
   const text = useFieldText(ns)(field)
   const errText = useErrorText()
   const id = `q-${field.id}`
@@ -119,6 +122,27 @@ export function QuestionStep({ field, ns, data, error, onChange, headingRef, onH
             multiline={field.type === 'textarea'}
             onAccept={(v) => onChange(field.id, v)}
           />
+        )}
+        {(field.type === 'text' || field.type === 'textarea') && field.voice !== false && (
+          <>
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<Hand size={18} aria-hidden="true" />}
+              onClick={() => setSignOpen(true)}
+            >
+              {t('sign.open')}
+            </Button>
+            {signOpen && (
+              <SignLanguageDialog
+                open
+                question={text.label}
+                currentValue={value === undefined ? '' : String(value)}
+                onClose={() => setSignOpen(false)}
+                onAccept={(v) => onChange(field.id, v)}
+              />
+            )}
+          </>
         )}
         <ReadAloud text={readText} />
         <Button

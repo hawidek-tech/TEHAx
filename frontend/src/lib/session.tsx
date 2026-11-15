@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from 'react'
 import { usePreferences } from '../a11y/preferences'
-import { api, isEmbedMode, setEmbedToken } from './api'
+import { NetworkError, api, hasEmbedToken, isEmbedMode, setEmbedToken } from './api'
 import { storage } from './storage'
 import type { Me, Preferences, SessionResponse } from './types'
 
@@ -25,7 +25,9 @@ const SessionContext = createContext<SessionValue | null>(null)
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   // Embedded: always start signed out; the token lives only in memory.
-  const [me, setMe] = useState<Me | null | undefined>(() => (isEmbedMode() ? null : undefined))
+  const [me, setMe] = useState<Me | null | undefined>(() =>
+    isEmbedMode() && !hasEmbedToken() ? null : undefined,
+  )
   const { prefs, replace, setSyncToServer } = usePreferences()
 
   // Preferences are saved to the account only while someone is signed in.
@@ -39,22 +41,26 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => {
     try {
-      setUser((await api.get<Me | undefined>('/api/v1/auth/me')) ?? null)
-    } catch {
-      setUser(null)
+      const user = (await api.get<Me | undefined>('/api/v1/auth/me')) ?? null
+      setUser(user)
+      cacheMe(user)
+    } catch (e) {
+      // Offline: keep the last known signed-in user (id, name, roles, language only) so drafts stay reachable.
+      setUser(e instanceof NetworkError ? readCachedMe() : null)
     }
   }, [setUser])
 
   useEffect(() => {
     // Synchronises with the server session on load (an external system); state is set after the response.
     // oxlint-disable-next-line react/set-state-in-effect
-    if (!isEmbedMode()) void refresh()
+    if (!isEmbedMode() || hasEmbedToken()) void refresh()
   }, [refresh])
 
   const onSession = useCallback(
     (res: SessionResponse) => {
       if (res.embedToken) setEmbedToken(res.embedToken)
       setUser(res.user)
+      cacheMe(res.user)
       return res.user
     },
     [setUser],
@@ -94,6 +100,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     await api.post('/api/v1/auth/logout').catch(() => undefined)
     setEmbedToken(null)
+    cacheMe(null)
     storage.clearDrafts()
     setUser(null)
   }, [setUser])
@@ -103,6 +110,33 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     [me, refresh, signIn, register, signOut],
   )
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
+}
+
+/** Minimal, non-sensitive identity cache (per tab) used only when the network is unavailable. */
+function cacheMe(user: Me | null) {
+  try {
+    if (user)
+      window.sessionStorage.setItem(
+        'af:me',
+        JSON.stringify({
+          id: user.id,
+          displayName: user.displayName,
+          roles: user.roles,
+          locale: user.locale,
+        }),
+      )
+    else window.sessionStorage.removeItem('af:me')
+  } catch {
+    /* ignore */
+  }
+}
+function readCachedMe(): Me | null {
+  try {
+    const raw = window.sessionStorage.getItem('af:me')
+    return raw ? (JSON.parse(raw) as Me) : null
+  } catch {
+    return null
+  }
 }
 
 export function useSession() {

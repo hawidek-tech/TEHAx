@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import { AnnouncerProvider } from '../a11y/announcer'
+import { AudioGuideProvider } from '../a11y/audioGuide'
 import { PreferencesProvider } from '../a11y/preferences'
 import { Loading } from '../design-system/Layout'
 import { useT } from '../i18n/useT'
@@ -217,11 +218,13 @@ export function App() {
   return (
     <PreferencesProvider>
       <AnnouncerProvider>
-        <SessionProvider>
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
-        </SessionProvider>
+        <AudioGuideProvider>
+          <SessionProvider>
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
+          </SessionProvider>
+        </AudioGuideProvider>
       </AnnouncerProvider>
     </PreferencesProvider>
   )

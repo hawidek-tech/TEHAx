@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+  Blank host page: no Bootstrap, no Savanna CSS or JavaScript, no framework.
+  The host deliberately uses aggressive global CSS to prove that ACCESSFLOW neither inherits nor changes host styles.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Blank page — ACCESSFLOW one-script demo</title>
+    <style>
+      /* Aggressive host styles that must NOT leak into the module */
+      * { font-family: 'Courier New', monospace; }
+      body { margin: 0; padding: 16px; background: #fffbe6; color: #222; }
+      button, input, select, textarea { border: 3px dashed red !important; font-size: 10px !important; }
+      h1 { color: #8a0000; }
+      /* Host design tokens the module is allowed to read (with fallbacks) */
+      db-signup { --db-signup-accent: #1f4e79; --db-signup-radius: 0; --db-signup-border: 2px solid #1f4e79; }
+    </style>
+  </head>
+  <body>
+    <h1 id="host-title">A plain website</h1>
+    <p id="host-text">This page has no frameworks. Below is ACCESSFLOW, installed with one script tag.</p>
+    <button id="host-button" type="button">Host button (must keep its own style)</button>
+
+    <script src="http://localhost:8081/db-signup.js" defer></script>
+    <db-signup lang="am" api="http://localhost:8081" theme="auto" frame-title="ACCESSFLOW: create your account"></db-signup>
+
+    <h2>Events</h2>
+    <pre id="events" aria-live="polite">(none yet)</pre>
+    <script>
+      document.addEventListener('db-signup:done', (event) => console.log(event.detail))
+      const log = document.getElementById('events')
+      for (const type of ['db-signup:ready', 'db-signup:step', 'db-signup:support', 'db-signup:done']) {
+        document.addEventListener(type, (e) => {
+          log.textContent = (log.textContent === '(none yet)' ? '' : log.textContent + '\n') + type + ' ' + JSON.stringify(e.detail)
+        })
+      }
+    </script>
+  </body>
+</html>

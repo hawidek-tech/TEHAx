@@ -24,7 +24,11 @@ export function PageHeader({
       >
         {title}
       </h1>
-      {lead && <div className="max-w-2xl text-lg text-muted">{lead}</div>}
+      {lead && (
+        <div data-page-lead className="max-w-2xl text-lg text-muted">
+          {lead}
+        </div>
+      )}
       {actions && <div className="mt-1 flex flex-wrap gap-3">{actions}</div>}
     </div>
   )
@@ -45,9 +49,12 @@ export function Card({
 export function Badge({
   children,
   tone = 'neutral',
+  announce,
 }: {
   children: ReactNode
   tone?: 'neutral' | 'primary' | 'success' | 'warning' | 'danger'
+  /** Include this badge in what the audio guide reads for the page. */
+  announce?: boolean
 }) {
   const cls = {
     neutral: 'bg-surface-2 text-ink',
@@ -58,6 +65,7 @@ export function Badge({
   }[tone]
   return (
     <span
+      data-announce={announce || undefined}
       className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-semibold ${cls}`}
     >
       {children}

@@ -23,6 +23,7 @@ export const DEFAULT_PREFERENCES: Preferences = {
   readAloud: true,
   reducedMotion: false,
   sharedDevice: false,
+  audioGuide: false,
 }
 
 interface PreferencesContextValue {

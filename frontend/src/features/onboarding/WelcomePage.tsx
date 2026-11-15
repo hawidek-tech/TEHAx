@@ -1,4 +1,5 @@
-import { ArrowRight, Languages, LogIn, Mic, ShieldCheck, Save } from 'lucide-react'
+import { ArrowRight, Languages, LogIn, Mic, ShieldCheck, Save, Volume2 } from 'lucide-react'
+import { useAudioGuide } from '../../a11y/audioGuide'
 import { Navigate, useSearchParams } from 'react-router'
 import { usePreferences } from '../../a11y/preferences'
 import { ReadAloud } from '../../a11y/ReadAloud'
@@ -14,6 +15,7 @@ export default function WelcomePage() {
   const { prefs, update } = usePreferences()
   const { me } = useSession()
   const [params] = useSearchParams()
+  const guide = useAudioGuide()
   if (me)
     return (
       <Navigate
@@ -37,6 +39,28 @@ export default function WelcomePage() {
 
   return (
     <div className="flex flex-col gap-10">
+      {/* One explicit action starts spoken guidance (browsers do not allow audio before a user action). */}
+      <section
+        aria-labelledby="audio-activate-title"
+        className="rounded-2xl border-4 border-primary bg-primary-soft p-5"
+      >
+        <h2 id="audio-activate-title" className="sr-only">
+          {t('audio.activateTitle')}
+        </h2>
+        <button
+          type="button"
+          onClick={() =>
+            guide.active
+              ? guide.say(`${t('welcome.title')}. ${t('welcome.lead')}. ${t('audio.welcomeHelp')}`)
+              : guide.activate()
+          }
+          className="af-transition flex min-h-20 w-full items-center justify-center gap-3 rounded-xl bg-primary px-6 text-2xl font-extrabold text-on-primary hover:bg-primary-strong"
+        >
+          <Volume2 aria-hidden="true" size={32} />
+          <span>{guide.active ? t('audio.activeButton') : t('audio.activateButton')}</span>
+        </button>
+        <p className="mt-2 text-center">{t('audio.activateHint')}</p>
+      </section>
       <section className="grid items-center gap-8 lg:grid-cols-[1.2fr_1fr]">
         <div className="flex flex-col gap-5">
           <p className="text-sm font-bold uppercase tracking-wide text-primary">

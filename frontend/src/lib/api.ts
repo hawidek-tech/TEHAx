@@ -41,11 +41,32 @@ const TIMEOUT_MS = 25_000 // Generous: slow 3G connections are expected.
 
 const embed: { key: string | null; token: string | null } = { key: null, token: null }
 
+const TOKEN_KEY = 'af:embedToken'
+
+/** Embedded mode. The key may be '' at first (keyless <db-signup>) and set once the partner is resolved by origin. */
 export function setEmbedMode(publishableKey: string | null) {
   embed.key = publishableKey
+  if (publishableKey !== null && embed.token === null) {
+    try {
+      // Per-tab sessionStorage of the ACCESSFLOW frame: browsers partition it by the host site, the host page cannot
+      // read it, and it is NOT a cookie - so sign-in survives moving between pages of the same partner site.
+      embed.token = window.sessionStorage.getItem(TOKEN_KEY)
+    } catch {
+      /* storage blocked: token stays in memory only */
+    }
+  }
 }
 export function setEmbedToken(token: string | null) {
   embed.token = token
+  try {
+    if (token) window.sessionStorage.setItem(TOKEN_KEY, token)
+    else window.sessionStorage.removeItem(TOKEN_KEY)
+  } catch {
+    /* ignore */
+  }
+}
+export function hasEmbedToken() {
+  return embed.token !== null
 }
 export function isEmbedMode() {
   return embed.key !== null
@@ -81,8 +102,9 @@ export async function request<T>(
     headers['Content-Type'] = 'application/json'
     payload = JSON.stringify(body)
   }
-  if (embed.key) {
-    headers['X-AccessFlow-Embed'] = embed.key
+  if (embed.key !== null) {
+    // Embedded: never cookies. Partner header once known; bearer token whenever the frame has one.
+    if (embed.key) headers['X-AccessFlow-Embed'] = embed.key
     if (embed.token) headers['Authorization'] = `Bearer ${embed.token}`
   } else if (method !== 'GET') {
     const csrf = await ensureCsrf()
@@ -95,7 +117,7 @@ export async function request<T>(
       method,
       headers,
       body: payload,
-      credentials: embed.key ? 'omit' : 'same-origin',
+      credentials: embed.key !== null ? 'omit' : 'same-origin',
       signal: signal ? AbortSignal.any([signal, timeout]) : timeout,
     })
   } catch (e) {
@@ -140,7 +162,10 @@ export const api = {
 export async function downloadFile(url: string, fallbackName: string) {
   const headers: Record<string, string> = {}
   if (embed.token) headers['Authorization'] = `Bearer ${embed.token}`
-  const res = await fetch(url, { headers, credentials: embed.key ? 'omit' : 'same-origin' })
+  const res = await fetch(url, {
+    headers,
+    credentials: embed.key !== null ? 'omit' : 'same-origin',
+  })
   if (!res.ok) throw new ApiError(res.status, 'error.notFound')
   const blob = await res.blob()
   const link = document.createElement('a')

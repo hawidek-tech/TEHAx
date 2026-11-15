@@ -5,6 +5,8 @@ import { CaptionBar } from '../a11y/ReadAloud'
 import { usePreferences } from '../a11y/preferences'
 import { useAnnounce } from '../a11y/announcer'
 import { speech } from '../a11y/speech'
+import { useAudioGuide, useRouteAudio } from '../a11y/audioGuide'
+import { Volume2 } from 'lucide-react'
 import { LOCALES } from '../i18n'
 import { useT } from '../i18n/useT'
 import { useSession } from '../lib/session'
@@ -27,6 +29,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [menuFor, setMenuFor] = useState<string | null>(null)
   const menuOpen = menuFor === location.pathname
   const langId = useId()
+  const guide = useAudioGuide()
+  useRouteAudio(location.pathname)
 
   useEffect(() => {
     speech.stop()
@@ -115,6 +119,15 @@ export function AppShell({ children }: { children: ReactNode }) {
                 ))}
               </select>
             </span>
+            <button
+              type="button"
+              aria-pressed={guide.active}
+              onClick={() => (guide.active ? guide.deactivate() : guide.activate())}
+              className={`af-transition inline-flex min-h-11 items-center gap-2 rounded-lg border-2 border-primary px-3 font-semibold ${guide.active ? 'bg-primary text-on-primary' : 'text-primary hover:bg-primary-soft'}`}
+            >
+              <Volume2 size={18} aria-hidden="true" />
+              <span>{t('audio.toggle')}</span>
+            </button>
             <Link
               to="/settings"
               className="af-transition inline-flex min-h-11 items-center gap-2 rounded-lg border-2 border-primary px-3 font-semibold text-primary hover:bg-primary-soft"
@@ -181,7 +194,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      <main id="main" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:py-10">
+      <main
+        id="main"
+        tabIndex={-1}
+        className={`mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:py-10 ${guide.active ? 'pb-56' : ''}`}
+      >
         {children}
       </main>
 
@@ -212,7 +229,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </ul>
         </div>
       </footer>
-      <CaptionBar />
+      {!guide.active && <CaptionBar />}
     </div>
   )
 }

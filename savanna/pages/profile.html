@@ -1,0 +1,58 @@
+<!doctype html>
+<!--
+  ACCESSFLOW integration page (added; not part of the original Savanna starter).
+  Uses the starter's own stylesheets and scripts unchanged and mounts the reusable ACCESSFLOW module with ONE script tag.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My profile | G-School Intranet</title>
+    <link rel="stylesheet" href="../assets/css/typekit-xgz4ilr-css.css" />
+    <link rel="stylesheet" href="../assets/css/application_alx.css" media="all" />
+    <link rel="stylesheet" href="../assets/css/app.css" media="all" />
+    <link rel="stylesheet" href="../assets/css/static-page.css" media="all" />
+    <!-- ACCESSFLOW: the only addition a host page needs. -->
+    <script src="http://localhost:8081/db-signup.js" defer></script>
+  </head>
+  <body class="signed_in env_development notranslate" translate="no" data-theme-suffix="_alx">
+    <div class="header d-flex align-items-center position-fixed top-0 w-100" style="z-index: 1000">
+      <div class="header-left align-items-center d-flex position-fixed px-2" style="z-index: 2">
+        <a class="logo-container p-1" href="../index.html" aria-label="Savanna home"><div class="logo mx-auto" style="background-image: url(&quot;../assets/img/holberton-logo-full-alx.png&quot;)"></div></a>
+      </div>
+    </div>
+    <nav class="sidebar navigation bg-white border-end position-fixed overflow-scroll bottom-0 start-0 expanded" id="sidebar" aria-label="Savanna"
+      style="background-color: rgb(255, 255, 255); border-color: rgb(238, 238, 238)">
+      <ul class="px-2">
+        <li><a href="../index.html"><div class="icon"><i aria-hidden="true" class="fa-solid fa-home"></i></div><div class="ps-3 overflow-hidden text-nowrap" style="display: block">Home</div></a></li>
+        <li><a href="signup.html"><div class="icon"><i aria-hidden="true" class="fa-solid fa-user-plus"></i></div><div class="ps-3 overflow-hidden text-nowrap" style="display: block">Accessible sign-up</div></a></li>
+        <li><a href="profile.html" aria-current="page"><div class="icon"><i aria-hidden="true" class="fa-solid fa-user"></i></div><div class="ps-3 overflow-hidden text-nowrap" style="display: block">My profile</div></a></li>
+        <li><a href="jobs.html"><div class="icon"><i aria-hidden="true" class="fa-solid fa-briefcase"></i></div><div class="ps-3 overflow-hidden text-nowrap" style="display: block">Career gateway</div></a></li>
+      </ul>
+    </nav>
+    <main class="content" id="content">
+      <div class="container py-4" style="max-width: 960px">
+        <h1 class="h3 mb-3">Your reusable profile</h1>
+        <p class="mb-4">Update the profile you share with employers. Private support needs are never shared.</p>
+        <db-signup view="profile" lang="en" api="http://localhost:8081" theme="auto" frame-title="ACCESSFLOW: edit your profile"></db-signup>
+        <section class="mt-4" aria-labelledby="events-title">
+          <h2 id="events-title" class="h6">Events received by this Savanna page (no personal data)</h2>
+          <pre id="events" aria-live="polite" style="white-space: pre-wrap">(none yet)</pre>
+        </section>
+      </div>
+    </main>
+    <script src="../assets/js/popper.js"></script>
+    <script src="../assets/js/bootstrap.bundle.js"></script>
+    <script src="../assets/js/static-page.js"></script>
+    <script>
+      ;(function () {
+        var log = document.getElementById('events')
+        ;['db-signup:ready', 'db-signup:step', 'db-signup:support', 'db-signup:done'].forEach(function (type) {
+          document.addEventListener(type, function (e) {
+            log.textContent = (log.textContent === '(none yet)' ? '' : log.textContent + '\n') + type + ' ' + JSON.stringify(e.detail)
+          })
+        })
+      })()
+    </script>
+  </body>
+</html>
