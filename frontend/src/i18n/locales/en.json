@@ -1568,5 +1568,167 @@
       "help": "",
       "stop": ""
     }
+  },
+  "assistant": {
+    "welcome": "Welcome to ACCESSFLOW!",
+    "welcomeBack": "Welcome back to ACCESSFLOW, {{name}}!",
+    "whatHelp": "What can I help you with today? You can say: find a job, create my profile, ask for support, or my applications.",
+    "anythingElse": "Is there anything else I can help you with?",
+    "menuPrompt": "Okay. What would you like to do now?",
+    "whatCanIDo": "I can help you find a job and hear about it, apply for it, create your profile, ask for private support, and check your applications.",
+    "controls": "At any time you can say repeat, go back, skip, help, stop, or main menu. To interrupt me, press Enter or Space. You can also type your answers.",
+    "notUnderstood": "Sorry, I did not understand “{{heard}}”.",
+    "generalHelp": "Answer the question in your own words, or say one of the choices. You can say repeat, go back, skip, or main menu.",
+    "privacy": "I will listen through your microphone, one answer at a time. Your browser may ask for permission. Some browsers, like Chrome, send the sound to an online service to turn it into text. ACCESSFLOW does not record or keep your voice. You can always type instead.",
+    "silence": "I didn't hear anything. Please answer when you are ready, or say repeat.",
+    "pausedSilence": "I'll wait. Press Enter or Space when you are ready to continue.",
+    "paused": "Paused. Your progress is saved. Press Enter or Space to continue.",
+    "cannotSkip": "This question is needed, so I can't skip it. Say help if you are not sure.",
+    "error": "Sorry, something went wrong. Your answers are saved. Press Enter to try again.",
+    "languageChanged": "Okay, I will speak English.",
+    "nothingUnfinished": "You have nothing unfinished.",
+    "unfinished": "You have something unfinished: {{what}}. Would you like to continue it now?",
+    "unfinishedWhat": {
+      "job-application": "a job application",
+      "profile": "your profile",
+      "support-request": "a support request"
+    },
+    "confirm": "I heard {{value}}. Is that right?",
+    "micError": {
+      "permission": "I can't use the microphone because permission was not given. Let's continue by typing. You can allow the microphone in your browser settings.",
+      "language": "Your browser can't recognise speech in this language. Let's continue by typing, or say English if you prefer.",
+      "network": "Speech recognition needs an internet connection in this browser. Let's continue by typing.",
+      "noMicrophone": "I can't find a microphone. Let's continue by typing.",
+      "other": "Voice input stopped working. Let's continue by typing."
+    },
+    "chips": {
+      "findJob": "Find a job",
+      "profile": "Create my profile",
+      "support": "Ask for support",
+      "track": "My applications",
+      "anyJob": "Any job",
+      "more": "Tell me more",
+      "nextJob": "Next job",
+      "apply": "Apply",
+      "searchAgain": "Search again",
+      "useEmail": "Use email",
+      "send": "Yes, send it",
+      "notYet": "Not yet"
+    },
+    "jobs": {
+      "what": "Of course! What kind of job are you looking for?",
+      "whatHelp": "Say the kind of work, for example customer service, data entry, or software development. Or say any job.",
+      "noneFor": "I didn't find jobs for {{what}}. Here are all {{count}} open jobs instead.",
+      "describe": "Job {{n}} of {{total}}: {{title}}, at {{org}}, in {{place}}. {{mode}}. You can apply for {{days}} more days.",
+      "whatNow": "Would you like to hear more, hear the next job, or apply?",
+      "browseHelp": "Say tell me more to hear the description, next job, apply, or search again.",
+      "support": "This employer offers: {{list}}.",
+      "noSupportListed": "The employer has not listed workplace support yet.",
+      "last": "That was the last job. Say apply, go back, or search again.",
+      "first": "This is the first job.",
+      "found_one": "Great! I found one job for {{what}}. Let me tell you about it.",
+      "found_other": "Great! I found {{count}} jobs for {{what}}. Let me tell you about the first one.",
+      "foundAll_one": "I found one open job. Let me tell you about it.",
+      "foundAll_other": "I found {{count}} open jobs. Let me tell you about the first one."
+    },
+    "account": {
+      "need": {
+        "apply": "To apply, you need an account. It takes four questions.",
+        "profile": "To save a profile, you need an account. It takes four questions.",
+        "support": "To ask for support, you need an account. It takes four questions.",
+        "track": "To see your applications, please sign in."
+      },
+      "haveOne": "Do you already have an ACCESSFLOW account?",
+      "name": "What should I call you?",
+      "phone": "What is your mobile phone number? Say the numbers one by one. Or say email to use an email address.",
+      "identifier": "What is your phone number or email address?",
+      "email": "What is your email address? For example, almaz at gmail dot com.",
+      "badPhone": "I heard {{heard}}. That doesn't look like an Ethiopian mobile number. It should start with 09 or 07 and have ten digits.",
+      "badEmail": "I heard {{heard}}. That doesn't look like an email address.",
+      "newPassword": "For your safety, please type a password of at least eight characters and press Enter. I will not say it aloud.",
+      "password": "Please type your password and press Enter. I will not say it aloud.",
+      "shortPassword": "That password is too short. Please type at least eight characters.",
+      "privacy": "Before I create your account: ACCESSFLOW keeps your information safe. Employers only see what you choose to share, and your support needs stay private. You can download or delete your data at any time.",
+      "agree": "Do you agree? Say yes or no.",
+      "noAgreement": "Without your agreement I can't create an account. Nothing was saved.",
+      "created": "Your account is ready, {{name}}.",
+      "trySignIn": "Would you like to sign in instead?",
+      "signedIn": "You are signed in, {{name}}."
+    },
+    "q": {
+      "chooseOne": "The choices are: {{list}}. Say the number or the name.",
+      "chooseMany": "The choices are: {{list}}. Say all that apply, or say none.",
+      "agree": "Do you agree? Say yes or no.",
+      "optional": "You can say skip.",
+      "current": "Your answer is {{value}}. Say yes to keep it, or give a new answer.",
+      "fileLater": "Documents can be added later on the screen. Let's continue.",
+      "gotChoice": "Got it: {{value}}.",
+      "help": "Answer in your own words. You can say repeat, go back, or skip if the question is optional.",
+      "listAdd": "{{label}} Would you like to add one? Say yes or no.",
+      "listMore": "{{label}} You added {{count}}. Would you like to add another?",
+      "notUnderstood": "Sorry, I didn't understand “{{heard}}”. Please try again, or say repeat."
+    },
+    "apply": {
+      "already": "You already applied for {{title}}. Its status is: {{status}}.",
+      "minimum": "The employer needs a few details from you first: {{count}} short questions.",
+      "start": "Now the application for {{title}}.",
+      "review": "Here are your answers. {{answers}}.",
+      "confirm": "Do you want to send your application for {{title}} at {{org}} now? Say yes to send it, or no to keep it for later.",
+      "kept": "Okay, I kept your answers. You can send it later.",
+      "sent": "Your application for {{title}} was sent. Your reference is {{reference}}. I will tell you when the employer replies."
+    },
+    "profile": {
+      "intro": "Let's build your profile. It has {{parts}} short parts, and you can stop after any part.",
+      "complete": "Your profile already has all the main details.",
+      "part": "Part {{n}} of {{total}}: {{name}}.",
+      "partDone": "That part is saved. Shall we continue with {{name}}?",
+      "saved": "Your profile is saved. You can continue another time.",
+      "ready": "Your profile is ready.",
+      "offerSupport": "Would you like to tell us about support you need at work? It stays private, and employers never see it."
+    },
+    "support": {
+      "intro": "I'll ask three short questions. Only our support staff can see your answers; employers never see them.",
+      "confirm": "Do you want to send this support request now?",
+      "sent": "Your request was sent. Only support staff can see it. We will reply in ACCESSFLOW or the way you chose."
+    },
+    "track": {
+      "none": "You haven't applied for any jobs yet. Say find a job to start.",
+      "item": "{{n}}: {{title}} at {{org}}: {{status}}.",
+      "count_one": "You have one application.",
+      "count_other": "You have {{count}} applications."
+    },
+    "status": {
+      "idle": "Ready",
+      "speaking": "Speaking…",
+      "listening": "Listening… speak now",
+      "waiting": "Waiting for your answer",
+      "paused": "Paused",
+      "thinking": "One moment…"
+    },
+    "ui": {
+      "title": "ACCESSFLOW assistant",
+      "intro": "Talk to me like a person. I'll ask one question at a time and do the rest.",
+      "start": "Start talking",
+      "talk": "Talk",
+      "interrupt": "Interrupt and talk",
+      "resume": "Continue",
+      "listening": "Listening…",
+      "keys": "Enter or Space: talk or interrupt · Escape: pause",
+      "conversation": "Conversation",
+      "said": "Assistant",
+      "youSaid": "You",
+      "suggestions": "Suggested answers",
+      "typeLabel": "Or type your answer",
+      "passwordLabel": "Type your password (it is never spoken or shown)",
+      "send": "Send",
+      "options": "Conversation options",
+      "voiceReplies": "Spoken replies",
+      "microphone": "Microphone",
+      "phrases": "Picture phrases",
+      "pause": "Pause",
+      "typing": "Typing mode: the microphone is off.",
+      "talkTo": "Talk to ACCESSFLOW",
+      "talkToHint": "Press Enter. I'll guide you by voice, one question at a time."
+    }
   }
 }

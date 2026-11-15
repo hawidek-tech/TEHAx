@@ -7,7 +7,7 @@
 | Module name | ACCESSFLOW (custom element `<db-signup>`) |
 | Team members | _To be completed by the team_ |
 | Co-designer | _To be completed by the team (no co-designer sessions have been recorded yet — see CONFORMANCE.md)_ |
-| Status | Working end to end; 164 automated tests passing; human accessibility testing pending; **no WCAG conformance claimed** |
+| Status | Working end to end; 175 automated tests passing; human accessibility testing pending; **no WCAG conformance claimed** |
 
 ## In plain English
 ACCESSFLOW lets people with disabilities register, build a profile, find jobs and apply on their own, one question at
@@ -17,7 +17,16 @@ employers. Any website — Savanna or a blank page — can add it with one scrip
 
 **Main user task:** find a job and apply for it, then follow the application, without help from another person.
 
-### How a learner uses it (voice-first flow — [docs/ux/first-visit-flow.md](docs/ux/first-visit-flow.md))
+### Blind users: the voice assistant ([docs/ux/voice-assistant.md](docs/ux/voice-assistant.md))
+Open ACCESSFLOW and press **Enter** once (the "Talk to ACCESSFLOW" button already has focus; browsers require this one
+action before any speech). From then on it is a conversation: "Welcome to ACCESSFLOW! What can I help you with today?"
+→ "I want to find a job" → "What kind of job?" → jobs are read out → "apply" → account, missing details and the
+application are asked one by one → answers are read back → sent only after an explicit "yes". It also creates profiles,
+sends private support requests, reads application status and continues unfinished work. Understanding is **rule-based**
+(English and Amharic word lists), not AI; passwords are typed, never spoken. The same conversation works by typing,
+suggestions and picture phrases with no sound. **Tested with simulated speech only; not yet with blind users.**
+
+### How a learner uses it on screen (voice-first flow — [docs/ux/first-visit-flow.md](docs/ux/first-visit-flow.md))
 1. **One question:** "Welcome to ACCESSFLOW. What would you like to do today?" — Find a job · Create my profile · Ask
    for support · Help me get started. On the same screen: **Activate Audio Accessibility / የድምፅ ተደራሽነትን አብራ**
    (voice guide), the five languages, and "More options" (simple words, bigger text, high contrast, picture phrases).
@@ -115,8 +124,8 @@ Demo accounts `employer@example.com` and `support@example.com` exist only if `DE
 ## Tests
 ```bash
 cd backend  && ./mvnw verify          # 58 tests (PostgreSQL test database)
-cd frontend && npm test               # translation completeness + 16 unit tests
-cd frontend && npx playwright install chromium && npx playwright test   # 90 browser tests; needs production mode + demo hosts
+cd frontend && npm test               # translation completeness + 21 unit tests
+cd frontend && npx playwright install chromium && npx playwright test   # 96 browser tests; needs production mode + demo hosts
 ```
 Browser tests cover: full journey (desktop + Android profile), keyboard-only registration, axe-core WCAG 2.2 A/AA (zero
 serious/critical, including inside the embedded module), all preferences, 320 px and 200 %, one-script install on the blank
@@ -144,7 +153,7 @@ curl -s -c j -b j -H "X-XSRF-TOKEN: $X" -H 'Content-Type: application/json' \
 ```
 
 ## Languages
-English, Amharic, Afaan Oromo, Somali, Tigrinya: 1,152 interface keys each; `npm test` fails if any key is missing or a
+English, Amharic, Afaan Oromo, Somali, Tigrinya: 1,286 interface keys each; `npm test` fails if any key is missing or a
 placeholder differs. **Only English is reviewed; the other four are drafts awaiting fluent speakers.** Audio guidance is
 written for English and Amharic (others are drafts) and uses the device's voices — if there is no voice for the language,
 the module says so and shows the text.
@@ -169,8 +178,8 @@ are used only after you press a button; nothing is recorded or uploaded. You can
 | Measurement | Result |
 |---|---|
 | Loader `db-signup.js` | 4.9 KB (2.1 KB gzip) |
-| Embedded module first load, Amharic, Ethiopic font downloaded | 403 KB transferred |
-| Main app first visit (English) | 159 KB transferred; usable after ~4.8 s on emulated slow 3G with 4× slower CPU |
+| Embedded module first load, Amharic, Ethiopic font downloaded | 412 KB transferred |
+| Main app first visit (English) | 163 KB transferred; usable after ~5.4 s on emulated slow 3G with 4× slower CPU |
 Android devices ship Noto Sans Ethiopic, so the font (~150 KB) is normally not downloaded there.
 
 ## Estimated monthly cost for 3,000 learners

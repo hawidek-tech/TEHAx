@@ -39,6 +39,7 @@ const PrivacyPage = lazy(() => import('../features/info/PrivacyPage'))
 const AccessibilityStatementPage = lazy(() => import('../features/info/AccessibilityStatementPage'))
 const NotFoundPage = lazy(() => import('../features/info/NotFoundPage'))
 const EmbedPage = lazy(() => import('../features/embed/EmbedPage'))
+const AssistantPage = lazy(() => import('../assistant/AssistantPage'))
 
 function Fallback() {
   const t = useT()
@@ -60,6 +61,7 @@ export function AppRoutes() {
                   <Route path="/preview" element={<PreviewPage />} />
                   <Route path="/register" element={<RegisterPage />} />
                   <Route path="/sign-in" element={<SignInPage />} />
+                  <Route path="/assistant" element={<AssistantPage />} />
                   <Route path="/jobs" element={<JobsPage />} />
                   <Route path="/jobs/:id" element={<JobDetailPage />} />
                   <Route path="/help" element={<HelpPage />} />

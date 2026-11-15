@@ -86,6 +86,12 @@ export function HelpMenu() {
               </button>
             </li>
             <li>
+              <button type="button" className={item} onClick={() => go('/assistant?start=1')}>
+                <Mic aria-hidden="true" size={20} />
+                {t('assistant.ui.talkTo')}
+              </button>
+            </li>
+            <li>
               <button type="button" className={item} onClick={() => go('/help')}>
                 <MessageCircleQuestion aria-hidden="true" size={20} />
                 {t('helpMenu.askQuestion')}

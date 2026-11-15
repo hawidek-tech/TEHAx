@@ -12,10 +12,10 @@ Statuses: **PASS** verified implementation + test evidence · **PARTIAL** implem
 | Suite | Result |
 |---|---|
 | Backend (`cd backend && ./mvnw verify`) | 58 passed, 0 failed |
-| Frontend unit + translation completeness (`npm test`) | 16 passed; 1,152 keys complete in en, am, om, so, ti |
-| Browser / accessibility (`npx playwright test`, production mode) | 90 passed, 0 failed (desktop Chromium + Pixel 5 profile) |
+| Frontend unit + translation completeness (`npm test`) | 21 passed; 1,286 keys complete in en, am, om, so, ti |
+| Browser / accessibility (`npx playwright test`, production mode) | 96 passed, 0 failed (desktop Chromium + Pixel 5 profile) |
 | Lint (incl. jsx-a11y), types, formatting, production build | pass, 0 warnings |
-| **Total automated** | **164 passing** (141 before the simplified flow). Tests that asserted the old screens were rewritten (none removed); the private-support job filter and the Accessibility Preview have their own tests again |
+| **Total automated** | **175 passing** (141 before the simplified flow). Tests that asserted the old screens were rewritten (none removed); the private-support job filter and the Accessibility Preview have their own tests again |
 | Docker Compose | **NOT TESTED** — Docker is not installed on this machine |
 
 ## Requirements audit
@@ -35,6 +35,7 @@ Statuses: **PASS** verified implementation + test evidence · **PARTIAL** implem
 | PASS | Data contract endpoints | `POST /api/v1/learners`, `PATCH /api/v1/learners/{id}`, `PUT /api/v1/learners/{id}/support`, `GET /api/v1/learners/{id}/export`, `DELETE /api/v1/learners/{id}` (password required) | `LearnerApiTest` (4 tests: lifecycle, IDOR → 404, support never visible to employers, keyless embed) | Request/response field names not compared with the official contract (guide unavailable) | Align field names with the guide |
 | PASS | Support data separate, never to employers | Separate column/requests; employer views use consented snapshot only | Backend journey + learner tests | — | — |
 | PASS | View / export / delete own data | Account page, `/account/export`, `/learners/{id}/export`, delete with password | Backend tests | — | — |
+| PARTIAL | Voice assistant: natural conversation for blind users (find, hear, register, apply with explicit yes, profile, support, track, continue) | `frontend/src/assistant/` (engine, rule-based `nlu.ts`, dialogs on the existing APIs); one Enter on the focused "Talk to ACCESSFLOW" starts it | `assistant.spec.ts` (6 conversations, simulated speech/recognition), `nlu.test.ts` (5) | **Not tested with a blind user or real voices/recognition**; one key press needed (browser rule); understanding is keyword-based; om/so/ti conversation texts are English placeholders | Real-user protocol in `docs/ux/voice-assistant.md` |
 | PASS | Voice-first welcome: one question, language + voice guide + options on the same screen; no disability question | `WelcomePage` (2026-11-16 redesign) | `first-visit.spec.ts` (12 tests: screen, axe, languages, audio en/am, silent when off, job description read, choose by voice, voice answers + commands in a form, options, get started, header + Help, no recogniser) | Speech is simulated in tests; no blind user has tried it | Co-designer + NVDA/TalkBack + real Android voices |
 | PASS | Voice answers for choices and commands | `VoiceAnswer` + `voiceCommands.ts` (number/name/yes-no/next-back-repeat-help-stop; en/am/om/so/ti word lists, non-English drafts) | 5 unit tests + browser tests above | Recognition accuracy on real devices unknown; om/so/ti recognition may be unsupported by browsers | Real-device tests |
 | SUPERSEDED | Simplified first visit (Start → language → how → what) | `WelcomePage` front door; usage modes set audio guide/captions/phrase board; choice kept on the device only (not in shared-device mode) | `first-visit.spec.ts` (screens, focus, axe, remembered, shared device, modes never speak, sign mode order, Help menu, no single-key shortcuts), keyboard-only first visit | Audio intro on screens 1–2 may overlap a screen reader for a few seconds | Co-designer + NVDA/TalkBack decide |

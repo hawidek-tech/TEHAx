@@ -7,6 +7,7 @@ import {
   Contrast,
   Hand,
   HeartHandshake,
+  Mic,
   SlidersHorizontal,
   Type,
   UserRound,
@@ -145,6 +146,7 @@ function Home({
 
   return (
     <div data-flow="welcome" className="mx-auto flex max-w-5xl flex-col gap-6">
+      <TalkButton />
       <section className="af-hero af-enter grid items-center gap-6 p-5 sm:p-10 lg:grid-cols-[1.4fr_1fr]">
         <div className="flex min-w-0 flex-col gap-4">
           <h1
@@ -207,6 +209,42 @@ function Home({
       </section>
       {footer}
     </div>
+  )
+}
+
+/**
+ * The voice assistant entry - the primary experience for blind users. It has keyboard focus when the page opens, so a
+ * single Enter (or one tap) starts the conversation; browsers do not allow speech before such a user action.
+ */
+function TalkButton() {
+  const t = useT()
+  const navigate = useNavigate()
+  const ref = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    // Only on arrival (not when coming back from "Help me get started").
+    if (document.activeElement === document.body) ref.current?.focus()
+  }, [])
+  return (
+    <button
+      ref={ref}
+      type="button"
+      onClick={() => navigate('/assistant?start=1')}
+      className="af-lift flex min-h-24 w-full items-center gap-5 rounded-3xl bg-primary px-6 py-4 text-left text-on-primary shadow-lg hover:bg-primary-strong"
+    >
+      <span
+        className="inline-flex size-14 shrink-0 items-center justify-center rounded-full bg-on-primary text-primary"
+        aria-hidden="true"
+      >
+        <Mic size={30} />
+      </span>
+      <span className="flex flex-col">
+        <span className="text-2xl font-extrabold sm:text-3xl">{t('assistant.ui.talkTo')}</span>
+        <span lang="am" className="text-lg font-semibold">
+          ከACCESSFLOW ጋር ይነጋገሩ · Enter
+        </span>
+        <span className="text-base">{t('assistant.ui.talkToHint')}</span>
+      </span>
+    </button>
   )
 }
 
