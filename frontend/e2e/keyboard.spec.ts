@@ -65,16 +65,9 @@ test('first visit can be completed with the keyboard only', async ({ page }) => 
     }
     throw new Error(`Could not reach ${name} with Tab`)
   }
-  await tabTo(/Jalqabi Start/)
-  await press('Enter')
-  await tabTo(/^English/)
-  await press('Enter')
-  await tabTo(/^I'll read and type/)
-  await press('Enter')
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'What would you like to do today?' }),
-  ).toBeFocused()
-  await tabTo(/^Find a job/)
+  // Language and the voice guide come before the choices, all reachable with Tab
+  await tabTo(/Activate Audio Accessibility/)
+  await tabTo(/^\d\. Find a job/)
   await press('Enter')
   await expect(page).toHaveURL(/\/jobs$/)
 })

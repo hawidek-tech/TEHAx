@@ -27,11 +27,6 @@ async function advanceTo(f: FrameLocator, heading: RegExp) {
   throw new Error(`Question not reached: ${heading}`)
 }
 
-/** First time in the module: "How do you want to use ACCESSFLOW?" (asked once per browser). */
-async function chooseModeIn(f: FrameLocator) {
-  await f.getByRole('button', { name: /^I'll read and type/ }).click()
-}
-
 /** Registration in the frame: 4 questions (email through the "Use email instead" link). */
 async function registerIn(f: FrameLocator, email: string) {
   await f.getByLabel('What should we call you?').fill('Plugin Learner')
@@ -98,10 +93,9 @@ test('blank page: one script installs <db-signup>; isolated, no globals, events 
     hostTitleColor,
   )
   expect(await page.evaluate(() => document.body.getAttribute('style'))).toBeNull()
-  // First time in the module: one question about how to use it (in Amharic here), then English
-  await expect(frame.getByRole('heading', { level: 2 })).toHaveText('ACCESSFLOWን እንዴት መጠቀም ይፈልጋሉ?')
+  // No question about how the person uses it: the form starts at once (voice guide switch in the frame header)
   await frame.getByRole('combobox').first().selectOption('en')
-  await chooseModeIn(frame)
+  await expect(frame.getByRole('button', { name: 'Voice guide' })).toBeVisible()
   const moduleInputBorder = await frame
     .locator('input')
     .first()
@@ -165,7 +159,6 @@ test('Savanna starter: sign up, edit profile on another page (same session), app
   await page.goto(`${SAVANNA}/signup.html`)
   const signup = page.frameLocator('iframe[title="ACCESSFLOW: create your account"]')
   await expect(signup.getByText('with Savanna static pages (local demo copy)')).toBeVisible()
-  await chooseModeIn(signup)
   await registerIn(signup, uniqueEmail())
   await profileIn(signup)
   await expect(page.locator('#events')).toContainText('db-signup:done')

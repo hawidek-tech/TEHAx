@@ -1,7 +1,7 @@
 import { CloudOff } from 'lucide-react'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { Link, useLocation } from 'react-router'
-import { AccountMenu, HeaderLink, HelpMenu } from './HelpMenu'
+import { AccountMenu, HeaderLink, HelpMenu, LanguageSelect, VoiceToggle } from './HelpMenu'
 import { CaptionBar } from '../a11y/ReadAloud'
 import { usePreferences } from '../a11y/preferences'
 import { useAnnounce } from '../a11y/announcer'
@@ -78,6 +78,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             {!me && location.pathname !== '/sign-in' && (
               <HeaderLink to="/sign-in">{t('auth.signIn')}</HeaderLink>
             )}
+            <VoiceToggle />
+            <LanguageSelect />
             <AccountMenu />
             <HelpMenu />
           </div>

@@ -48,13 +48,9 @@ test('audio accessibility (English): one touch on the first screen starts guidan
   await expect(activate).toBeVisible()
   await activate.click()
   await expect(page.getByRole('region', { name: 'Audio guidance' })).toBeVisible()
-  // "Choose your language" in every language with a voice, each with its own voice
-  await expect
-    .poll(async () => (await spoken(page)).map((s) => `${s.lang}: ${s.text}`))
-    .toEqual(expect.arrayContaining(['en-US: Choose your language', 'am-ET: ቋንቋዎን ይምረጡ']))
-  await page.getByRole('button', { name: /^English/ }).click()
-  // The "how" question is skipped: audio was already chosen
+  // The welcome question and the numbered choices are read at once
   await expect.poll(() => lastSpoken(page)).toContain('What would you like to do today?')
+  expect(await lastSpoken(page)).toContain('Audio accessibility is on.')
   expect(await lastSpoken(page)).toContain('1. Find a job')
   await expect(page.getByTestId('audio-guide-text')).toContainText(
     'What would you like to do today?',
@@ -107,8 +103,8 @@ test('audio accessibility (Amharic): Amharic text is spoken with an Amharic voic
 }) => {
   await fakeVoices(context, ['en-US', 'am-ET'])
   await page.goto('/')
+  await page.getByRole('button', { name: 'አማርኛ' }).click()
   await page.getByRole('button', { name: /የድምፅ ተደራሽነትን አብራ/ }).click()
-  await page.getByRole('button', { name: /አማርኛ/ }).click()
   await expect.poll(() => lastSpoken(page)).toContain('ዛሬ ምን ማድረግ ይፈልጋሉ?')
   expect((await spoken(page)).at(-1)?.lang).toBe('am-ET')
   await page.goto('/register')
@@ -123,15 +119,14 @@ test('audio accessibility: no voice for the language is stated on screen, never 
 }) => {
   await fakeVoices(context, ['en-US']) // no Amharic voice on this "device"
   await page.goto('/')
+  await page.getByRole('button', { name: 'አማርኛ' }).click()
   await page.getByRole('button', { name: /የድምፅ ተደራሽነትን አብራ/ }).click()
-  await page.getByRole('button', { name: /አማርኛ/ }).click()
   await expect(page.getByRole('region', { name: 'የድምፅ መመሪያ' })).toContainText(
     'ይህ መሣሪያ ለዚህ ቋንቋ ድምፅ የለውም',
   )
   await expect(page.getByTestId('audio-guide-text')).toContainText('ዛሬ ምን ማድረግ ይፈልጋሉ?')
-  // Only "Choose your language" in English (the one voice) was spoken; nothing Amharic with a wrong voice
-  const said = await spoken(page)
-  expect(said.every((s) => s.lang === 'en-US' && s.text === 'Choose your language')).toBe(true)
+  // Nothing was spoken: Amharic is never read with a wrong-language voice
+  expect(await spoken(page)).toEqual([])
 })
 
 test('sign-language option: explicit camera start, visible indicator, tracks stopped on close; phrase message confirmed before use', async ({

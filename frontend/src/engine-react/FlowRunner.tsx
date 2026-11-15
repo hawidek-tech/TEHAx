@@ -2,6 +2,8 @@ import { ArrowLeft, ArrowRight, Check, CloudOff, Loader2, Save } from 'lucide-re
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useAnnounce } from '../a11y/announcer'
 import { useAudioGuide } from '../a11y/audioGuide'
+import { recognitionSupported } from '../a11y/voice'
+import { onVoiceCommand, type VoiceCommand } from '../a11y/voiceCommands'
 import { usePreferences } from '../a11y/preferences'
 import { Alert } from '../design-system/Alert'
 import { Button } from '../design-system/Button'
@@ -289,6 +291,8 @@ export function FlowRunner(props: FlowRunnerProps) {
         if (firstOfType && guide.active) {
           spokenHow.add(how)
           parts.push(t(`audio.how.${how}`))
+          if (recognitionSupported() && how !== 'list' && how !== 'file')
+            parts.push(t(how === 'text' ? 'voiceAnswer.howText' : 'voiceAnswer.howChoice'))
         }
         return parts.join('. ')
       })
@@ -408,6 +412,27 @@ export function FlowRunner(props: FlowRunnerProps) {
     setRestored(null)
     announce(t('flow.startedOver'))
   }
+
+  // ---- Spoken commands (voice-guided mode): "next", "back", "repeat" ---------------------------------------------
+  const commandRef = useRef<(c: VoiceCommand) => boolean>(() => false)
+  commandRef.current = (c) => {
+    if (!loaded) return false
+    if (c === 'next' && stepId !== REVIEW) {
+      next()
+      return true
+    }
+    if (c === 'back') {
+      if (stepId === REVIEW) setStepId(steps[steps.length - 1].id)
+      else back()
+      return true
+    }
+    if (c === 'repeat') {
+      guide.say(describeStep())
+      return true
+    }
+    return false
+  }
+  useEffect(() => onVoiceCommand((c) => commandRef.current(c)), [])
 
   // ---- Render ----------------------------------------------------------------------------------------------------
   const sectionIndex = step ? def.sections.indexOf(step.section) : def.sections.length

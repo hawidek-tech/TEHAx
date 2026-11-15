@@ -1,7 +1,8 @@
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router'
-import { usageModePatch, usePreferences } from '../../a11y/preferences'
+import { usePreferences } from '../../a11y/preferences'
+import { VoiceToggle } from '../../app/HelpMenu'
 import { CaptionBar } from '../../a11y/ReadAloud'
 import { Alert } from '../../design-system/Alert'
 import { Button } from '../../design-system/Button'
@@ -12,14 +13,7 @@ import { LOCALES } from '../../i18n'
 import { useT } from '../../i18n/useT'
 import { ApiError, api, setEmbedMode } from '../../lib/api'
 import { useSession } from '../../lib/session'
-import type {
-  ApplicationSummary,
-  JobDetail,
-  JobSummary,
-  Locale,
-  Profile,
-  UsageMode,
-} from '../../lib/types'
+import type { ApplicationSummary, JobDetail, JobSummary, Locale, Profile } from '../../lib/types'
 import { useApi } from '../../lib/useApi'
 import { DateText } from '../shared/DateText'
 import {
@@ -161,20 +155,23 @@ export default function EmbedPage() {
             </span>
           )}
         </p>
-        <label className="flex items-center gap-2 text-sm font-semibold">
-          {t('prefs.language')}
-          <select
-            value={prefs.locale}
-            onChange={(e) => update({ locale: e.target.value as Locale })}
-            className="min-h-11 rounded-lg border-2 border-field bg-surface px-2"
-          >
-            {LOCALES.map((l) => (
-              <option key={l.code} value={l.code} lang={l.code}>
-                {l.nativeName}
-              </option>
-            ))}
-          </select>
-        </label>
+        <span className="flex flex-wrap items-center gap-2">
+          <VoiceToggle />
+          <label className="flex items-center gap-2 text-sm font-semibold">
+            {t('prefs.language')}
+            <select
+              value={prefs.locale}
+              onChange={(e) => update({ locale: e.target.value as Locale })}
+              className="min-h-11 rounded-lg border-2 border-field bg-surface px-2"
+            >
+              {LOCALES.map((l) => (
+                <option key={l.code} value={l.code} lang={l.code}>
+                  {l.nativeName}
+                </option>
+              ))}
+            </select>
+          </label>
+        </span>
       </header>
       <main>
         <h1 data-page-heading tabIndex={-1} className="mb-4 text-2xl font-bold">
@@ -186,8 +183,6 @@ export default function EmbedPage() {
           </Alert>
         ) : !config ? (
           <Loading label={t('app.loading')} />
-        ) : !prefs.usageMode ? (
-          <EmbedModeChoice />
         ) : (
           <EmbedContent view={view} jobId={jobId} post={post} />
         )}
@@ -204,17 +199,6 @@ export default function EmbedPage() {
             <span className="sr-only">({t('app.opensNewTab')})</span>
           </a>
         </p>
-        {config && prefs.usageMode && (
-          <p className="mt-3">
-            <button
-              type="button"
-              onClick={() => update({ usageMode: null })}
-              className="inline-flex min-h-11 items-center font-semibold text-primary underline"
-            >
-              {t('start.mode.change')}
-            </button>
-          </p>
-        )}
       </main>
       <CaptionBar />
     </div>
@@ -430,32 +414,6 @@ function SignupProfile({
         onDone('embed.signupDone')
       }}
     />
-  )
-}
-
-/** "How do you want to use ACCESSFLOW?" - asked once inside the module (kept in the module's own storage). */
-function EmbedModeChoice() {
-  const t = useT()
-  const { update } = usePreferences()
-  const modes: UsageMode[] = ['listen', 'screenReader', 'read', 'sign']
-  return (
-    <section aria-labelledby="embed-mode-title" className="flex flex-col gap-3">
-      <h2 id="embed-mode-title" className="text-xl font-bold">
-        {t('start.mode.title')}
-      </h2>
-      <p className="text-muted">{t('start.mode.changeLater')}</p>
-      {modes.map((m) => (
-        <button
-          key={m}
-          type="button"
-          onClick={() => update(usageModePatch(m))}
-          className="af-transition flex min-h-14 w-full flex-col rounded-xl border-2 border-field bg-surface px-4 py-2 text-left hover:border-primary hover:bg-primary-soft"
-        >
-          <span className="text-lg font-bold">{t(`start.mode.${m}.label`)}</span>
-          <span className="text-muted">{t(`start.mode.${m}.detail`)}</span>
-        </button>
-      ))}
-    </section>
   )
 }
 

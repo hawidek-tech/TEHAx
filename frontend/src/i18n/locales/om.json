@@ -1394,18 +1394,18 @@
         "detail": "Dhuunfaa dha. Hojjechiiftonni gonkumaa hin argan."
       },
       "learn": {
-        "label": "Akkamitti akka hojjetu baradhu",
-        "detail": "Daqiiqaa tokko qofa."
+        "label": "Akkan jalqabu na gargaari",
+        "detail": "Qajeelcha daqiiqaa tokkoo fi qindaa'ina barbaachisoo."
       }
     },
     "tour": {
-      "title": "ACCESSFLOW akkamitti hojjeta",
+      "title": "Haa jalqabnu",
       "p1": "Gaaffii tokko yeroo tokkotti deebifta. Itti fufi fi Duubatti yeroo hunda gadi jiru.",
       "p2": "Gargaarsaa fi qindaa'inni gubbaa jira: irra deebi'i, afaan jijjiiri, sagalee, nama gaafadhu, olkaa'ii dhaabi.",
       "p3": "Barreessuu, deebii kee dubbachuu (osoo hin fayyadamin dura ni mirkaneessita) ykn gaalee suuraa fayyadamuu dandeessa.",
       "p4": "Interneetiin yoo citu itti fufi. Deebiiwwan kee ni kuufamu, booda ni ergamu.",
       "p5": "Fedhiin deeggarsa dhuunfaa kee hojjechiiftotaaf gonkumaa hin mul'atu.",
-      "done": "Hubadheera"
+      "done": "Gara filannoowwaniitti deebi'i"
     },
     "returning": {
       "welcome": "Baga nagaan deebite, {{name}}.",
@@ -1450,7 +1450,9 @@
     "sound": "Sagalee fi dubbisa",
     "waysTitle": "Dubbadhu ykn suuraa fayyadami",
     "waysBody": "Gaaffii barreeffamaa hunda irratti deebii kee dubbachuuf Dubbadhu, ykn gaalee suuraa fayyadamuuf mallattoo tuquu dandeessa. Deebiin osoo hin fayyadamin dura yeroo hunda ni mirkaneessita.",
-    "account": "Herrega koo"
+    "account": "Herrega koo",
+    "voiceGuide": "Qajeelcha sagalee",
+    "voiceGuideHint": "Yeroo banaa ta'u, ACCESSFLOW fuula fi gaaffii hunda sagaleen dubbisa. Dubbisaa iskiriinii kee yoo fayyadamte cufaa dhiisi."
   },
   "profileParts": {
     "title": "Seenaa kee",
@@ -1485,5 +1487,41 @@
     "supportSaved": "Kuufameera.",
     "privateTitle": "Kun dhuunfaa ta'ee hafa",
     "privateBody": "Kana kan argan hojjettoota deeggarsaa qofa. Hojjechiiftonni gonkumaa hin argan."
+  },
+  "welcome2": {
+    "hello": "Baga gara ACCESSFLOW dhuftan.",
+    "lead": "Tokko filadhu. Dhaggeeffachuu fi dubbachuu, ykn kiiboordii, tuqaa ykn dubbisaa iskiriinii fayyadamuu dandeessa.",
+    "accessTitle": "Afaan fi dhaqqabummaa",
+    "language": "Afaan",
+    "on": "Banaa",
+    "off": "Cufaa",
+    "moreOptions": "Filannoo dabalataa: jechoota salphaa, barreeffama guddaa, faallaa, suuraa",
+    "biggerText": "Barreeffama guddaa",
+    "highContrast": "Faallaa olaanaa",
+    "pictures": "Gaalee suuraa fi afaan mallattoo",
+    "choicesTitle": "Waan gochuu barbaaddu filadhu",
+    "voiceChoose": "Sagaleen filadhu",
+    "howToChoose": "Sagaleen filadhu tuqiitii lakkoofsa ykn maqaa waan barbaaddu dubbadhu. Ykn filannoowwan gidduu socho'uuf Tab tuqi."
+  },
+  "voiceAnswer": {
+    "button": "Sagaleen deebisi",
+    "command": "Ajaja dubbadhu",
+    "listening": "Dhaggeeffachaa jira… lakkoofsa ykn maqaa filannoo keetii dubbadhu.",
+    "listeningCommand": "Dhaggeeffachaa jira… itti fufi, duubatti, irra deebi'i, gargaarsa ykn dhaabi jedhi.",
+    "chose": "Kan filatte: {{option}}. Itti fufi jedhi ykn Itti aanu tuqi.",
+    "yes": "Mallattaa'eera. Itti fufi jedhi ykn Itti aanu tuqi.",
+    "no": "Hin mallattoofne.",
+    "heard": "Kan dhageenye: “{{heard}}”.",
+    "notUnderstood": "Dhiifama, “{{heard}}” hin hubanne. Lakkoofsa filannoo keetii dubbadhu ykn qabduuwwan fayyadami.",
+    "notHere": "Fuula kana irratti wanti itti fufu hin jiru.",
+    "howText": "Sagaleen deebisuuf deebii kee dubbadhu tuqi. Jechoota osoo hin fayyadamin dura ni mirkaneessita.",
+    "howChoice": "Sagaleen deebisuuf Sagaleen deebisi tuqiitii lakkoofsa ykn maqaa filannoo keetii dubbadhu.",
+    "did": {
+      "next": "Itti aanu.",
+      "back": "Duubatti.",
+      "repeat": "",
+      "help": "",
+      "stop": ""
+    }
   }
 }

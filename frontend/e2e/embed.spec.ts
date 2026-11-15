@@ -41,7 +41,6 @@ test('registered partner origin: sign up inside the frame without any cookies', 
   await expect(frame.getByRole('heading', { level: 1, name: 'Create your account' })).toBeVisible()
   await expect(frame.getByText('with Demo Learning Platform')).toBeVisible()
 
-  await frame.getByRole('button', { name: /^I'll read and type/ }).click() // asked once in the module
   await frame.getByLabel('What should we call you?').fill('Embedded Learner')
   await frame.getByRole('button', { name: 'Next' }).click()
   await frame.getByRole('button', { name: 'Use email instead of a phone number' }).click()

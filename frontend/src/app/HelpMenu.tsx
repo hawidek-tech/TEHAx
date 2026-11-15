@@ -22,9 +22,7 @@ import { Dialog } from '../design-system/Dialog'
 import { LOCALES } from '../i18n'
 import { useT } from '../i18n/useT'
 import { useSession } from '../lib/session'
-import type { Locale, UsageMode } from '../lib/types'
-
-const MODES: UsageMode[] = ['listen', 'screenReader', 'read', 'sign']
+import type { Locale } from '../lib/types'
 
 /**
  * The one "Help and settings" button on every screen (docs/ux/first-visit-flow.md, rule R5). It gathers repeat,
@@ -153,22 +151,37 @@ export function HelpMenu() {
               <Volume2 aria-hidden="true" size={20} />
               {t('helpMenu.sound')}
             </h3>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {MODES.map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  aria-pressed={prefs.usageMode === m}
-                  onClick={() => {
-                    update(usageModePatch(m))
-                    if (m !== 'listen') guide.deactivate()
-                  }}
-                  className={`af-transition min-h-11 rounded-lg border-2 px-3 text-left font-semibold ${prefs.usageMode === m ? 'border-primary bg-primary text-on-primary' : 'border-field hover:border-primary'}`}
-                >
-                  {t(`start.mode.${m}.label`)}
-                </button>
-              ))}
-            </div>
+            <label className="flex min-h-11 cursor-pointer items-center gap-3 font-semibold">
+              <input
+                type="checkbox"
+                role="switch"
+                checked={guide.active}
+                aria-checked={guide.active}
+                onChange={(e) =>
+                  e.target.checked ? update(usageModePatch('listen')) : guide.deactivate()
+                }
+                className="size-6 accent-[var(--af-primary)]"
+              />
+              {t('helpMenu.voiceGuide')}
+            </label>
+            <p className="text-sm text-muted">{t('helpMenu.voiceGuideHint')}</p>
+            <label className="flex min-h-11 cursor-pointer items-center gap-3 font-semibold">
+              <input
+                type="checkbox"
+                role="switch"
+                checked={prefs.usageMode === 'sign'}
+                aria-checked={prefs.usageMode === 'sign'}
+                onChange={(e) =>
+                  update(
+                    e.target.checked
+                      ? usageModePatch('sign')
+                      : { usageMode: null, captions: false, readAloud: true },
+                  )
+                }
+                className="size-6 accent-[var(--af-primary)]"
+              />
+              {t('welcome2.pictures')}
+            </label>
             <label className="flex min-h-11 cursor-pointer items-center gap-3 font-semibold">
               <input
                 type="checkbox"
@@ -289,5 +302,50 @@ export function HeaderLink({ to, children }: { to: string; children: ReactNode }
     >
       {children}
     </Link>
+  )
+}
+
+/** Voice guide on/off, on every page (the same switch as "Activate Audio Accessibility"). */
+export function VoiceToggle() {
+  const t = useT()
+  const guide = useAudioGuide()
+  const { update } = usePreferences()
+  return (
+    <button
+      type="button"
+      aria-pressed={guide.active}
+      onClick={() => (guide.active ? guide.deactivate() : update(usageModePatch('listen')))}
+      className={`af-transition inline-flex min-h-11 items-center gap-2 rounded-lg border-2 border-primary px-3 font-semibold ${guide.active ? 'bg-primary text-on-primary' : 'text-primary hover:bg-primary-soft'}`}
+    >
+      <Volume2 size={18} aria-hidden="true" />
+      {t('helpMenu.voiceGuide')}
+    </button>
+  )
+}
+
+/** Language picker, on every page. */
+export function LanguageSelect() {
+  const t = useT()
+  const id = useId()
+  const { prefs, update } = usePreferences()
+  return (
+    <span className="flex items-center gap-1">
+      <label htmlFor={id} className="sr-only">
+        {t('helpMenu.language')}
+      </label>
+      <Languages size={18} aria-hidden="true" className="text-muted" />
+      <select
+        id={id}
+        value={prefs.locale}
+        onChange={(e) => update({ locale: e.target.value as Locale })}
+        className="min-h-11 rounded-lg border-2 border-field bg-surface px-2 font-semibold text-ink"
+      >
+        {LOCALES.map((l) => (
+          <option key={l.code} value={l.code} lang={l.code}>
+            {l.nativeName}
+          </option>
+        ))}
+      </select>
+    </span>
   )
 }

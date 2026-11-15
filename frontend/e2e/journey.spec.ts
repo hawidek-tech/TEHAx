@@ -22,20 +22,17 @@ test('Path A: a new learner finds a job and applies in at most 14 question scree
     await next(page)
   }
 
-  // First visit: Start → language → how → what
+  // Welcome: one question; language on the same screen
   await page.goto('/')
-  await page.getByRole('button', { name: /Jalqabi Start/ }).click()
-  await page.getByRole('button', { name: /አማርኛ/ }).click()
+  await page.getByRole('button', { name: 'አማርኛ' }).click()
   await expect(page.locator('html')).toHaveAttribute('lang', 'am')
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('ACCESSFLOWን እንዴት መጠቀም ይፈልጋሉ?')
-  await page.getByRole('button', { name: 'ተመለስ' }).click()
-  await page.getByRole('button', { name: /^English/ }).click()
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('ዛሬ ምን ማድረግ ይፈልጋሉ?')
+  await page.getByRole('button', { name: 'English', exact: true }).click()
   await expect(page.locator('html')).toHaveAttribute('lang', 'en')
-  await page.getByRole('button', { name: /I'll read and type/ }).click()
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'What would you like to do today?' }),
-  ).toBeFocused()
-  await page.getByRole('button', { name: /^Find a job/ }).click()
+  await expect(page.getByRole('heading', { level: 1 })).toContainText(
+    'What would you like to do today?',
+  )
+  await page.getByRole('button', { name: /^\d\. Find a job/ }).click()
 
   // Jobs can be browsed without an account
   await expect(page.getByRole('heading', { name: /jobs? found/ })).toBeVisible()

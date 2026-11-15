@@ -4,6 +4,8 @@ import { SignLanguageDialog } from '../a11y/sign/SignLanguageDialog'
 import type { RefObject } from 'react'
 import { ReadAloud } from '../a11y/ReadAloud'
 import { VoiceInput } from '../a11y/VoiceInput'
+import { VoiceAnswer } from '../a11y/VoiceAnswer'
+import { useAudioGuide } from '../a11y/audioGuide'
 import { usePreferences } from '../a11y/preferences'
 import { Button } from '../design-system/Button'
 import { FieldError, FieldSupport } from '../design-system/Field'
@@ -34,6 +36,7 @@ export function QuestionStep({ field, ns, data, error, onChange, headingRef, onH
   const t = useT()
   const { prefs } = usePreferences()
   const [signOpen, setSignOpen] = useState(false)
+  const guide = useAudioGuide()
   const text = useFieldText(ns)(field)
   const errText = useErrorText()
   const id = `q-${field.id}`
@@ -150,6 +153,27 @@ export function QuestionStep({ field, ns, data, error, onChange, headingRef, onH
           />
         )}
         {!signFirst && signControl}
+        {/* Choices, yes/no and consent can be answered by voice too: say the number or the name. */}
+        {(field.type === 'radio' ||
+          field.type === 'select' ||
+          field.type === 'checkboxes' ||
+          field.type === 'consent') && (
+          <VoiceAnswer
+            prominent={guide.active}
+            options={(field.options ?? []).map((o) => ({ value: o.value, label: text.option(o) }))}
+            onOption={(v) => {
+              if (field.type === 'checkboxes') {
+                const current = Array.isArray(value) ? (value as string[]) : []
+                onChange(
+                  field.id,
+                  current.includes(v) ? current.filter((x) => x !== v) : [...current, v],
+                )
+              } else onChange(field.id, v)
+            }}
+            onYes={field.type === 'consent' ? () => onChange(field.id, true) : undefined}
+            onNo={field.type === 'consent' ? () => onChange(field.id, false) : undefined}
+          />
+        )}
         <ReadAloud text={readText} />
         <Button
           variant="ghost"

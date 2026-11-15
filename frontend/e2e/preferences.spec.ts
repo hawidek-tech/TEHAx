@@ -21,16 +21,15 @@ test.describe('accessibility preferences change the interface', () => {
 
   test('simple words replace instructions with simplified text', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('button', { name: /Jalqabi Start/ }).click()
-    await page.getByRole('button', { name: /^English/ }).click()
-    await page.getByRole('button', { name: /^I'll read and type/ }).click()
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    await expect(page.getByRole('heading', { level: 1 })).toContainText(
       'What would you like to do today?',
     )
     await page.goto('/settings')
     await page.getByRole('switch', { name: /Simple words/ }).check()
     await page.goto('/')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('What do you want to do now?')
+    await expect(page.getByRole('heading', { level: 1 })).toContainText(
+      'What do you want to do now?',
+    )
   })
 
   test('listen buttons can be hidden', async ({ page }) => {

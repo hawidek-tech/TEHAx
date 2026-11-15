@@ -34,10 +34,37 @@
   unicode-range: U+1200-139F, U+2D80-2DDF, U+AB00-AB2F, U+1E7E0-1E7FF;
 }
 
+/* Atkinson Hyperlegible (Braille Institute, OFL-1.1): letter shapes designed to be told apart by low-vision readers.
+   Latin only (~17 KB per weight); Ethiopic text uses Noto Sans Ethiopic. */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    local('Atkinson Hyperlegible'),
+    url('./assets/fonts/atkinson-hyperlegible-latin-400-normal.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC,
+    U+2122;
+}
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src:
+    local('Atkinson Hyperlegible Bold'),
+    url('./assets/fonts/atkinson-hyperlegible-latin-700-normal.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC,
+    U+2122;
+}
+
 @theme {
   --font-sans:
-    system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Noto Sans Ethiopic', 'Nyala',
-    sans-serif;
+    'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans',
+    'Noto Sans Ethiopic', 'Nyala', sans-serif;
   --color-bg: var(--af-bg);
   --color-surface: var(--af-surface);
   --color-surface-2: var(--af-surface-2);
@@ -212,6 +239,35 @@ body {
   background: var(--af-surface);
   border: 1px solid var(--af-line);
   border-radius: var(--radius-card);
+  box-shadow:
+    0 1px 2px rgb(23 33 29 / 0.06),
+    0 4px 16px rgb(23 33 29 / 0.05);
+}
+
+/* Large choice cards: a small lift on hover/focus (movement only; colours and text never change contrast). */
+.af-lift {
+  transition:
+    transform var(--af-motion) ease,
+    box-shadow var(--af-motion) ease;
+}
+.af-lift:hover,
+.af-lift:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgb(14 90 72 / 0.16);
+}
+
+/* Welcome hero: decorative soft background (text sits on solid surface colours for contrast). */
+.af-hero {
+  background:
+    radial-gradient(60rem 22rem at 100% 0%, var(--af-primary-soft), transparent 70%),
+    radial-gradient(40rem 18rem at 0% 100%, var(--af-accent-soft), transparent 70%),
+    var(--af-surface);
+  border: 1px solid var(--af-line);
+  border-radius: 1.75rem;
+}
+:root[data-contrast='high'] .af-hero,
+:root[data-theme='dark'] .af-hero {
+  background: var(--af-surface);
 }
 :root[data-contrast='high'] .af-card {
   border-width: 2px;

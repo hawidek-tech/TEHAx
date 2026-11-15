@@ -12,6 +12,7 @@ Versions are those installed in this repository (2026-11-15). Licences were read
 | react-i18next | 18.0.1 | MIT |
 | lucide-react (icons) | 1.73.0 | ISC |
 | Noto Sans Ethiopic font (@fontsource/noto-sans-ethiopic) | 5.3.0 | SIL Open Font License 1.1 |
+| Atkinson Hyperlegible font, Latin 400/700 (Braille Institute, via @fontsource/atkinson-hyperlegible; files vendored in `frontend/src/assets/fonts/`) | 5.2.6 | SIL Open Font License 1.1 |
 
 ## Runtime — backend
 | Package | Version | Licence |

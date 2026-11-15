@@ -1394,18 +1394,18 @@
         "detail": "Waa qarsoodi. Loo-shaqeeyayaashu weligood ma arkaan."
       },
       "learn": {
-        "label": "Baro sida ay u shaqeyso",
-        "detail": "Qiyaastii hal daqiiqo."
+        "label": "I caawi inaan bilaabo",
+        "detail": "Hage hal daqiiqo ah iyo dejinta ugu faa'iidada badan."
       }
     },
     "tour": {
-      "title": "Sida ACCESSFLOW u shaqeyso",
+      "title": "Aan ku bilaabno",
       "p1": "Hal su'aal ayaad mar kasta ka jawaabtaa. Sii wad iyo Dib u noqo had iyo jeer hoose ayay ku yaallaan.",
       "p2": "Caawimaad iyo dejin waa xagga sare: ku celi, beddel luqadda, codka, weydii qof, kaydi oo jooji.",
       "p3": "Waad qori kartaa, sheegi kartaa jawaabtaada (waad hubinaysaa ka hor inta aan la isticmaalin), ama isticmaali kartaa weedho sawir leh.",
       "p4": "Haddii internetku go'o, sii wad. Jawaabahaaga waa la kaydiyaa oo hadhow ayaa la diraa.",
       "p5": "Baahiyahaaga taageero ee qarsoodiga ah weligood looma muujiyo loo-shaqeeyayaasha.",
-      "done": "Waan fahmay"
+      "done": "Ku noqo doorashooyinka"
     },
     "returning": {
       "welcome": "Ku soo dhowow mar kale, {{name}}.",
@@ -1450,7 +1450,9 @@
     "sound": "Codka iyo akhriska",
     "waysTitle": "Ku hadal ama isticmaal sawirro",
     "waysBody": "Su'aal kasta oo qoraal ah waxaad riixi kartaa Ku hadal si aad jawaabtaada u sheegto, ama badhanka calaamadaha si aad u isticmaasho weedho sawir leh. Had iyo jeer waad hubinaysaa jawaabta ka hor inta aan la isticmaalin.",
-    "account": "Akoonkayga"
+    "account": "Akoonkayga",
+    "voiceGuide": "Hagaha codka",
+    "voiceGuideHint": "Marka uu shidan yahay, ACCESSFLOW wuxuu kor u akhriyaa bog kasta iyo su'aal kasta. Dami haddii aad isticmaasho akhriyahaaga shaashadda."
   },
   "profileParts": {
     "title": "Astaantaada",
@@ -1485,5 +1487,41 @@
     "supportSaved": "Waa la kaydiyay.",
     "privateTitle": "Tani waa qarsoodi",
     "privateBody": "Shaqaalaha taageerada oo keliya ayaa arki kara. Loo-shaqeeyayaashu weligood ma arkaan."
+  },
+  "welcome2": {
+    "hello": "Ku soo dhowow ACCESSFLOW.",
+    "lead": "Mid dooro. Waad dhegaysan kartaa oo hadli kartaa, ama isticmaali kartaa kiiboodhka, taabashada ama akhriyaha shaashadda.",
+    "accessTitle": "Luqadda iyo helitaanka",
+    "language": "Luqadda",
+    "on": "Shidan",
+    "off": "Dansan",
+    "moreOptions": "Doorasho dheeraad ah: erayo fudud, qoraal weyn, iftiin, sawirro",
+    "biggerText": "Qoraal weyn",
+    "highContrast": "Kala-duwanaansho sare",
+    "pictures": "Weedho sawir leh iyo luqadda calaamadaha",
+    "choicesTitle": "Dooro waxaad rabto inaad samayso",
+    "voiceChoose": "Ku dooro cod",
+    "howToChoose": "Riix Ku dooro cod oo sheeg lambarka ama magaca waxaad rabto. Ama riix Tab si aad doorashooyinka dhexdooda ugu socoto."
+  },
+  "voiceAnswer": {
+    "button": "Ku jawaab cod",
+    "command": "Sheeg amar",
+    "listening": "Waan dhegaysanayaa… sheeg lambarka ama magaca doorashadaada.",
+    "listeningCommand": "Waan dhegaysanayaa… dheh sii wad, dib u noqo, ku celi, caawimaad ama jooji.",
+    "chose": "Waxaad dooratay: {{option}}. Dheh sii wad, ama riix Xiga.",
+    "yes": "Waa la calaamadeeyay. Dheh sii wad, ama riix Xiga.",
+    "no": "Lama calaamadeyn.",
+    "heard": "Waxaan maqalnay: “{{heard}}”.",
+    "notUnderstood": "Waan ka xumahay, ma fahmin “{{heard}}”. Sheeg lambarka doorashadaada, ama isticmaal badhamada.",
+    "notHere": "Boggan wax la sii wado ma jiraan.",
+    "howText": "Si aad cod ugu jawaabto, riix Sheeg jawaabtaada. Waad hubin doontaa erayada ka hor inta aan la isticmaalin.",
+    "howChoice": "Si aad cod ugu jawaabto, riix Ku jawaab cod oo sheeg lambarka ama magaca doorashadaada.",
+    "did": {
+      "next": "Xiga.",
+      "back": "Dib.",
+      "repeat": "",
+      "help": "",
+      "stop": ""
+    }
   }
 }

@@ -72,7 +72,8 @@ export default function JobDetailPage() {
                       {simple ? t('jobs.showFull') : t('jobs.showSimple')}
                     </Button>
                   </div>
-                  <p className="whitespace-pre-line text-lg">
+                  {/* With the voice guide on, the description is read after the title (data-announce). */}
+                  <p data-announce className="whitespace-pre-line text-lg">
                     {simple ? j.plainSummary : j.description}
                   </p>
                   <div className="mt-3 flex flex-wrap gap-3">

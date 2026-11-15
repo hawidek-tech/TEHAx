@@ -1439,18 +1439,18 @@
         "detail": "Private. Employers never see it."
       },
       "learn": {
-        "label": "Learn how this works",
-        "detail": "About one minute."
+        "label": "Help me get started",
+        "detail": "A one-minute guide and the most useful settings."
       }
     },
     "tour": {
-      "title": "How ACCESSFLOW works",
+      "title": "Let's get you started",
       "p1": "You answer one question at a time. Continue and Back are always at the bottom.",
       "p2": "Help and settings is at the top: repeat, change language, sound, ask a person, save and stop.",
       "p3": "You can type, speak your answer (you check it before it is used), or use picture phrases.",
       "p4": "If the internet stops, keep going. Your answers are kept and sent later.",
       "p5": "Your private support needs are never shown to employers.",
-      "done": "Got it"
+      "done": "Back to the choices"
     },
     "returning": {
       "welcome": "Welcome back, {{name}}.",
@@ -1495,7 +1495,9 @@
     "sound": "Sound and reading",
     "waysTitle": "Speak or use pictures",
     "waysBody": "On every written question you can press Speak to say your answer, or Sign or choose phrases to use picture phrases. You always check the answer before it is used.",
-    "account": "My account"
+    "account": "My account",
+    "voiceGuide": "Voice guide",
+    "voiceGuideHint": "When it is on, ACCESSFLOW reads every page and question aloud. Leave it off if you use your own screen reader."
   },
   "profileParts": {
     "title": "Your profile",
@@ -1530,5 +1532,41 @@
     "supportSaved": "Saved.",
     "privateTitle": "This stays private",
     "privateBody": "Only support staff can see this. Employers never see it."
+  },
+  "welcome2": {
+    "hello": "Welcome to ACCESSFLOW.",
+    "lead": "Choose one. You can listen and speak, or use your keyboard, touch or screen reader.",
+    "accessTitle": "Language and accessibility",
+    "language": "Language",
+    "on": "On",
+    "off": "Off",
+    "moreOptions": "More options: simple words, bigger text, contrast, pictures",
+    "biggerText": "Bigger text",
+    "highContrast": "High contrast",
+    "pictures": "Picture phrases and sign language",
+    "choicesTitle": "Choose what you want to do",
+    "voiceChoose": "Choose by voice",
+    "howToChoose": "Press Choose by voice and say a number, or the name of what you want. Or press Tab to move between the choices."
+  },
+  "voiceAnswer": {
+    "button": "Answer by voice",
+    "command": "Say a command",
+    "listening": "Listening… say the number or the name of your choice.",
+    "listeningCommand": "Listening… say next, back, repeat, help or stop.",
+    "chose": "You chose: {{option}}. Say next, or press Next.",
+    "yes": "Ticked. Say next, or press Next.",
+    "no": "Not ticked.",
+    "heard": "We heard: “{{heard}}”.",
+    "notUnderstood": "Sorry, I did not understand “{{heard}}”. Say the number of your choice, or use the buttons.",
+    "notHere": "There is nothing to continue on this page.",
+    "howText": "To answer by voice, press Speak your answer. You will check the words before they are used.",
+    "howChoice": "To answer by voice, press Answer by voice and say the number or the name of your choice.",
+    "did": {
+      "next": "Next.",
+      "back": "Back.",
+      "repeat": "",
+      "help": "",
+      "stop": ""
+    }
   }
 }

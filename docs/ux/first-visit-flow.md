@@ -191,3 +191,18 @@ Manual (required before any claim):
 
 Not built from this plan: nothing is skipped, but the following are **not validated**: real screen-reader behaviour of the
 first visit, real device voices, the om/so/ti/am wording, and the audio intro overlap question above.
+
+## Voice-first redesign (2026-11-16) — supersedes the four-screen first visit above
+| Before | Now | Why |
+|---|---|---|
+| Start → language → "How do you want to use ACCESSFLOW?" → "What would you like to do today?" | **One screen:** "Welcome to ACCESSFLOW. What would you like to do today?" with Find a job · Create my profile · Ask for support · **Help me get started**; language buttons, **Activate Audio Accessibility** and "More options" on the same screen | Brief: start with one question; language and accessibility immediately available |
+| "I use my own screen reader / sign language" question | Removed. Voice guide **off** = silent screen-reader experience; picture phrases is an option, not a disclosure | Never force disclosure |
+| Voice answers only for written questions | **Answer by voice** on every choice, yes/no and consent question and on the welcome choices; **Say a command** (next, back, repeat, help, stop) in the audio bar. Number and keyword matching in en/am/om/so/ti (word lists for am/om/so/ti are drafts) | A blind person can complete the journey without seeing the screen |
+| — | Header: voice guide switch and language picker on every page; Help and settings keeps the rest | Controls always available |
+| Embedded module asked the "how" question | Removed; voice guide switch in the frame header | Same principle |
+| System font | Atkinson Hyperlegible (Latin, 34 KB) + Noto Sans Ethiopic | Legibility for low-vision readers |
+
+Spoken choices are only **selected**; the person still presses or says Next and confirms the review. What was heard is
+always shown on screen. Recognition quality depends on the browser (Chrome sends audio to an online service; the
+privacy notice says so before first use). **Real recognition and real voices have not been tested on a device**, and
+nothing here has been tried by blind users yet.

@@ -12,6 +12,7 @@ import {
 import { useT } from '../i18n/useT'
 import { usePreferences } from './preferences'
 import { hasVoiceFor, speech, speechSupported, useSpeech } from './speech'
+import { VoiceAnswer } from './VoiceAnswer'
 
 /**
  * Audio guidance for blind and low-vision users ("Activate Audio Accessibility").
@@ -50,6 +51,7 @@ export function AudioGuideProvider({ children }: { children: ReactNode }) {
 
   const speakNow = useCallback(
     (text: string) => {
+      if (!text.trim()) return // nothing to say (e.g. Repeat before anything was said)
       setLastText(text)
       if (!speechSupported() || !hasVoiceFor(locale)) return
       // Browsers only allow speech after the user has interacted with the page.
@@ -179,6 +181,7 @@ function AudioGuideBar({
               {t('readAloud.stop')}
             </button>
           )}
+          <VoiceAnswer compact label={t('voiceAnswer.command')} />
           <button type="button" className={btn} onClick={onHelp}>
             <HelpCircle size={16} aria-hidden="true" />
             {t('audio.help')}
