@@ -22,6 +22,7 @@ Brute-force protection: progressive delays (HTTP 429 with `Retry-After`) — not
 ## Main endpoints
 | Area | Endpoints |
 |---|---|
+| **Learners (Track 1 contract)** | `POST /learners` (201 + Location), `PATCH /learners/{id}`, `PUT /learners/{id}/support`, `GET /learners/{id}/export`, `DELETE /learners/{id}` (body `{password}`, 204). Own id only; others → 404. |
 | Auth | `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`, `GET /auth/csrf`, `POST /auth/password` |
 | Preferences | `GET/PUT /preferences` |
 | Form engine | `GET /forms/{registration|profile|job-application|support-request}`, `GET /drafts`, `GET/PUT/DELETE /drafts/{flow}?context=` (PUT with `expectedVersion` → 409 `draft.conflict` on concurrent edits) |
@@ -36,7 +37,7 @@ Brute-force protection: progressive delays (HTTP 429 with `Retry-After`) — not
 | Account | `GET /account/export`, `POST /account/delete` |
 | Employer (`EMPLOYER`) | `GET/POST /employer/jobs`, `GET/PUT /employer/jobs/{id}`, `GET /employer/jobs/{id}/applications`, `POST /employer/applications/{id}/status`, `GET /employer/applications/{id}/resume` |
 | Support staff (`SUPPORT_STAFF`) | `GET /staff/verifications`, `POST /staff/verifications/{id}/decision`, `GET /staff/verifications/{id}/document`, `GET /staff/support-requests`, `POST /staff/support-requests/{id}/response`, `GET /staff/stats` |
-| Embedding | `GET /embed/config?key=` |
+| Embedding | `GET /embed/config?key=` or `?origin=` (keyless install) |
 
 ## Example: register and sign in (curl, first-party)
 ```bash

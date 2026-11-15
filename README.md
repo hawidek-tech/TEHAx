@@ -1,140 +1,188 @@
-# ACCESSFLOW
+# ACCESSFLOW — `<db-signup>`
 
-**One accessible journey from onboarding to employment.**
+**Track 1: Accessible Onboarding Kit · DIGITAL BRIDGE Accessibility Hackathon 2026**
 
-ACCESSFLOW is an accessibility-first registration, profile and job-application platform built for the ALX Ethiopia
-Accessibility Hackathon 2026 (Track 1: Accessible Onboarding Kit). People can register, build a reusable profile, find
-jobs with the support they need, and apply on their own: one question at a time, in Amharic, Afaan Oromo, English,
-Somali or Tigrinya, with voice input, read-aloud, private support and alternative identity routes. Partners can
-embed it with a single script tag or use its REST API.
-
-> **Status:** the full onboarding-to-application journey works end to end with real persistence and is covered by
-> 122 automated tests (52 backend, 11 frontend unit, 59 browser/accessibility). **Manual screen-reader testing and
-> co-designer sessions have not happened yet, so no WCAG conformance is claimed.** Non-English translations are drafts
-> awaiting fluent-speaker review. Details: [PROJECT_STATUS.md](PROJECT_STATUS.md).
-
----
-
-## What's in it
-
-| For | Features |
+| | |
 |---|---|
-| Job seekers | Language choice and Accessibility Preview before registering · 8 preferences that change the interface (text size to 200 %, high contrast, simple words, listen buttons, captions, keyboard-first, reduced motion, shared-device mode) · one-question-per-screen registration and profile on a **shared form engine** · voice input on every text field with review before use · read-aloud with play/pause/resume/stop · "why we ask" and examples on every question · save and resume (server and device drafts, conflict detection) · alternative identity routes (Fayda, kebele ID, passport, refugee ID, other document, partner referral, "refer me"), always checked by staff · private support requests (no medical proof) · reusable profile with CV · job search with a **private** support filter · simple job descriptions · applications prefilled from the profile, with field-level sharing choices, review, explicit confirmation and status tracking · consent withdrawal · data export and account deletion · optional AI help assistant with a non-AI fallback and a human route |
-| Employers | Jobs with plain-language summaries, an accommodation form (workplace, interview, flexible working, assistive technology, application accessibility, contact) and custom questions · received applications in submission order with only consented data (**no ranking**) · status updates that notify the applicant |
-| Support staff | Identity-verification queue (audited document viewing) and private support queue |
-| Partners / developers | `<accessflow-signup>`, `<accessflow-profile>`, `<accessflow-job-application>` Web Components (iframe-isolated, per-partner origin allow-list, **no third-party cookies**, full-page fallback) · REST API `/api/v1` with OpenAPI · schema.org/JobPosting JSON-LD |
+| Module name | ACCESSFLOW (custom element `<db-signup>`) |
+| Team members | _To be completed by the team_ |
+| Co-designer | _To be completed by the team (no co-designer sessions have been recorded yet — see CONFORMANCE.md)_ |
+| Status | Working end to end; 141 automated tests passing; human accessibility testing pending; **no WCAG conformance claimed** |
 
-Designed for Ethiopia: Ethiopic font that is only downloaded when needed (and not at all on Android, which ships it) ·
-Ethiopian-calendar dates · Ethiopian name structure (given / father / grandfather) · +251 phone numbers · regional
-states · ~144 KB first visit, usable in about 4.5 s on emulated slow 3G with a slow CPU · offline app shell.
+## In plain English
+ACCESSFLOW lets people with disabilities register, build a profile, find jobs and apply on their own, one question at
+a time, in Amharic, Afaan Oromo, English, Somali or Tigrinya. It can read every page and question aloud, accepts typed,
+spoken or pictogram-phrase answers, keeps answers safe when the internet drops, and never shares private support needs with
+employers. Any website — Savanna or a blank page — can add it with one script tag.
 
-## Repository layout
+**Main user task:** create an account and profile, then apply for a job and follow the application, without help from
+another person.
+
+## One-script installation
+```html
+<script src="https://YOUR-MODULE-HOST/db-signup.js" defer></script>
+
+<db-signup lang="am" api="https://YOUR-MODULE-HOST" theme="auto"></db-signup>
+
+<script>
+  document.addEventListener('db-signup:done', (event) => {
+    console.log(event.detail)
+  })
+</script>
 ```
-backend/            Java 21 · Spring Boot 3.5 · Spring Security · JPA · Flyway · PostgreSQL
-  src/main/resources/flows/      form-engine flow definitions (shared by UI and server validation)
-  src/main/resources/db/migration/  schema (V2) and demo data (V3)
-frontend/           React 19 · TypeScript · Vite 8 · Tailwind 4 · i18next
-  src/engine, src/engine-react   form engine core and renderer
-  src/a11y                       preferences, voice input, read-aloud, live announcer
-  src/i18n/locales               en, am, om, so, ti
-  src/embed-loader/accessflow.ts drop-in Web Components (built to dist/accessflow.js)
-  e2e/                           Playwright + axe-core tests
-demo-partner-site/  Neutral "Demo Learning Platform" embedding ACCESSFLOW from another origin
-docs/               roadmap, ADRs, API guide, embed guide, security, accessibility report, Savanna status
-Dockerfile, docker-compose.yml   container setup (not yet run, see below)
-```
+The host website's origin must be registered for an integration (see [embed guide](docs/integration/embed-guide.md)).
+Unregistered websites cannot display the module: browsers refuse because of `frame-ancestors`.
 
-## Prerequisites
-Java 21 · Node.js 22+ (developed on 26) · PostgreSQL 16 (Maven isn't needed; use `./mvnw`). Docker is optional.
+### Attributes
+| Attribute | Values | Default |
+|---|---|---|
+| `lang` | `en`, `am`, `om`, `so`, `ti` | `en` |
+| `api` | module origin, e.g. `https://accessflow.example` | the script's origin |
+| `theme` | `auto`, `light`, `dark`, `high-contrast` | `auto` |
+| `view` | `signup` (account + profile), `profile` (edit), `jobs` (career gateway), `job-application` | `signup` |
+| `job-id` | job UUID (for `view="job-application"`) | — |
+| `partner-key` | optional publishable key (otherwise resolved from the host origin) | — |
+| `frame-title` | accessible name of the embedded frame | `ACCESSFLOW: <view>` |
+| `fallback-text` | text of the "open in a new tab" link | English text |
 
-## 1. First-time setup
+Host CSS variables (optional): `--db-signup-accent` (used only if it has ≥ 4.5:1 contrast with white),
+`--db-signup-radius`, `--db-signup-border`, `--db-signup-background`, `--db-signup-link-color`.
+
+### Events (bubble, composed, no personal data)
+| Event | `detail` |
+|---|---|
+| `db-signup:ready` | `{ view }` |
+| `db-signup:step` | `{ view, step, index, total, section }` |
+| `db-signup:support` | `{ view, requested: true }` — the learner asked for private support (content is never sent) |
+| `db-signup:done` | `{ view, reference }` — account id after sign-up, or the application reference |
+
+### How it stays isolated
+Shadow DOM around a sandboxed iframe from the module origin; no global variables; host CSS can't reach it and it
+never changes host styles or other DOM. Sign-in inside the frame uses a short-lived bearer token kept per tab in the
+frame's own storage, never third-party cookies. A full-page "open in a new tab" link is always shown.
+
+## Integrations included
+| Host | URL (after setup below) | Notes |
+|---|---|---|
+| Savanna starter (official, unmodified) + 3 added pages | http://localhost:5510/pages/signup.html, `profile.html`, `jobs.html` | [savanna/ACCESSFLOW-INTEGRATION.md](savanna/ACCESSFLOW-INTEGRATION.md) |
+| Blank page (no frameworks) | http://localhost:5520/blank.html | Deliberately hostile host CSS to show isolation |
+| Full web app | http://localhost:8081 | Employer and support-staff areas too |
+
+## Setup and run
+Prerequisites: Java 21, Node.js 22+, PostgreSQL 16, Python 3 (only to serve the demo hosts).
 ```bash
-# Database: dedicated role + dev and test databases (choose your own password)
+# Database
 psql -d postgres <<'SQL'
 CREATE ROLE accessflow LOGIN PASSWORD 'choose-a-strong-password';
 CREATE DATABASE accessflow OWNER accessflow ENCODING 'UTF8' TEMPLATE template0;
 CREATE DATABASE accessflow_test OWNER accessflow ENCODING 'UTF8' TEMPLATE template0;
 SQL
+cp backend/.env.example backend/.env   # set DB_PASSWORD (+ optional DEMO_ACCOUNTS_PASSWORD, ANTHROPIC_API_KEY)
 
-cp backend/.env.example backend/.env      # set DB_PASSWORD; optionally DEMO_ACCOUNTS_PASSWORD, ANTHROPIC_API_KEY
-cd frontend && npm install && cd ..
-```
-`backend/.env` is gitignored. Never commit secrets; real environment variables override `.env`.
-
-## 2. Run for development (two terminals, hot reload)
-```bash
-cd backend  && ./mvnw spring-boot:run     # API on http://localhost:8080 (Flyway migrates automatically)
-cd frontend && npm run dev                # app on http://localhost:5173 (proxies /api to :8080)
-```
-If 8080 is taken: `SERVER_PORT=8081 ./mvnw spring-boot:run` and `BACKEND_URL=http://localhost:8081 npm run dev`.
-
-## 3. Run in production mode (one origin; required for embedding and e2e tests)
-```bash
-cd frontend && npm run build && cd ..                 # builds dist/ incl. accessflow.js and sw.js
+# Build and run (one origin for app, API, embeds)
+cd frontend && npm install && npm run build && cd ..
 cd backend && ./mvnw -DskipTests package
 SERVER_PORT=8081 ACCESSFLOW_FRONTEND_DIR=../frontend/dist java -jar target/accessflow-backend-0.1.0-SNAPSHOT.jar
+
+# Demo hosts (other terminals, from the repository root)
+python3 -m http.server 5510 -d savanna
+python3 -m http.server 5520 -d demo
 ```
-Open http://localhost:8081. API docs: http://localhost:8081/swagger-ui.html
+For development with hot reload: `cd backend && ./mvnw spring-boot:run` and `cd frontend && npm run dev` (port 5173).
+Demo accounts `employer@example.com` and `support@example.com` exist only if `DEMO_ACCOUNTS_PASSWORD` is set.
 
-**Demo accounts** (created only when `DEMO_ACCOUNTS_PASSWORD` is set in `backend/.env`; the password is whatever you
-put there): `employer@example.com` (employer for "Kidame Digital Services (Demo)") and `support@example.com` (support
-staff). Applicants register through the app. All seeded organisations are fictional and labelled "(Demo)".
+**Docker:** `cp .env.example .env && docker compose up --build` (app on http://localhost:8081) (add `--profile demo` for the Savanna and blank hosts).
+**Not yet verified: Docker was not available on the development machine.**
 
-**Embedding demo:** `node demo-partner-site/serve.mjs 5500 http://localhost:8081`, then open http://localhost:5500.
-
-## 4. Demonstration script (spec §12)
-1. http://localhost:5500 (partner site) → the embedded sign-up form; or http://localhost:8081 directly.
-2. Choose a language (for example አማርኛ) → **Start** → Accessibility Preview: try 200 % text, high contrast, simple words.
-3. Register one question at a time; press **Speak your answer** (Chrome) and edit the recognised text.
-4. Profile: choose **Refugee ID** or **"I have no document — please ask a partner"**; ask for **private support**.
-5. Close the tab partway through, sign in again → **"We kept your answers"**.
-6. **Find jobs** → the private support filter is already set from your profile → open a job → **Show simple description**.
-7. **Apply** → answers prefilled → choose what to share → review → tick the confirmation → send → reference number.
-8. Sign in as `employer@example.com` → **View applications** → only shared data is shown, no ranking → set **Interview**.
-9. Back as the applicant: the dashboard message and status tracker show **Invited to interview**.
-10. Sign in as `support@example.com` → verify the identity request; answer the support request.
-11. Developers page / http://localhost:5500: one script tag; the frame is blocked on unregistered sites.
-
-## 5. Tests
+## Tests
 ```bash
-cd backend && ./mvnw verify                      # 52 tests against the accessflow_test database
-cd frontend && npm test                          # translation completeness check + 11 unit tests
-cd frontend && npm run lint && npm run typecheck && npm run build
-# Browser + accessibility tests (start production mode on :8081 first, see §3):
-cd frontend && npx playwright install chromium && npx playwright test   # 59 tests: desktop + Android profile
-./scripts/check.sh                               # backend + frontend checks (not Playwright)
+cd backend  && ./mvnw verify          # 56 tests (PostgreSQL test database)
+cd frontend && npm test               # translation completeness + 11 unit tests
+cd frontend && npx playwright install chromium && npx playwright test   # 74 browser tests; needs production mode + demo hosts
 ```
-The Playwright suite covers the full journey, keyboard-only registration, axe-core WCAG 2.2 A/AA (gate: zero serious or
-critical issues), every preference, 320 px reflow, 200 % text, embedding with all cookies stripped, `frame-ancestors`
-blocking, a slow-3G budget, voice-input review and read-aloud controls (with simulated speech APIs), offline draft
-keeping, and the employer and support-staff screens. Results and what is **not** tested: [conformance report](docs/accessibility/conformance-report.md).
+Browser tests cover: full journey (desktop + Android profile), keyboard-only registration, axe-core WCAG 2.2 A/AA (zero
+serious/critical, including inside the embedded module), all preferences, 320 px and 200 %, one-script install on the blank
+page and in Savanna (isolation, no globals, events), unregistered-origin blocking, audio guide (English, Amharic — simulated
+speech engine), camera permission and cleanup (fake camera), offline at question 7 with reload, employer and staff screens,
+slow 3G.
 
-## 6. Docker (written, not yet run)
-```bash
-cp .env.example .env          # set POSTGRES_PASSWORD
-docker compose up --build     # http://localhost:8080
-docker compose --profile demo up --build   # + demo partner site on :5500
-```
-Docker wasn't available on the development machine, so these files **have not been executed**. Please run them once
-and report any issue.
+## API
+OpenAPI: [`openapi.yaml`](openapi.yaml) (live: `/swagger-ui.html`). Guide: [docs/api/README.md](docs/api/README.md).
 
-## Configuration
-| Variable | Purpose | Default |
+Track 1 data contract:
+| Method | Path | Notes |
 |---|---|---|
-| `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` | PostgreSQL connection | required |
-| `DB_TEST_URL` | test database | — |
-| `SERVER_PORT` | HTTP port | 8080 |
-| `ACCESSFLOW_FRONTEND_DIR` | built frontend served by the backend | `../frontend/dist` |
-| `ACCESSFLOW_STORAGE_DIR` | uploaded files (outside the web root) | `./storage` |
-| `COOKIE_SECURE` | `true` behind HTTPS (required in production) | false |
-| `SESSION_TIMEOUT` | session length (no short timeouts) | 8h |
-| `DEMO_ACCOUNTS_PASSWORD` | creates demo employer/staff accounts; **never in production** | unset |
-| `ANTHROPIC_API_KEY` | enables the optional AI assistant (server-side only) | unset → local help only |
-| `ACCESSFLOW_AI_MODEL` | Claude model for the assistant | `claude-opus-5-5` |
+| POST | `/api/v1/learners` | Create a learner and sign in → 201 + `Location` |
+| PATCH | `/api/v1/learners/{id}` | Change only the profile fields sent; validated like the form |
+| PUT | `/api/v1/learners/{id}/support` | Private support preferences (+ optional private request); never shown to employers |
+| GET | `/api/v1/learners/{id}/export` | All of the learner's data (JSON) |
+| DELETE | `/api/v1/learners/{id}` | Permanent deletion; body `{"password": "…"}` → 204 |
 
-## Documentation
-- [PROJECT_STATUS.md](PROJECT_STATUS.md): what is done, tested, pending and blocked
-- [Roadmap](docs/roadmap.md) · [Architecture decisions](docs/adr/README.md)
-- [REST API guide](docs/api/README.md) · [Embedding guide](docs/integration/embed-guide.md) · [Savanna status](docs/integration/savanna-open-questions.md)
-- [Security and privacy](docs/security/security-design.md)
-- Accessibility: [conformance report](docs/accessibility/conformance-report.md) · [manual test checklist](docs/accessibility/manual-test-checklist.md) · [known limitations](docs/accessibility/known-limitations.md) · [co-design log](docs/accessibility/codesign-log.md)
+A learner can only access their own id (others → 404). Example:
+```bash
+B=http://localhost:8081; curl -s -c j -b j $B/api/v1/auth/csrf >/dev/null; X=$(awk '/XSRF-TOKEN/{print $7}' j)
+curl -s -c j -b j -H "X-XSRF-TOKEN: $X" -H 'Content-Type: application/json' \
+  -d '{"displayName":"Almaz","phone":"0911234567","password":"my coffee is hot","locale":"am","acceptPrivacyNotice":true}' $B/api/v1/learners
+```
+
+## Languages
+English, Amharic, Afaan Oromo, Somali, Tigrinya: 1,021 interface keys each; `npm test` fails if any key is missing or a
+placeholder differs. **Only English is reviewed; the other four are drafts awaiting fluent speakers.** Audio guidance is
+written for English and Amharic (others are drafts) and uses the device's voices — if there is no voice for the language,
+the module says so and shows the text.
+
+**Add a language:** copy `frontend/src/i18n/locales/en.json` to `<code>.json` and translate; add the code to `LOCALES` in
+`frontend/src/i18n/index.ts` and to the loaders map; add the code to the `locale` patterns in the backend DTOs
+(`PreferencesDto`, `RegisterRequest`, help/assistant controllers); add help articles in a new Flyway migration; run `npm test`.
+
+## Offline
+Answers are saved on the server as you go and, on your own device, kept locally (except passwords, ID numbers and support
+details) for up to 7 days. If the connection drops, you can keep answering and even reload the page; answers are sent when
+you are back online. Signing in, searching jobs and sending need a connection. "Shared device" mode stores nothing locally.
+AI help is never needed to complete a task.
+
+## Privacy and data deletion
+Employers see only the profile parts you choose to share; private support needs are never shown. The camera and microphone
+are used only after you press a button; nothing is recorded or uploaded. You can download all your data (Account page or
+`GET /learners/{id}/export`) and permanently delete your account (`DELETE /learners/{id}`). Details:
+[docs/security/security-design.md](docs/security/security-design.md).
+
+## Measured size and performance
+| Measurement | Result |
+|---|---|
+| Loader `db-signup.js` | 4.9 KB (2.1 KB gzip) |
+| Embedded module first load, Amharic, Ethiopic font downloaded | 359 KB transferred |
+| Main app first visit (English) | 144 KB transferred; usable after ~4.5 s on emulated slow 3G with 4× slower CPU |
+Android devices ship Noto Sans Ethiopic, so the font (~150 KB) is normally not downloaded there.
+
+## Estimated monthly cost for 3,000 learners
+| Item | Assumption | USD / month |
+|---|---|---|
+| App server | 1 VM, 2 vCPU / 4 GB | 15–25 |
+| PostgreSQL | small managed instance (or same VM: 0) | 0–15 |
+| File storage + backups | ~12 GB uploads, daily backups | 3–6 |
+| Bandwidth | ~6 MB per learner per month ≈ 18 GB | 0–2 (usually included) |
+| Domain + TLS | Let's Encrypt | ~1 |
+| **Subtotal without AI** | | **≈ 20–50** |
+| Optional AI help (Claude Opus 5.5, $4 / $20 per M tokens) | 20 % of learners × 5 questions ≈ 3,000 questions × ~2,500 input + ~700 output tokens | ≈ 70 |
+SMS is not included (not implemented). AI cost scales with usage; a smaller model would cost much less.
+
+## Completed and incomplete
+**Completed:** registration and guided profile on one form engine; job discovery with a private support filter; applications
+with consent, review and tracking; employer and support-staff areas; one-script `<db-signup>` (blank page + Savanna);
+learner data contract; audio accessibility (one-touch); voice input with review; read-aloud; sign-language camera interface and
+phrase board; offline drafts and sync; five languages (drafts); Ethiopian calendar and phone formats.
+
+**Incomplete / not done:** real sign-language recognition (no validated EthSL model; adapter ready); text-to-sign clips;
+voice-note fallback; recorded-audio fallback; SMS resume links; LTI 1.3; human accessibility testing (NVDA, TalkBack,
+co-designer); translation review; Docker verification; real-device speech tests. See [PROJECT_STATUS.md](PROJECT_STATUS.md).
+
+## Third-party libraries and licences
+React, React Router, i18next (MIT); lucide icons (ISC); Noto Sans Ethiopic (OFL-1.1); Spring Boot, Flyway, Tika, springdoc,
+Anthropic SDK (Apache-2.0); Hibernate 6.6 (LGPL-2.1); PostgreSQL driver (BSD-2-Clause); Bouncy Castle (MIT-style).
+Full list: [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
+
+## More documentation
+[PROJECT_STATUS.md](PROJECT_STATUS.md) · [CONFORMANCE.md](CONFORMANCE.md) · [embed guide](docs/integration/embed-guide.md) ·
+[sign language](docs/integration/sign-language.md) · [Savanna status](docs/integration/savanna-open-questions.md) ·
+[security](docs/security/security-design.md) · [architecture decisions](docs/adr/README.md) · [roadmap](docs/roadmap.md)

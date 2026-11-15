@@ -1,5 +1,10 @@
 # Embedding ACCESSFLOW (Web Components)
 
+**Recommended (Track 1 contract):** `<script src="https://HOST/db-signup.js" defer></script>` and
+`<db-signup lang="am" api="https://HOST" theme="auto"></db-signup>`. Attributes, events (`db-signup:ready|step|support|done`)
+and CSS variables are documented in the [README](../../README.md#one-script-installation). If your origin is registered, no
+key is needed: the module resolves your integration from the page origin. The older elements below still work.
+
 ## 1. Get a partner key
 A platform administrator registers your organisation and allowed website origins (exact scheme + host + port).
 You receive a **publishable key** (`pk_…`). It is safe to put in your HTML because it only works from your

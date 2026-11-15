@@ -1,6 +1,7 @@
 # Savanna (ALX) integration — status and open questions
 
-**Status (2026-11-15): NOT INTEGRATED.** No official Savanna starter, API documentation, credentials or Track 1 brief PDF
+**Status (2026-11-15): integrated with a LOCAL COPY of the official Savanna static starter** (`savanna/`, see
+`savanna/ACCESSFLOW-INTEGRATION.md`; tested end to end). **Not integrated with a live Savanna system.** No official Savanna starter, API documentation, credentials or Track 1 brief PDF
 have been provided to this project. **No Savanna integration details are assumed and no integration is claimed.**
 
 ## What exists instead (partner-agnostic, ready for Savanna)

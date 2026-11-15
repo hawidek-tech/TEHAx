@@ -1,0 +1,2451 @@
+openapi: 3.1.0
+info:
+  title: ACCESSFLOW API
+  description: "Accessible onboarding and job applications (DIGITAL BRIDGE Accessibility\
+    \ Hackathon 2026, Track 1). First-party clients use a session cookie plus the\
+    \ X-XSRF-TOKEN header; embedded components send X-AccessFlow-Embed and then 'Authorization:\
+    \ Bearer <embedToken>'. Errors are RFC 7807 problem details with a translatable\
+    \ 'code'. Learners can only access their own records (other ids return 404)."
+  license:
+    name: See THIRD_PARTY_LICENSES.md
+  version: 0.1.0-SNAPSHOT
+servers:
+- url: http://localhost:8081
+  description: Generated server url
+tags:
+- name: Help
+  description: Approved help content (works without AI)
+- name: Profile
+  description: The signed-in user's reusable profile. Owner-only.
+- name: Jobs
+  description: Accessible job discovery. The 'support' filter is private and never
+    stored or shared.
+- name: Support staff
+  description: Identity verification and private support queues (SUPPORT_STAFF only)
+- name: Files
+  description: "Protected uploads (identity documents, CVs). Owner-only access."
+- name: Authentication
+  description: "Registration, sign-in and sessions. First-party clients use a session\
+    \ cookie + CSRF header; embedded components send X-AccessFlow-Embed and receive\
+    \ a short-lived bearer token instead (no third-party cookies)."
+- name: Identity verification
+  description: Alternative identification routes. Every route is reviewed by authorised
+    staff.
+- name: Assistant
+  description: Optional help assistant grounded in approved help content
+- name: Embedding
+  description: Configuration for <accessflow-*> Web Components
+- name: Account
+  description: Data export and account deletion
+- name: Applications
+  description: "The signed-in applicant's job applications, status tracking and consents"
+- name: Private support
+  description: Help requests without medical proof. Visible only to the requester
+    and support staff.
+- name: Employer
+  description: "Jobs, accommodation information and received applications (EMPLOYER\
+    \ only)"
+- name: Form engine
+  description: Flow definitions and server-side drafts (save & resume)
+paths:
+  /api/v1/saved-jobs/{jobId}:
+    put:
+      tags:
+      - Jobs
+      summary: Save a job
+      operationId: save
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+    delete:
+      tags:
+      - Jobs
+      summary: Remove a saved job
+      operationId: unsave
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+  /api/v1/profile:
+    get:
+      tags:
+      - Profile
+      summary: My profile
+      operationId: get
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProfileDto"
+    put:
+      tags:
+      - Profile
+      summary: Edit my profile (same field ids and validation as the profile flow)
+      operationId: update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProfileDto"
+  /api/v1/profile/support-preferences:
+    put:
+      tags:
+      - Profile
+      summary: Update my PRIVATE workplace-support preferences (used only for my own
+        job filtering)
+      operationId: supportPreferences
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SupportPreferencesRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProfileDto"
+  /api/v1/profile/resume:
+    put:
+      tags:
+      - Profile
+      summary: "Attach (or remove, with null) my CV"
+      operationId: resume
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResumeRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProfileDto"
+  /api/v1/preferences:
+    get:
+      tags:
+      - Accessibility preferences
+      operationId: get_1
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PreferencesDto"
+    put:
+      tags:
+      - Accessibility preferences
+      operationId: update_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PreferencesDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PreferencesDto"
+  /api/v1/learners/{id}/support:
+    put:
+      tags:
+      - Learners (Track 1 data contract)
+      summary: Replace the learner's PRIVATE support preferences; optionally open
+        a private support request. Never shared with employers.
+      operationId: support
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SupportUpdate"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SupportState"
+  /api/v1/employer/jobs/{id}:
+    get:
+      tags:
+      - Employer
+      summary: One of my organisation's jobs (any status)
+      operationId: job
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JobDetail"
+    put:
+      tags:
+      - Employer
+      summary: Update a job and its accommodation information
+      operationId: update_2
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobInput"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JobDetail"
+  /api/v1/drafts/{flowKey}:
+    get:
+      tags:
+      - Form engine
+      summary: Get my draft for a flow (context = job id for applications)
+      operationId: get_2
+      parameters:
+      - name: flowKey
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: "[a-z-]{1,40}"
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          default: ""
+          maxLength: 64
+          minLength: 0
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DraftDto"
+    put:
+      tags:
+      - Form engine
+      summary: Save my draft. Send expectedVersion to detect edits from another device
+        (409 draft.conflict).
+      operationId: save_1
+      parameters:
+      - name: flowKey
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: "[a-z-]{1,40}"
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          default: ""
+          maxLength: 64
+          minLength: 0
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveDraftRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DraftDto"
+    delete:
+      tags:
+      - Form engine
+      summary: Delete my draft
+      operationId: delete
+      parameters:
+      - name: flowKey
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: "[a-z-]{1,40}"
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          default: ""
+          maxLength: 64
+          minLength: 0
+      responses:
+        "200":
+          description: OK
+  /api/v1/support-requests:
+    get:
+      tags:
+      - Private support
+      summary: My support requests
+      operationId: mine
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupportRequestDto"
+    post:
+      tags:
+      - Private support
+      summary: Create a private support request (support-request flow)
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SupportRequestDto"
+  /api/v1/staff/verifications/{id}/decision:
+    post:
+      tags:
+      - Support staff
+      summary: "Record a verification decision (VERIFIED, REJECTED, NEEDS_INFO)"
+      operationId: decide
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Decision"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VerificationDto"
+  /api/v1/staff/support-requests/{id}/response:
+    post:
+      tags:
+      - Support staff
+      summary: Update a support request and reply to the requester
+      operationId: respond
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SupportResponse"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SupportRequestDto"
+  /api/v1/onboarding/profile:
+    post:
+      tags:
+      - Profile
+      summary: Submit the guided profile flow (profile + identity route + optional
+        private support request)
+      operationId: onboarding
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OnboardingResponse"
+  /api/v1/notifications/{id}/read:
+    post:
+      tags:
+      - Notifications
+      operationId: markRead
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+  /api/v1/learners:
+    post:
+      tags:
+      - Learners (Track 1 data contract)
+      summary: Create a learner account (same rules as /auth/register) and sign in.
+        201 + Location.
+      operationId: create_1
+      parameters:
+      - name: X-AccessFlow-Embed
+        in: header
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SessionResponse"
+  /api/v1/jobs/{jobId}/applications:
+    post:
+      tags:
+      - Applications
+      summary: Submit an application (validated against the job's application flow)
+      operationId: submit
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApplicationSummary"
+  /api/v1/identity:
+    get:
+      tags:
+      - Identity verification
+      summary: My identity verification requests
+      operationId: mine_1
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VerificationDto"
+    post:
+      tags:
+      - Identity verification
+      summary: Start a verification (same fields as the identity section of the profile
+        flow)
+      operationId: start
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VerificationDto"
+  /api/v1/files:
+    post:
+      tags:
+      - Files
+      summary: Upload a file (PDF/JPEG/PNG for identity documents; PDF/DOCX for CVs;
+        max 5 MB)
+      operationId: upload
+      parameters:
+      - name: purpose
+        in: query
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              required:
+              - file
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/FileDto"
+  /api/v1/employer/jobs:
+    get:
+      tags:
+      - Employer
+      summary: My organisation's jobs
+      operationId: myJobs
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmployerJobSummary"
+    post:
+      tags:
+      - Employer
+      summary: Create a job with its accommodation information
+      operationId: create_2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobInput"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JobDetail"
+  /api/v1/employer/applications/{id}/status:
+    post:
+      tags:
+      - Employer
+      summary: Update an application's status (the applicant is notified)
+      operationId: updateStatus
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StatusUpdate"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ReceivedApplication"
+  /api/v1/consents/{id}/revoke:
+    post:
+      tags:
+      - Applications
+      summary: "Withdraw consent: removes shared profile data from the employer's\
+        \ view"
+      operationId: revoke
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+  /api/v1/auth/register:
+    post:
+      tags:
+      - Authentication
+      summary: Create an applicant account and sign in
+      operationId: register
+      parameters:
+      - name: X-AccessFlow-Embed
+        in: header
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SessionResponse"
+  /api/v1/auth/password:
+    post:
+      tags:
+      - Authentication
+      summary: Change password
+      operationId: changePassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+  /api/v1/auth/logout:
+    post:
+      tags:
+      - Authentication
+      summary: Sign out (ends the session or revokes the embed token)
+      operationId: logout
+      parameters:
+      - name: Authorization
+        in: header
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+  /api/v1/auth/login:
+    post:
+      tags:
+      - Authentication
+      summary: Sign in with email or Ethiopian phone number
+      operationId: login
+      parameters:
+      - name: X-AccessFlow-Embed
+        in: header
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SessionResponse"
+  /api/v1/assistant/ask:
+    post:
+      tags:
+      - Assistant
+      summary: "Ask for help with a question, field, error or next step"
+      operationId: ask
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AskRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AskResponse"
+  /api/v1/applications/{id}/withdraw:
+    post:
+      tags:
+      - Applications
+      summary: Withdraw one of my applications
+      operationId: withdraw
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApplicationSummary"
+  /api/v1/account/delete:
+    post:
+      tags:
+      - Account
+      summary: Permanently delete my account and all my data (password required)
+      operationId: delete_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+  /api/v1/learners/{id}:
+    delete:
+      tags:
+      - Learners (Track 1 data contract)
+      summary: "Permanently delete the learner and all their data. Body: {\"password\"\
+        : \"…\"} (re-authentication). 204."
+      operationId: delete_2
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+    patch:
+      tags:
+      - Learners (Track 1 data contract)
+      summary: Partially update the learner's profile. Only the fields sent are changed;
+        the result is validated with the same rules as the profile form.
+      operationId: patch
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProfileDto"
+  /api/v1/system/info:
+    get:
+      tags:
+      - system-info-controller
+      operationId: info
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SystemInfo"
+  /api/v1/staff/verifications:
+    get:
+      tags:
+      - Support staff
+      summary: Identity verifications awaiting review
+      operationId: verifications
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: array
+          default:
+          - PENDING
+          - NEEDS_INFO
+          items:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StaffVerification"
+  /api/v1/staff/verifications/{id}/document:
+    get:
+      tags:
+      - Support staff
+      summary: View an uploaded identity document (audited)
+      operationId: document
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+  /api/v1/staff/support-requests:
+    get:
+      tags:
+      - Support staff
+      summary: Private support requests
+      operationId: supportRequests
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: array
+          default:
+          - OPEN
+          - IN_PROGRESS
+          items:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StaffSupportRequest"
+  /api/v1/staff/stats:
+    get:
+      tags:
+      - Support staff
+      operationId: stats
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/StaffStats"
+  /api/v1/saved-jobs:
+    get:
+      tags:
+      - Jobs
+      summary: My saved jobs
+      operationId: saved
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/JobSummary"
+  /api/v1/organizations/referral-partners:
+    get:
+      tags:
+      - Organizations
+      operationId: referralPartners
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReferralPartner"
+  /api/v1/notifications:
+    get:
+      tags:
+      - Notifications
+      operationId: list
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NotificationDto"
+  /api/v1/learners/{id}/export:
+    get:
+      tags:
+      - Learners (Track 1 data contract)
+      summary: Export all of the learner's data (JSON attachment)
+      operationId: export
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties: {}
+  /api/v1/jobs:
+    get:
+      tags:
+      - Jobs
+      summary: Search open jobs
+      operationId: search
+      parameters:
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: region
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: workMode
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: support
+        in: query
+        description: Workplace-support categories the job must offer (private filter)
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/JobSummary"
+  /api/v1/jobs/{id}:
+    get:
+      tags:
+      - Jobs
+      summary: "Job details, including the employer's accommodation information"
+      operationId: detail
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JobDetail"
+  /api/v1/jobs/{id}/jsonld:
+    get:
+      tags:
+      - Jobs
+      summary: schema.org/JobPosting JSON-LD for a job
+      operationId: jsonLd
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            application/ld+json:
+              schema:
+                type: object
+                additionalProperties: {}
+  /api/v1/jobs/{id}/application-form:
+    get:
+      tags:
+      - Jobs
+      summary: "Application flow for a job: the shared job-application flow plus the\
+        \ employer's questions"
+      operationId: applicationForm
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/FlowDefinition"
+  /api/v1/help:
+    get:
+      tags:
+      - Help
+      operationId: list_1
+      parameters:
+      - name: locale
+        in: query
+        required: false
+        schema:
+          type: string
+          default: en
+          pattern: en|am|om|so|ti
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ArticleDto"
+  /api/v1/help/{slug}:
+    get:
+      tags:
+      - Help
+      operationId: get_3
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: "[a-z0-9-]{1,64}"
+      - name: locale
+        in: query
+        required: false
+        schema:
+          type: string
+          default: en
+          pattern: en|am|om|so|ti
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ArticleDto"
+  /api/v1/forms/{key}:
+    get:
+      tags:
+      - Form engine
+      summary: "Get a flow definition (registration, profile, …)"
+      operationId: definition
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: "[a-z-]{1,40}"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/FlowDefinition"
+  /api/v1/files/{id}:
+    get:
+      tags:
+      - Files
+      summary: Metadata of one of my files
+      operationId: get_4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/FileDto"
+    delete:
+      tags:
+      - Files
+      summary: Delete one of my files
+      operationId: delete_3
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+  /api/v1/files/{id}/content:
+    get:
+      tags:
+      - Files
+      summary: Download one of my files (always as an attachment)
+      operationId: download
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+  /api/v1/employer/jobs/{id}/applications:
+    get:
+      tags:
+      - Employer
+      summary: "Applications received for a job, in submission order (never ranked)"
+      operationId: applicationsFor
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReceivedApplication"
+  /api/v1/employer/applications/{id}/resume:
+    get:
+      tags:
+      - Employer
+      summary: "Download the CV, only if the applicant chose to share it"
+      operationId: resume_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+  /api/v1/embed/config:
+    get:
+      tags:
+      - Embedding
+      summary: "Partner configuration by publishable key, or by registered host origin\
+        \ (keyless <db-signup> install)"
+      operationId: config
+      parameters:
+      - name: key
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: origin
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/EmbedConfig"
+  /api/v1/drafts:
+    get:
+      tags:
+      - Form engine
+      summary: List my saved drafts
+      operationId: list_2
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DraftDto"
+  /api/v1/consents:
+    get:
+      tags:
+      - Applications
+      summary: "Everything I have agreed to share, and with whom"
+      operationId: consents
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ConsentDto"
+  /api/v1/auth/me:
+    get:
+      tags:
+      - Authentication
+      summary: "Current user, or 204 when not signed in"
+      operationId: me
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+  /api/v1/auth/csrf:
+    get:
+      tags:
+      - Authentication
+      summary: Get a CSRF token (also sets the XSRF-TOKEN cookie)
+      operationId: csrf
+      parameters:
+      - name: token
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/CsrfToken"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CsrfResponse"
+  /api/v1/assistant/status:
+    get:
+      tags:
+      - Assistant
+      operationId: status
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Status"
+  /api/v1/applications:
+    get:
+      tags:
+      - Applications
+      summary: My applications
+      operationId: mine_2
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApplicationSummary"
+  /api/v1/applications/{id}:
+    get:
+      tags:
+      - Applications
+      summary: "One of my applications, with its status history"
+      operationId: detail_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApplicationDetail"
+  /api/v1/account/export:
+    get:
+      tags:
+      - Account
+      summary: Download all my data as JSON
+      operationId: export_1
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties: {}
+components:
+  schemas:
+    FileDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        purpose:
+          type: string
+        name:
+          type: string
+        contentType:
+          type: string
+        sizeBytes:
+          type: integer
+          format: int64
+        createdAt:
+          type: string
+          format: date-time
+    ProfileDto:
+      type: object
+      properties:
+        givenName:
+          type: string
+        fatherName:
+          type: string
+        grandfatherName:
+          type: string
+        birthYear:
+          type: integer
+          format: int32
+        region:
+          type: string
+        city:
+          type: string
+        headline:
+          type: string
+        summary:
+          type: string
+        education:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        experience:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        skills:
+          type: array
+          items:
+            type: string
+        languages:
+          type: array
+          items:
+            type: string
+        supportPreferences:
+          type: array
+          items:
+            type: string
+        resume:
+          $ref: "#/components/schemas/FileDto"
+        completed:
+          type: boolean
+        missing:
+          type: array
+          items:
+            type: string
+        updatedAt:
+          type: string
+          format: date-time
+    SupportPreferencesRequest:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            type: string
+    ResumeRequest:
+      type: object
+      properties:
+        fileId:
+          type: string
+          format: uuid
+    PreferencesDto:
+      type: object
+      properties:
+        locale:
+          type: string
+          pattern: en|am|om|so|ti
+        textScale:
+          type: integer
+          format: int32
+          maximum: 200
+          minimum: 100
+        highContrast:
+          type: boolean
+        simplifiedLanguage:
+          type: boolean
+        captions:
+          type: boolean
+        keyboardFirst:
+          type: boolean
+        readAloud:
+          type: boolean
+        reducedMotion:
+          type: boolean
+        sharedDevice:
+          type: boolean
+        audioGuide:
+          type: boolean
+      required:
+      - locale
+    SupportRequestInput:
+      type: object
+      properties:
+        category:
+          type: string
+          maxLength: 32
+          minLength: 0
+        message:
+          type: string
+          maxLength: 2000
+          minLength: 0
+        contact:
+          type: string
+          maxLength: 16
+          minLength: 0
+    SupportUpdate:
+      type: object
+      properties:
+        workplaceSupport:
+          type: array
+          items:
+            type: string
+        request:
+          $ref: "#/components/schemas/SupportRequestInput"
+    SupportState:
+      type: object
+      properties:
+        workplaceSupport:
+          type: array
+          items:
+            type: string
+        supportRequestId:
+          type: string
+          format: uuid
+    AccommodationDto:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            type: string
+          maxItems: 12
+          minItems: 0
+        workplaceAccommodations:
+          type: string
+          maxLength: 2000
+          minLength: 0
+        interviewArrangements:
+          type: string
+          maxLength: 2000
+          minLength: 0
+        flexibleWorking:
+          type: string
+          maxLength: 2000
+          minLength: 0
+        assistiveTechnology:
+          type: string
+          maxLength: 2000
+          minLength: 0
+        applicationAccessibility:
+          type: string
+          maxLength: 2000
+          minLength: 0
+        contactName:
+          type: string
+          maxLength: 100
+          minLength: 0
+        contactEmail:
+          type: string
+          format: email
+          maxLength: 254
+          minLength: 0
+        contactPhone:
+          type: string
+          maxLength: 20
+          minLength: 0
+    CustomQuestionInput:
+      type: object
+      properties:
+        label:
+          type: string
+          maxLength: 300
+          minLength: 0
+        type:
+          type: string
+          minLength: 1
+          pattern: text|textarea|radio
+        required:
+          type: boolean
+        options:
+          type: array
+          items:
+            type: string
+            maxLength: 100
+            minLength: 0
+          maxItems: 8
+          minItems: 0
+      required:
+      - label
+      - type
+    JobInput:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+          minLength: 0
+        summary:
+          type: string
+          maxLength: 500
+          minLength: 0
+        plainSummary:
+          type: string
+          maxLength: 1000
+          minLength: 0
+        description:
+          type: string
+          maxLength: 10000
+          minLength: 0
+        region:
+          type: string
+          maxLength: 64
+          minLength: 0
+        city:
+          type: string
+          maxLength: 100
+          minLength: 0
+        workMode:
+          type: string
+          minLength: 1
+          pattern: ONSITE|REMOTE|HYBRID
+        employmentType:
+          type: string
+          minLength: 1
+          pattern: FULL_TIME|PART_TIME|CONTRACT|INTERNSHIP
+        salaryText:
+          type: string
+          maxLength: 100
+          minLength: 0
+        deadline:
+          type: string
+          format: date
+        status:
+          type: string
+          minLength: 1
+          pattern: DRAFT|PUBLISHED|CLOSED
+        accommodations:
+          $ref: "#/components/schemas/AccommodationDto"
+        customQuestions:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomQuestionInput"
+          maxItems: 5
+          minItems: 0
+      required:
+      - accommodations
+      - deadline
+      - description
+      - employmentType
+      - plainSummary
+      - region
+      - status
+      - summary
+      - title
+      - workMode
+    CustomQuestion:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        type:
+          type: string
+        required:
+          type: boolean
+        options:
+          type: array
+          items:
+            type: string
+    JobDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        organizationName:
+          type: string
+        organizationDescription:
+          type: string
+        summary:
+          type: string
+        plainSummary:
+          type: string
+        description:
+          type: string
+        region:
+          type: string
+        city:
+          type: string
+        workMode:
+          type: string
+        employmentType:
+          type: string
+        salaryText:
+          type: string
+        deadline:
+          type: string
+          format: date
+        daysLeft:
+          type: integer
+          format: int64
+        status:
+          type: string
+        accommodations:
+          $ref: "#/components/schemas/AccommodationDto"
+        customQuestions:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomQuestion"
+        saved:
+          type: boolean
+        open:
+          type: boolean
+    SaveDraftRequest:
+      type: object
+      properties:
+        definitionVersion:
+          type: integer
+          format: int32
+        expectedVersion:
+          type: integer
+          format: int32
+        currentStep:
+          type: string
+          maxLength: 64
+          minLength: 0
+        data:
+          type: object
+          additionalProperties: {}
+      required:
+      - data
+      - definitionVersion
+    DraftDto:
+      type: object
+      properties:
+        flowKey:
+          type: string
+        context:
+          type: string
+        definitionVersion:
+          type: integer
+          format: int32
+        currentStep:
+          type: string
+        data:
+          type: object
+          additionalProperties: {}
+        version:
+          type: integer
+          format: int32
+        updatedAt:
+          type: string
+          format: date-time
+    SupportRequestDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        category:
+          type: string
+        message:
+          type: string
+        preferredContact:
+          type: string
+        status:
+          type: string
+        staffResponse:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Decision:
+      type: object
+      properties:
+        status:
+          type: string
+          minLength: 1
+        note:
+          type: string
+          maxLength: 500
+          minLength: 0
+      required:
+      - status
+    VerificationDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        route:
+          type: string
+        documentLabel:
+          type: string
+        documentLast4:
+          type: string
+        documentUploaded:
+          type: boolean
+        partnerOrgId:
+          type: string
+          format: uuid
+        status:
+          type: string
+        reviewerNote:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        reviewedAt:
+          type: string
+          format: date-time
+    SupportResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          minLength: 1
+        response:
+          type: string
+          maxLength: 2000
+          minLength: 0
+      required:
+      - status
+    OnboardingResponse:
+      type: object
+      properties:
+        profile:
+          $ref: "#/components/schemas/ProfileDto"
+        identityVerificationId:
+          type: string
+          format: uuid
+        supportRequestId:
+          type: string
+          format: uuid
+    RegisterRequest:
+      type: object
+      properties:
+        displayName:
+          type: string
+          maxLength: 100
+          minLength: 0
+        email:
+          type: string
+          maxLength: 254
+          minLength: 0
+        phone:
+          type: string
+          maxLength: 20
+          minLength: 0
+        password:
+          type: string
+          maxLength: 128
+          minLength: 8
+        locale:
+          type: string
+          pattern: en|am|om|so|ti
+        acceptPrivacyNotice:
+          type: boolean
+      required:
+      - displayName
+      - password
+    MeResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        displayName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        locale:
+          type: string
+        organizationId:
+          type: string
+          format: uuid
+    SessionResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/MeResponse"
+        embedToken:
+          type: string
+        embedTokenExpiresInSeconds:
+          type: integer
+          format: int64
+    ApplicationSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        referenceCode:
+          type: string
+        jobId:
+          type: string
+          format: uuid
+        jobTitle:
+          type: string
+        organizationName:
+          type: string
+        status:
+          type: string
+        submittedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    StatusUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          minLength: 1
+        note:
+          type: string
+          maxLength: 500
+          minLength: 0
+      required:
+      - status
+    ReceivedApplication:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        referenceCode:
+          type: string
+        status:
+          type: string
+        submittedAt:
+          type: string
+          format: date-time
+        sharedProfile:
+          type: object
+          additionalProperties: {}
+        answers:
+          type: object
+          additionalProperties: {}
+        accommodationNote:
+          type: string
+        resumeShared:
+          type: boolean
+        history:
+          type: array
+          items:
+            $ref: "#/components/schemas/StatusChange"
+    StatusChange:
+      type: object
+      properties:
+        status:
+          type: string
+        note:
+          type: string
+        changedAt:
+          type: string
+          format: date-time
+    ChangePasswordRequest:
+      type: object
+      properties:
+        currentPassword:
+          type: string
+          minLength: 1
+        newPassword:
+          type: string
+          maxLength: 128
+          minLength: 8
+      required:
+      - currentPassword
+      - newPassword
+    LoginRequest:
+      type: object
+      properties:
+        identifier:
+          type: string
+          maxLength: 254
+          minLength: 0
+        password:
+          type: string
+          maxLength: 128
+          minLength: 0
+      required:
+      - identifier
+      - password
+    AskRequest:
+      type: object
+      properties:
+        question:
+          type: string
+          maxLength: 500
+          minLength: 0
+        locale:
+          type: string
+          minLength: 1
+          pattern: en|am|om|so|ti
+        flowKey:
+          type: string
+          maxLength: 64
+          minLength: 0
+        fieldId:
+          type: string
+          maxLength: 64
+          minLength: 0
+        fieldLabel:
+          type: string
+          maxLength: 300
+          minLength: 0
+        topic:
+          type: string
+          maxLength: 32
+          minLength: 0
+        contextText:
+          type: string
+          maxLength: 6000
+          minLength: 0
+        allowExternalAi:
+          type: boolean
+      required:
+      - locale
+      - question
+    ArticleDto:
+      type: object
+      properties:
+        slug:
+          type: string
+        locale:
+          type: string
+        topic:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        reviewed:
+          type: boolean
+    AskResponse:
+      type: object
+      properties:
+        answer:
+          type: string
+        source:
+          type: string
+        aiAvailable:
+          type: boolean
+        uncertain:
+          type: boolean
+        articles:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArticleDto"
+        humanSupportPath:
+          type: string
+    DeleteRequest:
+      type: object
+      properties:
+        password:
+          type: string
+          minLength: 1
+      required:
+      - password
+    SystemInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+        apiVersion:
+          type: string
+    Requester:
+      type: object
+      properties:
+        displayName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+    StaffVerification:
+      type: object
+      properties:
+        verification:
+          $ref: "#/components/schemas/VerificationDto"
+        requester:
+          $ref: "#/components/schemas/Requester"
+        referralCode:
+          type: string
+    StaffSupportRequest:
+      type: object
+      properties:
+        request:
+          $ref: "#/components/schemas/SupportRequestDto"
+        requester:
+          $ref: "#/components/schemas/Requester"
+    StaffStats:
+      type: object
+      properties:
+        pendingVerifications:
+          type: integer
+          format: int64
+        openSupportRequests:
+          type: integer
+          format: int64
+        asOf:
+          type: string
+          format: date-time
+    JobSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        organizationName:
+          type: string
+        summary:
+          type: string
+        plainSummary:
+          type: string
+        region:
+          type: string
+        city:
+          type: string
+        workMode:
+          type: string
+        employmentType:
+          type: string
+        deadline:
+          type: string
+          format: date
+        daysLeft:
+          type: integer
+          format: int64
+        accommodations:
+          type: array
+          items:
+            type: string
+        saved:
+          type: boolean
+    ReferralPartner:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+    NotificationDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+        params:
+          type: object
+          additionalProperties: {}
+        read:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+    Condition:
+      type: object
+      properties:
+        field:
+          type: string
+        in:
+          type: array
+          items:
+            type: string
+    Field:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        labelKey:
+          type: string
+        label:
+          type: string
+        hintKey:
+          type: string
+        exampleKey:
+          type: string
+        whyKey:
+          type: string
+        icon:
+          type: string
+        required:
+          type: boolean
+        voice:
+          type: boolean
+        sensitive:
+          type: boolean
+        autocomplete:
+          type: string
+        minLength:
+          type: integer
+          format: int32
+        maxLength:
+          type: integer
+          format: int32
+        min:
+          type: integer
+          format: int32
+        max:
+          type: integer
+          format: int32
+        maxItems:
+          type: integer
+          format: int32
+        validator:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/Option"
+        optionsSource:
+          type: string
+        prefill:
+          type: string
+        defaultValue: {}
+        itemFields:
+          type: array
+          items:
+            $ref: "#/components/schemas/Field"
+        filePurpose:
+          type: string
+    FlowDefinition:
+      type: object
+      properties:
+        key:
+          type: string
+        version:
+          type: integer
+          format: int32
+        titleKey:
+          type: string
+        sections:
+          type: array
+          items:
+            type: string
+        steps:
+          type: array
+          items:
+            $ref: "#/components/schemas/Step"
+        requireOneOf:
+          type: array
+          items:
+            type: string
+    Option:
+      type: object
+      properties:
+        value:
+          type: string
+        labelKey:
+          type: string
+        label:
+          type: string
+    Step:
+      type: object
+      properties:
+        id:
+          type: string
+        section:
+          type: string
+        showIf:
+          $ref: "#/components/schemas/Condition"
+        fields:
+          type: array
+          items:
+            $ref: "#/components/schemas/Field"
+    EmployerJobSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        status:
+          type: string
+        deadline:
+          type: string
+          format: date
+        applicationCount:
+          type: integer
+          format: int64
+        accommodations:
+          type: array
+          items:
+            type: string
+    EmbedConfig:
+      type: object
+      properties:
+        partnerName:
+          type: string
+        publishableKey:
+          type: string
+        allowedOrigins:
+          type: array
+          items:
+            type: string
+        components:
+          type: array
+          items:
+            type: string
+    ConsentDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        recipientOrg:
+          type: string
+          format: uuid
+        recipientName:
+          type: string
+        applicationId:
+          type: string
+          format: uuid
+        purpose:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        noticeVersion:
+          type: string
+        grantedAt:
+          type: string
+          format: date-time
+        revokedAt:
+          type: string
+          format: date-time
+    CsrfToken:
+      type: object
+      properties:
+        headerName:
+          type: string
+        parameterName:
+          type: string
+        token:
+          type: string
+    CsrfResponse:
+      type: object
+      properties:
+        headerName:
+          type: string
+        token:
+          type: string
+    Status:
+      type: object
+      properties:
+        aiAvailable:
+          type: boolean
+        provider:
+          type: string
+    ApplicationDetail:
+      type: object
+      properties:
+        summary:
+          $ref: "#/components/schemas/ApplicationSummary"
+        answers:
+          type: object
+          additionalProperties: {}
+        sharedProfile:
+          type: object
+          additionalProperties: {}
+        accommodationNote:
+          type: string
+        history:
+          type: array
+          items:
+            $ref: "#/components/schemas/StatusChange"
+        consentId:
+          type: string
+          format: uuid

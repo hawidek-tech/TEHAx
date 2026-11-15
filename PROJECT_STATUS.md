@@ -1,107 +1,79 @@
-# ACCESSFLOW — Project status
+# ACCESSFLOW — Project status (DIGITAL BRIDGE Accessibility Hackathon 2026, Track 1)
 
-_Last updated: 2026-11-15_
+_Last updated: 2026-11-15 (final compliance audit)_
 
-## Current phase
-**MVP complete and verified by automated tests.** All phases of the roadmap have been built.
-**Remaining work is mainly evidence that only people can provide:** manual screen-reader testing, co-designer
-sessions, and fluent-speaker translation review. External integrations (Savanna, SMS) are blocked on missing information.
+**Important:** the DIGITAL BRIDGE Technical Guide v2 is **not in this repository**. This audit follows the requirements as
+quoted in the audit brief (sections 2–17). Anything in the guide that the brief did not quote could not be checked.
 
-## Overall progress
-| Area | State |
+Statuses: **PASS** verified implementation + test evidence · **PARTIAL** implemented but incomplete or under-tested ·
+**FAIL** missing or not working · **NOT TESTED** needs human or real-device evidence.
+
+## Test totals (run 2026-11-15)
+| Suite | Result |
 |---|---|
-| Core journey (welcome → language → preview → register → profile → dashboard → jobs → job detail → apply → review → submit → confirmation → tracking) | ✅ Implemented and tested end to end (desktop + Android profile) |
-| Mandatory ALX Track 1 features | ✅ Implemented; see the matrix below for the testing level of each |
-| Reusability (Web Components, REST API, OpenAPI, schema.org) | ✅ Implemented and tested; LTI 1.3 / Open Badges ⛔ blocked |
-| Accessibility evidence | 🟡 Automated testing complete; manual AT and co-designer testing **pending** |
-| Deployment | 🟡 Production mode verified locally; Docker files written but **not executed** |
+| Backend (`cd backend && ./mvnw verify`) | 56 passed, 0 failed |
+| Frontend unit + translation completeness (`npm test`) | 11 passed; 1,021 keys complete in en, am, om, so, ti |
+| Browser / accessibility (`npx playwright test`, production mode) | 74 passed, 0 failed (desktop Chromium + Pixel 5 profile) |
+| Lint (incl. jsx-a11y), types, formatting, production build | pass, 0 warnings |
+| **Total automated** | **141 passing** (previously reported 122 — all still pass) |
+| Docker Compose | **NOT TESTED** — Docker is not installed on this machine |
 
-Legend: ✅ implemented and tested · 🟢 implemented, not fully tested · 🟡 partially implemented · ❌ not implemented · ⛔ blocked by an external dependency
+## Requirements audit
+| Status | Requirement | Actual implementation | Evidence / test result | Remaining limitation | Next action |
+|---|---|---|---|---|---|
+| PASS | One-script install, custom element | `<script src=".../db-signup.js" defer>` + `<db-signup>`; also `<accessflow-signup|profile|job-application>` | `plugin.spec.ts`: blank page + Savanna | — | — |
+| PASS | Attributes `lang`, `api`, `theme` | `lang` (en/am/om/so/ti), `api` (module origin), `theme` (auto/light/dark/high-contrast), plus `view` (signup/profile/jobs/job-application), `job-id`, optional `partner-key`, `frame-title` | `plugin.spec.ts` (am honoured), `a11y-new.spec.ts` (dark) | — | — |
+| PASS | Custom events, bubbling + composed | `db-signup:ready`, `db-signup:step`, `db-signup:support`, `db-signup:done`; `{bubbles: true, composed: true}`; no personal data | `plugin.spec.ts` asserts events and absence of email/name/support text | Event payload schema not compared with the official guide (not available) | Compare with official data contract when available |
+| PASS | CSS isolation, no host style changes, no Bootstrap/Savanna dependency | Shadow DOM wrapper + iframe; module styles never leave the shadow root | `plugin.spec.ts`: hostile host CSS doesn't reach inputs; host button/heading/body unchanged | — | — |
+| PASS | No unnecessary globals | IIFE with no exports | `plugin.spec.ts` compares `window` keys before/after | — | — |
+| PASS | Host CSS variables with fallbacks | `--db-signup-accent` (applied only if ≥ 4.5:1 on white), `--db-signup-radius`, `--db-signup-border`, `--db-signup-background`, `--db-signup-link-color` | Blank page uses them; axe passes | Accent ignored in dark mode | — |
+| PASS | Responsive | Fluid iframe height via messages; 320 px reflow | `reflow.spec.ts` (main app), Pixel 5 project | Embedded reflow at 320 px not separately tested | Add embedded reflow test |
+| PASS | First load < 500 KB | Loader 4.9 KB (2.1 KB gzip). Module first load: **359 KB** transferred (Amharic, Ethiopic font downloaded); main app English first visit **144 KB** | `plugin.spec.ts`, `performance.spec.ts` | Ethiopic font (2 weights, ~150 KB) dominates when not installed on the device | Consider single-weight font |
+| PASS | Savanna integration | `savanna/` = official starter @ `9e83ac7`, **originals unmodified**; added `pages/signup.html`, `profile.html`, `jobs.html` | `plugin.spec.ts`: register → profile edit on another page (same session) → apply in career gateway; no page errors; Bootstrap still works | Not tested on a live Savanna deployment; Savanna `index.html` not linked (left unmodified) | Register real Savanna origins |
+| PASS | Blank-page integration | `demo/blank.html`, no frameworks | `plugin.spec.ts` | — | — |
+| PASS | Unregistered sites blocked | `frame-ancestors` from registered origins (keyless install resolves by origin) | `plugin.spec.ts`, `embed.spec.ts`, `LearnerApiTest` | — | — |
+| PASS | Data contract endpoints | `POST /api/v1/learners`, `PATCH /api/v1/learners/{id}`, `PUT /api/v1/learners/{id}/support`, `GET /api/v1/learners/{id}/export`, `DELETE /api/v1/learners/{id}` (password required) | `LearnerApiTest` (4 tests: lifecycle, IDOR → 404, support never visible to employers, keyless embed) | Request/response field names not compared with the official contract (guide unavailable) | Align field names with the guide |
+| PASS | Support data separate, never to employers | Separate column/requests; employer views use consented snapshot only | Backend journey + learner tests | — | — |
+| PASS | View / export / delete own data | Account page, `/account/export`, `/learners/{id}/export`, delete with password | Backend tests | — | — |
+| PASS | One question per screen, Back/Continue, "Question N of M", focus to heading | Form engine | `journey`, `keyboard` specs | — | — |
+| PASS | Immediate persistence, resume after refresh | Server + device drafts, conflict detection | `journey.spec.ts` (sign out/in), offline q7 reload | — | — |
+| PASS | Accessible validation and announcements | Error summary (alert, focused), inline errors, spoken by audio guide | `keyboard.spec.ts`, `audio-sign-offline.spec.ts` | Real screen-reader output unverified | NVDA/TalkBack session |
+| PARTIAL | Voice input on every applicable field, editable transcript | Web Speech API, privacy notice, review-before-use | `assistive.spec.ts` (simulated recogniser) | **Real speech recognition not tested on any device/language**; Afaan Oromo/Somali/Tigrinya likely unsupported by browsers | Test Chrome Android with am/en |
+| FAIL | Voice-note fallback when recognition is unavailable | Not implemented (users can type, or use the phrase board) | — | No audio note recording | Implement voice notes for support messages with consent and storage rules |
+| PASS | Read-aloud (play/pause/resume/stop, captions) | Speech synthesis, never automatic | `assistive.spec.ts` (simulated) | Real voices untested | Real-device check |
+| PARTIAL | One-touch audio accessibility (blind users) | "Activate Audio Accessibility" on the first screen + header toggle; reads pages, questions, choices, how to answer, progress, errors, review, success; Repeat/Pause/Resume/Stop/Help/Turn off; text always shown | `audio-sign-offline.spec.ts`: English + Amharic with a **simulated** engine; no-voice message | **No real voice tested**; this Mac has no Amharic voice; recorded-audio fallback **not implemented** (no recordings) | Test on Android with Amharic TTS; record core prompts |
+| NOT TESTED | Audio guidance with real screen readers (no conflict) | Opt-in only, never autoplays | — | Needs NVDA/TalkBack users | Manual session |
+| PARTIAL | Sign-language communication | Camera opt-in, indicator, stop, track cleanup; phrase board; confirm-before-use; recogniser adapter; validated clip manifest | `audio-sign-offline.spec.ts` (fake camera), `a11y-new.spec.ts` | **Sign recognition NOT implemented** (no validated EthSL model); **text-to-sign has no clips** | See `docs/integration/sign-language.md` |
+| PASS | Camera privacy | No recording/upload; `Permissions-Policy: camera=(self)`; frame `allow="camera"` | Tracks `ended` after stop and after close (test) | — | — |
+| PASS | Low-literacy mode, icons with text | "Simple words" variants, examples, pictograms with labels | `preferences.spec.ts` | Simplified variants mainly English | Add simplified texts per language with reviewers |
+| PASS | 200 % zoom, 320 px, keyboard, no time limits, no drag-only | — | `reflow`, `keyboard`, `preferences` specs | Real-user keyboard test pending | Manual session |
+| PASS | Offline-first answers | Device draft (non-sensitive fields), sync on reconnect, conflict dialog, offline banner, offline reload via service worker | `audio-sign-offline.spec.ts`: drop at question 7, reload offline, answers restored, synced after reconnect | Sensitive answers typed offline are not stored on the device by design | — |
+| PASS | Duplicate submission prevention | Submit button disabled while sending; server rejects a second application (409) | Backend journey test | — | — |
+| PARTIAL | Multilingual (am, en, om, so, ti) | All UI text in language files; 1,021 keys complete per language | i18n check in `npm test` | **am/om/so/ti are unreviewed drafts** | Fluent-speaker review |
+| PASS | Ethiopian calendar, phone numbers 09/07/+251, Ethiopic font | Converter (tested), normaliser (tested), font with `unicode-range` + local-first | Unit + backend tests | — | — |
+| PARTIAL | AI architecture | Replaceable provider, local approved-help fallback, consent per question, redaction | Local fallback tested | **Claude provider not exercised (no key)**; no local model | Test with a key; evaluate a local model only if it adds value |
+| PASS | Security & privacy (auth, roles, employer boundaries, staff permissions, validation, secrets) | See `docs/security/security-design.md` | Authorization matrix, learner IDOR tests, upload tests | CORS is not enabled (same-origin by design); logs include stack traces on unexpected errors | Review logging before production |
+| PASS | README, `.env.example`, `openapi.yaml`, `CONFORMANCE.md`, licences, cost estimate | Repository root | — | Team members / co-designer names not provided | Team to fill in |
+| NOT TESTED | `docker-compose.yml` | Written (app + db + demo hosts) | **Docker not installed** | — | Run `docker compose up --build` |
+| NOT TESTED | NVDA, TalkBack, real keyboard user, co-designer completion, translation review | Checklist ready | — | All pending | Run sessions, log in `docs/accessibility/manual-test-log.md` |
 
-## Requirement matrix (master prompt §4–§5)
-| # | Requirement | Status | Evidence / notes |
-|---|---|---|---|
-| A | Multilingual (am, om, en, so, ti), Ethiopic font, `lang`/`dir` | ✅ / 🟡 | All 961 keys in every language (CI check); e2e switches languages. **Non-English texts are unreviewed drafts.** |
-| B | Preferences: text size, contrast, simple words, captions, keyboard-first, read-aloud, language (+ reduced motion, shared device) applied everywhere and saved | ✅ | `e2e/preferences.spec.ts`; saved locally and to the account. Simple-word variants exist for selected texts only. |
-| C | Accessible registration & profile: one question per screen, progress, validation, errors, no time limits, keyboard, announcements, save/resume, review, why-we-ask, shared engine | ✅ | `journey`, `keyboard`, `a11y` specs; backend validation tests. |
-| D | Voice input on every applicable text field, review/edit/confirm, typing alternative, unsupported/permission errors, privacy disclosure | 🟢 | UI behaviour tested with simulated speech APIs (`assistive.spec.ts`). **Real speech recognition per language not tested.** |
-| E | Read-aloud with play/pause/resume/stop; questions, instructions, errors, messages; never audio-only | 🟢 | Controls and captions tested with a simulated speech engine. **Real device voices not tested.** |
-| F | AI assistant: explains questions, fields, instructions, options, next steps, jobs; grounded in approved help; no decisions, no filling, admits uncertainty, human route, consent before external AI, replaceable provider, local fallback | 🟢 | Local fallback tested (`OnboardingToApplicationJourneyTest`, a11y spec). Claude provider (`ClaudeAssistantProvider`, model `claude-opus-5-5`, low effort, server-side refusal fallbacks) **not exercised: no API key configured.** |
-| G | Reusable profile: view, edit, choose what to share, reuse, consent required | ✅ | Prefill + share-choice + employer-view privacy asserted in backend and e2e tests. |
-| H | Accessible job application on the same engine (voice, read-aloud, validation, save/resume, review, confirmation) | ✅ | `journey.spec.ts`, backend journey test. |
-| I | Private support requests (no proof, private, staff-only access, minimal data, human route) | ✅ | Authorization matrix; staff e2e (`roles.spec.ts`). |
-| J | Alternative identification (Fayda, kebele ID, passport, refugee ID, other document, partner referral, "Refer me"); staff verification; protected documents | ✅ | Never auto-verified (tests); only last 4 characters stored; uploads content-type checked; document views audited. |
-| K | Private support-needs job filter | ✅ | Filter prefilled from the private profile choice; never stored or shown to employers (tests). |
-| L | Employer accommodations form, shown clearly to job seekers | ✅ | Employer job form (a11y-tested), job detail page. |
-| M | Progress tracker: completed, remaining, missing info, saved applications, submission status, next action | ✅ | Dashboard; applications page; status tracker. |
-| N | Low data & offline: light pages, save/resume, drafts on connection failure, cached guidance, retry messages, offline vs online distinction, no insecure storage | ✅ / 🟢 | 144 KB first visit; slow-3G test; offline test. Service-worker caching of help/forms implemented, **not covered by an automated offline-reload test.** |
-| O | Accessibility preview before registration | ✅ | `/preview`, tested. |
-| §5 | Script-tag embedding, origin validation, postMessage checks, no third-party cookies, full-page fallback | ✅ | `embed.spec.ts` (all cookies stripped; unregistered origin blocked). Chromium only. |
-| §5 | REST API + OpenAPI + schema.org/JobPosting | ✅ | `/swagger-ui.html`, JSON-LD test. |
-| §5 | LTI 1.3, Open Badges 3.0 | ⛔ | Needs official platform registration/credentials. Documented. |
-| §5 | Savanna integration | ⛔ | No official documentation/credentials. Generic partner integration ready; see `docs/integration/savanna-open-questions.md`. |
-| §8 | Security & privacy | ✅ / 🟡 | See `docs/security/security-design.md` (includes the honest gaps). |
-| L (spec) | SMS resume links | ⛔ | Needs an SMS provider account. Resume works by signing in (server-side drafts). |
-| — | Resume-to-Profile (CV parsing), Accessibility Test Playground, Partner Integration Dashboard | ❌ | Optional ("Medium"/"Later" in the spec). Partners are configured in the database. |
-
-## Tests
-| Suite | Command | Result (2026-11-15) |
-|---|---|---|
-| Backend unit + integration (PostgreSQL) | `cd backend && ./mvnw verify` | **52 passed, 0 failed** |
-| Frontend unit + translation completeness | `cd frontend && npm test` | **11 passed**; 961 keys complete in 5 languages |
-| Lint (incl. jsx-a11y), types, formatting, build | `npm run lint && npm run typecheck && npm run format:check && npm run build` | **Pass** (0 warnings) |
-| Browser, accessibility, journey, embed, performance | `cd frontend && npx playwright test` (production mode on :8081) | **59 passed, 0 failed** (desktop Chromium + Pixel 5 profile) |
-| axe-core WCAG 2.2 A/AA | part of Playwright | **0 serious/critical** on every scanned page and step; **0 violations of any severity** on 10 public pages |
-| Manual NVDA / TalkBack / co-designer | — | **Not performed — PENDING** |
-| Docker Compose | — | **Not executed — Docker unavailable** |
-
-Total automated: **122 tests passing.** Failed tests: none.
-
-## Known bugs and limitations
-- No known functional bugs at the time of writing.
-- Session timeout is 8 hours; inside an embed, reloading the partner page requires signing in again (by design: no cookies).
-- Rate limiting is in-memory (single server instance).
-- Device drafts are not encrypted (only non-sensitive fields are stored; shared-device mode stores nothing).
-- Unexpected server errors are logged with stack traces; review logging before production.
-- Embedded components tested in Chromium only.
-- Full list: `docs/accessibility/known-limitations.md`.
-
-## Missing dependencies / external information
-| Needed | For |
-|---|---|
-| Docker (Desktop or Colima) | Running `docker compose up` (files are ready) |
-| Savanna/ALX documentation, origins, credentials, Track 1 brief PDF | Savanna integration, LTI 1.3 |
-| SMS provider account (e.g. Africa's Talking) | SMS resume links |
-| `ANTHROPIC_API_KEY` | Live AI assistant (local fallback works without it) |
-| Co-designer(s), NVDA and TalkBack testers, a low-cost Android phone | Manual accessibility evidence |
-| Fluent reviewers for am, om, so, ti | Translation sign-off |
-
-## Remaining tasks (priority order)
-1. Run the manual checklist (`docs/accessibility/manual-test-checklist.md`) with NVDA and TalkBack and a co-designer; log results; fix findings; update the conformance report.
-2. Translation review by fluent speakers; then add the locale to `REVIEWED_LOCALES` in `frontend/src/i18n/index.ts` and set `reviewed = TRUE` for help articles.
-3. Run `docker compose up --build` once Docker is available; fix any issue.
-4. Test real speech recognition and read-aloud voices per language on Chrome for Android; update known limitations.
-5. Test embedding in Safari and Firefox.
-6. Savanna: when documentation arrives, add partner-signed launch tokens (ADR 0004) and register Savanna origins.
-7. Optional: SMS resume links, CV-to-profile suggestions, partner self-service dashboard, ClamAV scanning, shared rate-limit store.
-
-## Exact commands to run the project
+## Exact commands (demonstration)
 ```bash
-# one-time: create DB role/databases (README §1), then
-cp backend/.env.example backend/.env    # set DB_PASSWORD (+ optional DEMO_ACCOUNTS_PASSWORD)
+# 1. Production mode (backend serves the built frontend)
 cd frontend && npm install && npm run build && cd ..
-cd backend && ./mvnw -DskipTests package
-SERVER_PORT=8081 ACCESSFLOW_FRONTEND_DIR=../frontend/dist java -jar target/accessflow-backend-0.1.0-SNAPSHOT.jar
-# open http://localhost:8081 · API docs http://localhost:8081/swagger-ui.html
-node demo-partner-site/serve.mjs 5500 http://localhost:8081   # embedding demo at http://localhost:5500
+cd backend && ./mvnw -DskipTests package && cd ..
+(cd backend && SERVER_PORT=8081 ACCESSFLOW_FRONTEND_DIR=../frontend/dist java -jar target/accessflow-backend-0.1.0-SNAPSHOT.jar)
+# 2. Host sites (separate origins)
+python3 -m http.server 5510 -d savanna     # http://localhost:5510/pages/signup.html | profile.html | jobs.html
+python3 -m http.server 5520 -d demo        # http://localhost:5520/blank.html
+# 3. Tests
+cd backend && ./mvnw verify
+cd frontend && npm test && npx playwright test
 ```
-Development with hot reload: README §2.
 
-## How to resume development
-1. `git log --oneline` — every milestone is a commit on `main`.
-2. Verify the baseline: `cd backend && ./mvnw verify`; `cd frontend && npm test && npm run build`;
-   start production mode (above) and run `cd frontend && npx playwright test`. All should pass.
-3. Pick the next item from "Remaining tasks". Keep these rules (from the approved roadmap):
-   every new screen passes axe with zero serious/critical issues and works by keyboard; every new endpoint is under
-   `/api/v1`, owner-scoped, documented in OpenAPI and added to the authorization tests; every new text key is added to
-   all five locale files (the `npm test` check enforces it); never claim accessibility compliance without logged evidence.
+## How to resume
+1. `git log --oneline` — every step is committed.
+2. Start production mode and the two host servers (above), run all tests — all should pass.
+3. Next actions, in order: run the manual checklist with NVDA/TalkBack and the co-designer; fluent-speaker translation
+   review; `docker compose up --build`; real-device voice tests (Amharic/English TTS, speech recognition); align the
+   learner API field names and event payloads with the official guide once it is in the repository.

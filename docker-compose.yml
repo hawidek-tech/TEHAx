@@ -31,7 +31,7 @@ services:
       DEMO_ACCOUNTS_PASSWORD: ${DEMO_ACCOUNTS_PASSWORD:-}  # leave empty in production
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}            # optional AI assistant
     ports:
-      - "8080:8080"
+      - "8081:8080"   # same port as the local demos (Savanna and blank pages load http://localhost:8081)
     volumes:
       - uploads:/app/storage
 
@@ -39,11 +39,27 @@ services:
     image: node:22-alpine
     profiles: ["demo"]
     working_dir: /site
-    command: ["node", "serve.mjs", "5500", "http://localhost:8080"]
+    command: ["node", "serve.mjs", "5500", "http://localhost:8081"]
     volumes:
       - ./demo-partner-site:/site:ro
     ports:
       - "5500:5500"
+
+  savanna-host:
+    image: nginx:1.27-alpine
+    profiles: ["demo"]
+    volumes:
+      - ./savanna:/usr/share/nginx/html:ro
+    ports:
+      - "5510:80"
+
+  blank-host:
+    image: nginx:1.27-alpine
+    profiles: ["demo"]
+    volumes:
+      - ./demo:/usr/share/nginx/html:ro
+    ports:
+      - "5520:80"
 
 volumes:
   db-data:
