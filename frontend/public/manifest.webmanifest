@@ -1,0 +1,12 @@
+{
+  "name": "ACCESSFLOW",
+  "short_name": "ACCESSFLOW",
+  "description": "Accessible registration, profiles and job applications.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f6f5f1",
+  "theme_color": "#0e5a48",
+  "lang": "en",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

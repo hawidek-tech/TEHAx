@@ -20,6 +20,8 @@
 | Contrast (1.4.3, 1.4.11) | Computed with the WCAG relative-luminance formula from the design tokens; axe colour-contrast rule | Default and high-contrast palettes | Text ≥ 6.5:1 in default theme (ink/bg 15.1:1); form-control borders 4.4–4.8:1; high contrast 9.2–14.7:1. |
 | Preferences really change the UI | Playwright | Text size, contrast, simple words, listen buttons, keyboard-first, reduced motion, captions, language, shared device | Pass — each setting changes the rendered page or behaviour. |
 | Sound off | Every journey test runs without audio | Whole journey | Pass — no information is audio-only; read-aloud is optional and always has visible text. |
+| Voice input & read-aloud UI | Playwright with simulated Web Speech APIs (headless browsers have no microphone or voices) | Privacy notice, review-and-edit before use, language tag follows UI language, unsupported-browser message, play/pause/resume/stop, captions, "no voice for this language" message | Pass — verifies the interface; real recognition quality and real voices are NOT tested. |
+| Offline drafts | Playwright `setOffline` | Profile flow | Pass — offline banner, answers kept on the device, synced after reconnecting. |
 | Slow network / low-cost device | Chrome DevTools Slow 3G (400 kbps, 400 ms RTT) + 4× CPU slowdown, cold cache | First visit | Usable after ~4.5 s; 144 KB transferred. |
 | Screen readers (NVDA, TalkBack) | — | — | **PENDING — not yet tested.** See [manual-test-checklist.md](manual-test-checklist.md). |
 | Co-designer / disabled users | — | — | **PENDING — no sessions yet.** See [codesign-log.md](codesign-log.md). |

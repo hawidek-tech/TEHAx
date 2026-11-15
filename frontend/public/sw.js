@@ -10,7 +10,7 @@ const DATA = `${VERSION}-guidance`
 const CACHEABLE_API = [/^\/api\/v1\/forms\/[a-z-]+$/, /^\/api\/v1\/help(\/|$)/] // public content only
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(SHELL).then((c) => c.addAll(['/', '/index.html', '/favicon.svg'])).then(() => self.skipWaiting()))
+  event.waitUntil(caches.open(SHELL).then((c) => c.addAll(['/', '/index.html', '/favicon.svg', '/manifest.webmanifest'])).then(() => self.skipWaiting()))
 })
 
 self.addEventListener('activate', (event) => {

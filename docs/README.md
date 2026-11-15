@@ -8,4 +8,7 @@
 | [accessibility/](accessibility/) | Co-design log, manual test log, known limitations, conformance report |
 | [security/](security/) | Security and privacy design |
 | [integration/](integration/) | Partner / Savanna integration notes and open questions |
-| [api/](api/) | REST API guide (OpenAPI is generated from the backend from Phase 1) |
+| [api/](api/README.md) | REST API guide (live OpenAPI at `/swagger-ui.html`) |
+| [integration/embed-guide.md](integration/embed-guide.md) | Embedding the Web Components |
+| [accessibility/conformance-report.md](accessibility/conformance-report.md) | Interim WCAG 2.2 AA report (no claim) |
+| [accessibility/manual-test-checklist.md](accessibility/manual-test-checklist.md) | Manual AT tests still to run |

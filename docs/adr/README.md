@@ -9,3 +9,4 @@
 | [0005](0005-voice-input.md) | Voice input on every applicable text-entry field | Accepted |
 | [0006](0006-accessibility-evidence-policy.md) | Accessibility testing and evidence policy | Accepted |
 | [0007](0007-api-before-components.md) | REST API foundations before Web Components | Accepted |
+| [0008](0008-ai-assistant.md) | Optional, replaceable AI help assistant | Accepted |

@@ -372,7 +372,7 @@ export function FlowRunner(props: FlowRunnerProps) {
             })}
           </ol>
         )}
-        <SyncIndicator state={sync} online={online} serverDrafts={serverDrafts} />
+        <SyncIndicator state={sync} serverDrafts={serverDrafts} />
       </div>
 
       {restored && (
@@ -554,19 +554,11 @@ export function FlowRunner(props: FlowRunnerProps) {
   )
 }
 
-function SyncIndicator({
-  state,
-  online,
-  serverDrafts,
-}: {
-  state: SyncState
-  online: boolean
-  serverDrafts: boolean
-}) {
+function SyncIndicator({ state, serverDrafts }: { state: SyncState; serverDrafts: boolean }) {
   const t = useT()
   if (state === 'idle') return null
   const content =
-    !online || state === 'local'
+    state === 'local'
       ? {
           icon: <CloudOff size={16} aria-hidden="true" />,
           text: serverDrafts ? t('connection.savedLocal') : t('connection.savedDevice'),

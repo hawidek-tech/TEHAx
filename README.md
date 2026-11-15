@@ -9,7 +9,7 @@ Somali or Tigrinya, with voice input, read-aloud, private support and alternativ
 embed it with a single script tag or use its REST API.
 
 > **Status:** the full onboarding-to-application journey works end to end with real persistence and is covered by
-> 116 automated tests (52 backend, 11 frontend unit, 53 browser/accessibility). **Manual screen-reader testing and
+> 122 automated tests (52 backend, 11 frontend unit, 59 browser/accessibility). **Manual screen-reader testing and
 > co-designer sessions have not happened yet, so no WCAG conformance is claimed.** Non-English translations are drafts
 > awaiting fluent-speaker review. Details: [PROJECT_STATUS.md](PROJECT_STATUS.md).
 
@@ -101,12 +101,13 @@ cd backend && ./mvnw verify                      # 52 tests against the accessfl
 cd frontend && npm test                          # translation completeness check + 11 unit tests
 cd frontend && npm run lint && npm run typecheck && npm run build
 # Browser + accessibility tests (start production mode on :8081 first, see §3):
-cd frontend && npx playwright install chromium && npx playwright test   # 53 tests: desktop + Android profile
+cd frontend && npx playwright install chromium && npx playwright test   # 59 tests: desktop + Android profile
 ./scripts/check.sh                               # backend + frontend checks (not Playwright)
 ```
 The Playwright suite covers the full journey, keyboard-only registration, axe-core WCAG 2.2 A/AA (gate: zero serious or
 critical issues), every preference, 320 px reflow, 200 % text, embedding with all cookies stripped, `frame-ancestors`
-blocking, and a slow-3G budget. Results and what is **not** tested: [conformance report](docs/accessibility/conformance-report.md).
+blocking, a slow-3G budget, voice-input review and read-aloud controls (with simulated speech APIs), offline draft
+keeping, and the employer and support-staff screens. Results and what is **not** tested: [conformance report](docs/accessibility/conformance-report.md).
 
 ## 6. Docker (written, not yet run)
 ```bash

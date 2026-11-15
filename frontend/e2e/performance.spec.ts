@@ -31,12 +31,10 @@ test('first visit on slow 3G stays within the low-data budget', async ({ page, b
   console.log(
     `slow-3G first visit: usable after ${usableMs} ms, ${Math.round(bytes / 1024)} KB transferred`,
   )
-  test
-    .info()
-    .annotations.push({
-      type: 'perf',
-      description: `usable=${usableMs}ms transferred=${Math.round(bytes / 1024)}KB`,
-    })
+  test.info().annotations.push({
+    type: 'perf',
+    description: `usable=${usableMs}ms transferred=${Math.round(bytes / 1024)}KB`,
+  })
   expect(bytes).toBeLessThan(200 * 1024) // whole first visit under 200 KB
   expect(usableMs).toBeLessThan(10_000)
 })

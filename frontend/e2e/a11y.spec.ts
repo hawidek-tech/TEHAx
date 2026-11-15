@@ -72,7 +72,7 @@ test('axe: every registration step, the review step, and signed-in pages', async
 })
 
 test('axe: voice-input privacy dialog and help assistant dialog', async ({ page, context }) => {
-  // Pretend the browser supports speech recognition so the voice UI renders (no audio is used).
+  // Chromium already exposes speech recognition; this stub just guarantees the voice button renders (no audio used).
   await context.addInitScript(() => {
     ;(window as unknown as { webkitSpeechRecognition: unknown }).webkitSpeechRecognition = class {
       start() {}

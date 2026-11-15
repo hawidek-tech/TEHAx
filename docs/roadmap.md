@@ -1,6 +1,6 @@
 # ACCESSFLOW development roadmap
 
-Status: **approved 2026-11-15**. Current phase: **Phase 0 complete – awaiting review.**
+Status: **approved 2026-11-15**. All phases built; see [PROJECT_STATUS.md](../PROJECT_STATUS.md) for what is tested, pending and blocked.
 
 Each phase ends with a demo and a review. The next phase starts only after approval.
 
@@ -61,7 +61,7 @@ scanning and pre-recorded audio prompts.
 
 ## Phases and acceptance criteria
 
-### Phase 0: Repository and tooling ✅
+### Phase 0: Repository and tooling ✅ done
 - Git repository, `.gitignore`, monorepo layout, Maven wrapper, Vite + React + TS + Tailwind, Vitest,
   oxlint with jsx-a11y rules, Prettier, local check script, documentation structure, ADRs.
 - **Accepted when:** the backend starts against local PostgreSQL with Flyway; `/actuator/health` is UP;
