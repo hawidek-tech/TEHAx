@@ -31,12 +31,20 @@ public class EmbedFrameAncestorsFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String key = request.getParameter("key");
-        String ancestors = key == null ? "'none'" : integrations.findByPublishableKeyAndActiveTrue(key)
-                .filter(i -> !i.getAllowedOrigins().isEmpty())
-                .map(i -> i.getAllowedOrigins().stream().filter(o -> o.matches("^https?://[A-Za-z0-9.-]+(:\\d+)?$"))
-                        .collect(Collectors.joining(" ")))
-                .filter(s -> !s.isBlank())
-                .orElse("'none'");
+        String ancestors;
+        if (key != null && !key.isBlank()) {
+            ancestors = integrations.findByPublishableKeyAndActiveTrue(key)
+                    .filter(i -> !i.getAllowedOrigins().isEmpty())
+                    .map(i -> i.getAllowedOrigins().stream().filter(o -> o.matches("^https?://[A-Za-z0-9.-]+(:\\d+)?$"))
+                            .collect(Collectors.joining(" ")))
+                    .filter(s -> !s.isBlank())
+                    .orElse("'none'");
+        } else {
+            // Keyless one-script install (<db-signup>): only the claimed host origin, and only if it is registered.
+            // The browser enforces frame-ancestors against the REAL parent, so a false claim simply blocks the frame.
+            String origin = request.getParameter("origin");
+            ancestors = integrations.findActiveByOrigin(origin).map(i -> origin).orElse("'none'");
+        }
         response.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
                 + "img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; "
                 + "form-action 'self'; frame-ancestors " + ancestors);

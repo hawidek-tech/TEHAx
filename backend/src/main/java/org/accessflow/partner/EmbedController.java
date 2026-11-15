@@ -16,20 +16,25 @@ public class EmbedController {
 
     private final EmbedTokenService tokens;
     private final OrganizationRepository organizations;
+    private final PartnerIntegrationRepository integrations;
 
-    public EmbedController(EmbedTokenService tokens, OrganizationRepository organizations) {
+    public EmbedController(EmbedTokenService tokens, OrganizationRepository organizations, PartnerIntegrationRepository integrations) {
         this.tokens = tokens;
         this.organizations = organizations;
+        this.integrations = integrations;
     }
 
     /** Public partner configuration used by the iframe to validate the parent origin for postMessage. */
-    public record EmbedConfig(String partnerName, List<String> allowedOrigins, List<String> components) {}
+    /** publishableKey is public by design; it is returned so a keyless install can identify itself to the API. */
+    public record EmbedConfig(String partnerName, String publishableKey, List<String> allowedOrigins, List<String> components) {}
 
-    @Operation(summary = "Partner configuration for a publishable key (allowed origins are not secret)")
+    @Operation(summary = "Partner configuration by publishable key, or by registered host origin (keyless <db-signup> install)")
     @GetMapping("/config")
-    public EmbedConfig config(@RequestParam String key) {
-        PartnerIntegration i = tokens.requireIntegration(key);
+    public EmbedConfig config(@RequestParam(required = false) String key, @RequestParam(required = false) String origin) {
+        PartnerIntegration i = key != null && !key.isBlank() ? tokens.requireIntegration(key)
+                : integrations.findActiveByOrigin(origin)
+                        .orElseThrow(() -> new org.accessflow.common.ApiException(org.springframework.http.HttpStatus.FORBIDDEN, "embed.unknownPartner"));
         String name = organizations.findById(i.getOrganizationId()).map(o -> o.getName()).orElse("Partner");
-        return new EmbedConfig(name, i.getAllowedOrigins(), i.getEnabledComponents());
+        return new EmbedConfig(name, i.getPublishableKey(), i.getAllowedOrigins(), i.getEnabledComponents());
     }
 }

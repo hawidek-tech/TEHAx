@@ -74,13 +74,7 @@ public class AuthController {
     public ResponseEntity<SessionResponse> register(@Valid @RequestBody RegisterRequest req,
                                                     @RequestHeader(value = EmbedTokenAuthenticationFilter.EMBED_HEADER, required = false) String embedKey,
                                                     HttpServletRequest request, HttpServletResponse response) {
-        if (!rateLimiter.tryAcquire("register:" + ClientIp.of(request), registrationsPerIpPerHour, Duration.ofHours(1))) {
-            throw new ApiException(HttpStatus.TOO_MANY_REQUESTS, "error.rateLimited");
-        }
-        PartnerIntegration integration = embedKey == null ? null : embedTokens.requireIntegration(embedKey);
-        User user = auth.register(req);
-        preferences.initialiseFor(user, req.locale());
-        return ResponseEntity.status(HttpStatus.CREATED).body(signIn(user, integration, request, response));
+        return ResponseEntity.status(HttpStatus.CREATED).body(registerAndSignIn(req, embedKey, request, response));
     }
 
     @Operation(summary = "Sign in with email or Ethiopian phone number")
@@ -123,13 +117,25 @@ public class AuthController {
         return ResponseEntity.noContent().build();
     }
 
-    private SessionResponse signIn(User user, PartnerIntegration integration, HttpServletRequest request, HttpServletResponse response) {
+    /** First-party: session cookie. Embedded: short-lived bearer token (no cookies). */
+    public SessionResponse signIn(User user, PartnerIntegration integration, HttpServletRequest request, HttpServletResponse response) {
         if (integration != null) {
             String token = embedTokens.issue(user.getId(), integration);
             return new SessionResponse(AuthService.toMe(user), token, EmbedTokenService.TOKEN_TTL.toSeconds());
         }
         auth.startSession(user, request, response);
         return new SessionResponse(AuthService.toMe(user), null, 0);
+    }
+
+    /** Shared by POST /auth/register and POST /learners. */
+    public SessionResponse registerAndSignIn(RegisterRequest req, String embedKey, HttpServletRequest request, HttpServletResponse response) {
+        if (!rateLimiter.tryAcquire("register:" + ClientIp.of(request), registrationsPerIpPerHour, Duration.ofHours(1))) {
+            throw new ApiException(HttpStatus.TOO_MANY_REQUESTS, "error.rateLimited");
+        }
+        PartnerIntegration integration = embedKey == null ? null : embedTokens.requireIntegration(embedKey);
+        User user = auth.register(req);
+        preferences.initialiseFor(user, req.locale());
+        return signIn(user, integration, request, response);
     }
 
     @ExceptionHandler(AuthService.TooManyAttemptsException.class)

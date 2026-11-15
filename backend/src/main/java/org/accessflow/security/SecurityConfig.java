@@ -103,7 +103,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                     // Public API: discovery, help, form definitions, auth entry points
                     .requestMatchers(HttpMethod.GET, "/api/v1/system/info", "/api/v1/auth/csrf", "/api/v1/auth/me").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/logout").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/logout", "/api/v1/learners").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/jobs", "/api/v1/jobs/*", "/api/v1/jobs/*/jsonld",
                             "/api/v1/forms/*", "/api/v1/help", "/api/v1/help/*", "/api/v1/organizations/referral-partners",
                             "/api/v1/embed/config", "/api/v1/assistant/status").permitAll()

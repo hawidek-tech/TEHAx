@@ -15,9 +15,11 @@ public record PreferencesDto(
         boolean keyboardFirst,
         boolean readAloud,
         boolean reducedMotion,
-        boolean sharedDevice) {
+        boolean sharedDevice,
+        /** Spoken guidance through the whole journey, started by the user ("Activate Audio Accessibility"). */
+        boolean audioGuide) {
 
     public static PreferencesDto defaults(String locale) {
-        return new PreferencesDto(locale == null ? "en" : locale, 100, false, false, false, false, false, false, false);
+        return new PreferencesDto(locale == null ? "en" : locale, 100, false, false, false, false, false, false, false, false);
     }
 }

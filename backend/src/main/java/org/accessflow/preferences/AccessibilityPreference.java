@@ -21,6 +21,7 @@ public class AccessibilityPreference {
     @Column(name = "read_aloud") private boolean readAloud;
     @Column(name = "reduced_motion") private boolean reducedMotion;
     @Column(name = "shared_device") private boolean sharedDevice;
+    @Column(name = "audio_guide") private boolean audioGuide;
     @Column(name = "updated_at") private Instant updatedAt = Instant.now();
 
     protected AccessibilityPreference() {}
@@ -31,7 +32,7 @@ public class AccessibilityPreference {
 
     public PreferencesDto toDto() {
         return new PreferencesDto(locale, textScale, highContrast, simplifiedLanguage, captions, keyboardFirst,
-                readAloud, reducedMotion, sharedDevice);
+                readAloud, reducedMotion, sharedDevice, audioGuide);
     }
 
     public void apply(PreferencesDto d) {
@@ -44,5 +45,6 @@ public class AccessibilityPreference {
         readAloud = d.readAloud();
         reducedMotion = d.reducedMotion();
         sharedDevice = d.sharedDevice();
+        audioGuide = d.audioGuide();
     }
 }
