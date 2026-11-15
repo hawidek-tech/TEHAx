@@ -35,13 +35,16 @@ test('axe: high-contrast mode and 200% text on the job list', async ({ page }) =
 
 test('axe: every registration step, the review step, and signed-in pages', async ({ page }) => {
   await page.goto('/register')
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 4; i++) {
     await expectNoSeriousA11yViolations(page, `registration step ${i + 1}`)
     if (i === 0) await page.getByLabel('What should we call you?').fill('Axe Tester')
-    if (i === 1) await page.getByLabel('With my email address').check()
-    if (i === 2) await page.getByLabel('What is your email address?').fill(uniqueEmail())
-    if (i === 3) await page.getByLabel('Create a password').fill('my coffee is hot today')
-    if (i === 4) await page.getByLabel(/I have read how ACCESSFLOW/).check()
+    if (i === 1) {
+      await page.getByRole('button', { name: 'Use email instead of a phone number' }).click()
+      await expectNoSeriousA11yViolations(page, 'registration email step')
+      await page.getByLabel('What is your email address?').fill(uniqueEmail())
+    }
+    if (i === 2) await page.getByLabel('Create a password').fill('my coffee is hot today')
+    if (i === 3) await page.getByLabel(/I have read how ACCESSFLOW/).check()
     await next(page)
   }
   await expectNoSeriousA11yViolations(page, 'registration review')
@@ -53,8 +56,11 @@ test('axe: every registration step, the review step, and signed-in pages', async
 
   // Signed in: profile flow first steps, dashboard, profile, support, applications
   await register(page, uniqueEmail())
-  await expectNoSeriousA11yViolations(page, 'profile flow step 1')
+  await expectNoSeriousA11yViolations(page, 'profile overview')
+  await page.getByRole('button', { name: /^(Start|Continue: About you)$/ }).click()
+  await expectNoSeriousA11yViolations(page, 'profile part 1 first question')
   for (const path of [
+    '/',
     '/dashboard',
     '/profile',
     '/support',

@@ -64,11 +64,9 @@ export default function ApplicationDetailPage() {
                   <li>{t('apply.whatNext3')}</li>
                 </ol>
                 <div className="mt-4 flex flex-wrap gap-3">
+                  <LinkButton to="/onboarding">{t('start.done.finishProfile')}</LinkButton>
                   <LinkButton to="/jobs" variant="secondary">
-                    {t('apply.backToJobs')}
-                  </LinkButton>
-                  <LinkButton to="/dashboard" variant="ghost">
-                    {t('nav.dashboard')}
+                    {t('start.done.moreJobs')}
                   </LinkButton>
                 </div>
               </section>

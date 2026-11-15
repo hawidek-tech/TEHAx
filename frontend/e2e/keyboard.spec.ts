@@ -29,10 +29,7 @@ test('registration can be completed with the keyboard only', async ({ page }) =>
   await tabTo(/^Next$/)
   await press('Enter')
   await expect(page.getByText('Question 2 of')).toBeVisible()
-  await tabTo('With my phone number', 'radio')
-  await press('ArrowDown') // move to "With my email address"
-  await expect(page.getByRole('radio', { name: 'With my email address' })).toBeChecked()
-  await tabTo(/^Next$/)
+  await tabTo('Use email instead of a phone number')
   await press('Enter')
   await tabTo('What is your email address?', 'textbox')
   await page.keyboard.type(uniqueEmail())
@@ -49,7 +46,37 @@ test('registration can be completed with the keyboard only', async ({ page }) =>
   await expect(page.getByRole('heading', { name: 'Check your answers' })).toBeFocused()
   await tabTo(/^Create account$/)
   await press('Enter')
-  await expect(page.getByRole('heading', { level: 1, name: 'Create your profile' })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1, name: 'Your profile' })).toBeVisible()
+})
+
+test('first visit can be completed with the keyboard only', async ({ page }) => {
+  await page.goto('/')
+  const press = (k: string) => page.keyboard.press(k)
+  const tabTo = async (name: RegExp) => {
+    const target = page.getByRole('button', { name })
+    for (let i = 0; i < 30; i++) {
+      if (
+        await target
+          .evaluate((el) => el === document.activeElement, undefined, { timeout: 500 })
+          .catch(() => false)
+      )
+        return
+      await press('Tab')
+    }
+    throw new Error(`Could not reach ${name} with Tab`)
+  }
+  await tabTo(/Jalqabi Start/)
+  await press('Enter')
+  await tabTo(/^English/)
+  await press('Enter')
+  await tabTo(/^I'll read and type/)
+  await press('Enter')
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'What would you like to do today?' }),
+  ).toBeFocused()
+  await tabTo(/^Find a job/)
+  await press('Enter')
+  await expect(page).toHaveURL(/\/jobs$/)
 })
 
 test('errors are announced, summarised and linked to the field', async ({ page }) => {

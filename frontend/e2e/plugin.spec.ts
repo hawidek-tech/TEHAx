@@ -27,11 +27,16 @@ async function advanceTo(f: FrameLocator, heading: RegExp) {
   throw new Error(`Question not reached: ${heading}`)
 }
 
+/** First time in the module: "How do you want to use ACCESSFLOW?" (asked once per browser). */
+async function chooseModeIn(f: FrameLocator) {
+  await f.getByRole('button', { name: /^I'll read and type/ }).click()
+}
+
+/** Registration in the frame: 4 questions (email through the "Use email instead" link). */
 async function registerIn(f: FrameLocator, email: string) {
   await f.getByLabel('What should we call you?').fill('Plugin Learner')
   await nextIn(f)
-  await f.getByLabel('With my email address').check()
-  await nextIn(f)
+  await f.getByRole('button', { name: 'Use email instead of a phone number' }).click()
   await f.getByLabel('What is your email address?').fill(email)
   await nextIn(f)
   await f.getByLabel('Create a password').fill(PASSWORD)
@@ -39,24 +44,18 @@ async function registerIn(f: FrameLocator, email: string) {
   await f.getByLabel(/I have read how ACCESSFLOW/).check()
   await nextIn(f)
   await f.getByRole('button', { name: 'Create account' }).click()
-  await expect(f.getByLabel('What is your first name?')).toBeVisible()
+  // Names come from the account name ("Plugin Learner"): the first profile question is the region
+  await expect(f.getByLabel('Which region do you live in?')).toBeVisible()
 }
 
-/** Minimal profile in the frame, with a private support request (emits db-signup:support). */
+/** Short sign-up profile in the frame, then the optional private support question (emits db-signup:support). */
 async function profileIn(f: FrameLocator) {
-  await f.getByLabel('What is your first name?').fill('Plugin')
-  await nextIn(f)
-  await f.getByLabel("What is your father's name?").fill('Learner')
-  await nextIn(f)
-  await nextIn(f)
-  await nextIn(f)
   await f.getByLabel('Which region do you live in?').selectOption({ label: 'Addis Ababa' })
   await nextIn(f)
-  await nextIn(f)
   await f.getByLabel('What kind of work are you looking for?').fill('Data entry')
-  await advanceTo(f, /verify your identity/)
-  await f.getByLabel('I will do this later').check()
   await nextIn(f)
+  await nextIn(f) // skills (optional)
+  await f.getByRole('button', { name: 'Continue', exact: true }).click()
   await f.getByLabel('Yes, please').check()
   await nextIn(f)
   await f.getByLabel('Technology', { exact: false }).first().check()
@@ -99,6 +98,10 @@ test('blank page: one script installs <db-signup>; isolated, no globals, events 
     hostTitleColor,
   )
   expect(await page.evaluate(() => document.body.getAttribute('style'))).toBeNull()
+  // First time in the module: one question about how to use it (in Amharic here), then English
+  await expect(frame.getByRole('heading', { level: 2 })).toHaveText('ACCESSFLOWን እንዴት መጠቀም ይፈልጋሉ?')
+  await frame.getByRole('combobox').first().selectOption('en')
+  await chooseModeIn(frame)
   const moduleInputBorder = await frame
     .locator('input')
     .first()
@@ -115,8 +118,7 @@ test('blank page: one script installs <db-signup>; isolated, no globals, events 
   expect(newGlobals).toEqual([])
   expect(await page.evaluate(() => customElements.get('db-signup') !== undefined)).toBe(true)
 
-  // Switch the frame to English and register; step / support / done events arrive, without personal data
-  await frame.getByRole('combobox').first().selectOption('en')
+  // Register; step / support / done events arrive, without personal data
   const email = uniqueEmail()
   await registerIn(frame, email)
   await expect(page.locator('#events')).toContainText('db-signup:step')
@@ -163,6 +165,7 @@ test('Savanna starter: sign up, edit profile on another page (same session), app
   await page.goto(`${SAVANNA}/signup.html`)
   const signup = page.frameLocator('iframe[title="ACCESSFLOW: create your account"]')
   await expect(signup.getByText('with Savanna static pages (local demo copy)')).toBeVisible()
+  await chooseModeIn(signup)
   await registerIn(signup, uniqueEmail())
   await profileIn(signup)
   await expect(page.locator('#events')).toContainText('db-signup:done')
@@ -191,8 +194,7 @@ test('Savanna starter: sign up, edit profile on another page (same session), app
   const jobs = page.frameLocator('iframe[title="ACCESSFLOW: find and apply for jobs"]')
   await jobs.getByRole('button', { name: /Junior Web Developer/ }).click()
   await jobs.getByRole('button', { name: 'Apply for this job' }).click()
-  await nextIn(jobs)
-  await nextIn(jobs)
+  // Contact details are known from the account: not asked again
   await jobs.getByLabel('Why do you want this job?').fill('I build accessible websites.')
   await nextIn(jobs)
   await jobs

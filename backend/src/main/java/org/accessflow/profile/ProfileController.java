@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Profile", description = "The signed-in user's reusable profile. Owner-only.")
@@ -68,6 +69,14 @@ public class ProfileController {
     @PutMapping("/profile")
     public ProfileDto update(@RequestBody Map<String, Object> data) {
         return toDto(service.update(CurrentUser.id(), data));
+    }
+
+    @Operation(summary = "Save only some profile questions (one part of the guided profile, or what an application needs)",
+            description = "`steps` lists profile step ids, e.g. `fatherName,region,headline,skills`. Other fields are unchanged.")
+    @PutMapping("/profile/steps")
+    public ProfileDto saveSteps(@RequestParam("steps") List<String> steps, @RequestBody Map<String, Object> data) {
+        if (steps.size() > 30) throw org.accessflow.common.ApiException.badRequest("profile.unknownStep");
+        return toDto(service.saveSteps(CurrentUser.id(), steps, data));
     }
 
     public record SupportPreferencesRequest(List<String> categories) {}

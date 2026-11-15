@@ -19,7 +19,8 @@ Terms: **Supports** — automated/scripted evidence and no known failures (still
   linked; 320 px reflow and 200 % text with no horizontal scrolling; every preference changes the UI; sound-off journey;
   audio guidance (simulated speech engine) in English and Amharic; camera permission and cleanup (fake camera); offline
   at question 7 with reload; full journey on desktop and an Android (Pixel 5) profile.
-- Totals: 141 automated tests passing (56 backend, 11 frontend unit, 74 browser).
+- Totals: 156 automated tests passing (58 backend, 11 frontend unit, 87 browser), including the simplified first visit,
+  usage modes, the Help and settings menu and keyboard-only first visit.
 
 ## Summary by principle
 | Area | Status | Notes |

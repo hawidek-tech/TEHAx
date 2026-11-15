@@ -131,6 +131,37 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ProfileDto"
+  /api/v1/profile/steps:
+    put:
+      tags:
+      - Profile
+      summary: "Save only some profile questions (one part of the guided profile,\
+        \ or what an application needs)"
+      description: "`steps` lists profile step ids, e.g. `fatherName,region,headline,skills`.\
+        \ Other fields are unchanged."
+      operationId: saveSteps
+      parameters:
+      - name: steps
+        in: query
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProfileDto"
   /api/v1/profile/resume:
     put:
       tags:
@@ -2409,11 +2440,11 @@ components:
     CsrfToken:
       type: object
       properties:
-        headerName:
-          type: string
         parameterName:
           type: string
         token:
+          type: string
+        headerName:
           type: string
     CsrfResponse:
       type: object

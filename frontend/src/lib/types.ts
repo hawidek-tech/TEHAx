@@ -29,7 +29,14 @@ export interface Preferences {
   reducedMotion: boolean
   sharedDevice: boolean
   audioGuide: boolean
+  /**
+   * How the person chose to use ACCESSFLOW on the first visit. Kept ONLY on this device (never sent to the server,
+   * never stored in shared-device mode) because it can reveal a disability.
+   */
+  usageMode?: UsageMode | null
 }
+
+export type UsageMode = 'listen' | 'screenReader' | 'read' | 'sign'
 
 export interface FileInfo {
   id: string

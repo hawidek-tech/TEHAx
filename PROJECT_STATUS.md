@@ -1,6 +1,6 @@
 # ACCESSFLOW — Project status (DIGITAL BRIDGE Accessibility Hackathon 2026, Track 1)
 
-_Last updated: 2026-11-15 (final compliance audit)_
+_Last updated: 2026-11-15 (simplified learner flow built on top of the final compliance audit)_
 
 **Important:** the DIGITAL BRIDGE Technical Guide v2 is **not in this repository**. This audit follows the requirements as
 quoted in the audit brief (sections 2–17). Anything in the guide that the brief did not quote could not be checked.
@@ -11,11 +11,11 @@ Statuses: **PASS** verified implementation + test evidence · **PARTIAL** implem
 ## Test totals (run 2026-11-15)
 | Suite | Result |
 |---|---|
-| Backend (`cd backend && ./mvnw verify`) | 56 passed, 0 failed |
-| Frontend unit + translation completeness (`npm test`) | 11 passed; 1,021 keys complete in en, am, om, so, ti |
-| Browser / accessibility (`npx playwright test`, production mode) | 74 passed, 0 failed (desktop Chromium + Pixel 5 profile) |
+| Backend (`cd backend && ./mvnw verify`) | 58 passed, 0 failed |
+| Frontend unit + translation completeness (`npm test`) | 11 passed; 1,120 keys complete in en, am, om, so, ti |
+| Browser / accessibility (`npx playwright test`, production mode) | 87 passed, 0 failed (desktop Chromium + Pixel 5 profile) |
 | Lint (incl. jsx-a11y), types, formatting, production build | pass, 0 warnings |
-| **Total automated** | **141 passing** (previously reported 122 — all still pass) |
+| **Total automated** | **156 passing** (141 before the simplified flow). Tests that asserted the old screens were rewritten (none removed); the private-support job filter and the Accessibility Preview have their own tests again |
 | Docker Compose | **NOT TESTED** — Docker is not installed on this machine |
 
 ## Requirements audit
@@ -28,13 +28,18 @@ Statuses: **PASS** verified implementation + test evidence · **PARTIAL** implem
 | PASS | No unnecessary globals | IIFE with no exports | `plugin.spec.ts` compares `window` keys before/after | — | — |
 | PASS | Host CSS variables with fallbacks | `--db-signup-accent` (applied only if ≥ 4.5:1 on white), `--db-signup-radius`, `--db-signup-border`, `--db-signup-background`, `--db-signup-link-color` | Blank page uses them; axe passes | Accent ignored in dark mode | — |
 | PASS | Responsive | Fluid iframe height via messages; 320 px reflow | `reflow.spec.ts` (main app), Pixel 5 project | Embedded reflow at 320 px not separately tested | Add embedded reflow test |
-| PASS | First load < 500 KB | Loader 4.9 KB (2.1 KB gzip). Module first load: **359 KB** transferred (Amharic, Ethiopic font downloaded); main app English first visit **144 KB** | `plugin.spec.ts`, `performance.spec.ts` | Ethiopic font (2 weights, ~150 KB) dominates when not installed on the device | Consider single-weight font |
+| PASS | First load < 500 KB | Loader 4.9 KB (2.1 KB gzip). Module first load: **364 KB** transferred (Amharic, Ethiopic font downloaded); main app English first visit **154 KB** | `plugin.spec.ts`, `performance.spec.ts` | Ethiopic font (2 weights, ~150 KB) dominates when not installed on the device | Consider single-weight font |
 | PASS | Savanna integration | `savanna/` = official starter @ `9e83ac7`, **originals unmodified**; added `pages/signup.html`, `profile.html`, `jobs.html` | `plugin.spec.ts`: register → profile edit on another page (same session) → apply in career gateway; no page errors; Bootstrap still works | Not tested on a live Savanna deployment; Savanna `index.html` not linked (left unmodified) | Register real Savanna origins |
 | PASS | Blank-page integration | `demo/blank.html`, no frameworks | `plugin.spec.ts` | — | — |
 | PASS | Unregistered sites blocked | `frame-ancestors` from registered origins (keyless install resolves by origin) | `plugin.spec.ts`, `embed.spec.ts`, `LearnerApiTest` | — | — |
 | PASS | Data contract endpoints | `POST /api/v1/learners`, `PATCH /api/v1/learners/{id}`, `PUT /api/v1/learners/{id}/support`, `GET /api/v1/learners/{id}/export`, `DELETE /api/v1/learners/{id}` (password required) | `LearnerApiTest` (4 tests: lifecycle, IDOR → 404, support never visible to employers, keyless embed) | Request/response field names not compared with the official contract (guide unavailable) | Align field names with the guide |
 | PASS | Support data separate, never to employers | Separate column/requests; employer views use consented snapshot only | Backend journey + learner tests | — | — |
 | PASS | View / export / delete own data | Account page, `/account/export`, `/learners/{id}/export`, delete with password | Backend tests | — | — |
+| PASS | Simplified first visit (Start → language → how → what) | `WelcomePage` front door; usage modes set audio guide/captions/phrase board; choice kept on the device only (not in shared-device mode) | `first-visit.spec.ts` (screens, focus, axe, remembered, shared device, modes never speak, sign mode order, Help menu, no single-key shortcuts), keyboard-only first visit | Audio intro on screens 1–2 may overlap a screen reader for a few seconds | Co-designer + NVDA/TalkBack decide |
+| PASS | Intent-first job path (Path A) | Jobs browsable signed out; Apply → 4 account questions → only missing profile details (names pre-filled) → application (contact pre-filled, on review) | `journey.spec.ts` Path A: **12 question screens** (limit 14), no question asked twice, desktop + Android | Offline reload of the application page is not supported (job details are not cached) | — |
+| PASS | Profile in parts with stop points (Path B) | 3 parts + 2 optional; `PUT /api/v1/profile/steps`; part in the address (`?part=`) | `ProfileStepsTest` (2), journey Path B stop/continue, offline mid-profile reload | — | — |
+| PASS | Returning visit: one sentence, one main action | News → unfinished draft/part → choices | journey save-and-resume, roles (employer news → Open) | — | — |
+| PASS | One "Help and settings" button | Repeat, home, ask question/person, save and stop, language, sound and reading, all settings; "My account" menu | `first-visit.spec.ts` | — | — |
 | PASS | One question per screen, Back/Continue, "Question N of M", focus to heading | Form engine | `journey`, `keyboard` specs | — | — |
 | PASS | Immediate persistence, resume after refresh | Server + device drafts, conflict detection | `journey.spec.ts` (sign out/in), offline q7 reload | — | — |
 | PASS | Accessible validation and announcements | Error summary (alert, focused), inline errors, spoken by audio guide | `keyboard.spec.ts`, `audio-sign-offline.spec.ts` | Real screen-reader output unverified | NVDA/TalkBack session |
@@ -47,9 +52,9 @@ Statuses: **PASS** verified implementation + test evidence · **PARTIAL** implem
 | PASS | Camera privacy | No recording/upload; `Permissions-Policy: camera=(self)`; frame `allow="camera"` | Tracks `ended` after stop and after close (test) | — | — |
 | PASS | Low-literacy mode, icons with text | "Simple words" variants, examples, pictograms with labels | `preferences.spec.ts` | Simplified variants mainly English | Add simplified texts per language with reviewers |
 | PASS | 200 % zoom, 320 px, keyboard, no time limits, no drag-only | — | `reflow`, `keyboard`, `preferences` specs | Real-user keyboard test pending | Manual session |
-| PASS | Offline-first answers | Device draft (non-sensitive fields), sync on reconnect, conflict dialog, offline banner, offline reload via service worker | `audio-sign-offline.spec.ts`: drop at question 7, reload offline, answers restored, synced after reconnect | Sensitive answers typed offline are not stored on the device by design | — |
+| PASS | Offline-first answers | Device draft (non-sensitive fields), sync on reconnect, conflict dialog, offline banner, offline reload via service worker | `audio-sign-offline.spec.ts`: drop in profile part 2 (after 8 earlier questions; the shorter journey no longer has the old question 7 there), reload offline, answers restored, synced after reconnect | Sensitive answers typed offline are not stored on the device by design | — |
 | PASS | Duplicate submission prevention | Submit button disabled while sending; server rejects a second application (409) | Backend journey test | — | — |
-| PARTIAL | Multilingual (am, en, om, so, ti) | All UI text in language files; 1,021 keys complete per language | i18n check in `npm test` | **am/om/so/ti are unreviewed drafts** | Fluent-speaker review |
+| PARTIAL | Multilingual (am, en, om, so, ti) | All UI text in language files; 1,120 keys complete per language | i18n check in `npm test` | **am/om/so/ti are unreviewed drafts** | Fluent-speaker review |
 | PASS | Ethiopian calendar, phone numbers 09/07/+251, Ethiopic font | Converter (tested), normaliser (tested), font with `unicode-range` + local-first | Unit + backend tests | — | — |
 | PARTIAL | AI architecture | Replaceable provider, local approved-help fallback, consent per question, redaction | Local fallback tested | **Claude provider not exercised (no key)**; no local model | Test with a key; evaluate a local model only if it adds value |
 | PASS | Security & privacy (auth, roles, employer boundaries, staff permissions, validation, secrets) | See `docs/security/security-design.md` | Authorization matrix, learner IDOR tests, upload tests | CORS is not enabled (same-origin by design); logs include stack traces on unexpected errors | Review logging before production |

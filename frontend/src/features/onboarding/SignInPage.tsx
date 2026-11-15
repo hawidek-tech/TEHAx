@@ -35,7 +35,7 @@ export default function SignInPage() {
             ? '/employer'
             : me.roles.includes('SUPPORT_STAFF')
               ? '/staff'
-              : '/dashboard')
+              : '/')
         }
         replace
       />
@@ -59,7 +59,7 @@ export default function SignInPage() {
             ? '/employer'
             : user.roles.includes('SUPPORT_STAFF')
               ? '/staff'
-              : '/dashboard'),
+              : '/'),
       )
     } catch (err) {
       const msg =
@@ -124,7 +124,7 @@ export default function SignInPage() {
       </Card>
       <p className="mt-6 text-center">
         {t('auth.noAccount')}{' '}
-        <Link to="/preview" className="font-semibold text-primary underline">
+        <Link to="/register" className="font-semibold text-primary underline">
           {t('auth.createAccount')}
         </Link>
       </p>

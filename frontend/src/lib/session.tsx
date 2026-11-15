@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { usePreferences } from '../a11y/preferences'
+import { serverPreferences, usePreferences } from '../a11y/preferences'
 import { NetworkError, api, hasEmbedToken, isEmbedMode, setEmbedToken } from './api'
 import { storage } from './storage'
 import type { Me, Preferences, SessionResponse } from './types'
@@ -91,7 +91,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         }),
       )
       // Preferences chosen in the Accessibility Preview are saved to the new account.
-      await api.put('/api/v1/preferences', prefs).catch(() => undefined)
+      await api.put('/api/v1/preferences', serverPreferences(prefs)).catch(() => undefined)
       return user
     },
     [onSession, prefs],

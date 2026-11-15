@@ -41,10 +41,10 @@ test('registered partner origin: sign up inside the frame without any cookies', 
   await expect(frame.getByRole('heading', { level: 1, name: 'Create your account' })).toBeVisible()
   await expect(frame.getByText('with Demo Learning Platform')).toBeVisible()
 
+  await frame.getByRole('button', { name: /^I'll read and type/ }).click() // asked once in the module
   await frame.getByLabel('What should we call you?').fill('Embedded Learner')
   await frame.getByRole('button', { name: 'Next' }).click()
-  await frame.getByLabel('With my email address').check()
-  await frame.getByRole('button', { name: 'Next' }).click()
+  await frame.getByRole('button', { name: 'Use email instead of a phone number' }).click()
   await frame.getByLabel('What is your email address?').fill(uniqueEmail())
   await frame.getByRole('button', { name: 'Next' }).click()
   await frame.getByLabel('Create a password').fill(PASSWORD)
@@ -53,7 +53,8 @@ test('registered partner origin: sign up inside the frame without any cookies', 
   await frame.getByRole('button', { name: 'Check my answers' }).click()
   await frame.getByRole('button', { name: 'Create account' }).click()
   // Signed in via bearer token: the profile flow (an authenticated endpoint) loads inside the frame.
-  await expect(frame.getByLabel('What is your first name?')).toBeVisible()
+  // (Names come from the account name, so the first profile question is the region.)
+  await expect(frame.getByLabel('Which region do you live in?')).toBeVisible()
   // The host page received only an opaque "ready" event.
   await expect(page.locator('#events')).toContainText('accessflow:ready')
   // A full-page fallback is always offered.

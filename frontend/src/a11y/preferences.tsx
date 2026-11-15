@@ -10,7 +10,7 @@ import {
 } from 'react'
 import { api } from '../lib/api'
 import { storage } from '../lib/storage'
-import type { Preferences } from '../lib/types'
+import type { Preferences, UsageMode } from '../lib/types'
 import { directionOf, loadLocale } from '../i18n'
 
 export const DEFAULT_PREFERENCES: Preferences = {
@@ -24,6 +24,28 @@ export const DEFAULT_PREFERENCES: Preferences = {
   reducedMotion: false,
   sharedDevice: false,
   audioGuide: false,
+  usageMode: null,
+}
+
+/** Settings implied by each first-visit choice (all can still be changed one by one in Settings). */
+export function usageModePatch(mode: UsageMode): Partial<Preferences> {
+  switch (mode) {
+    case 'listen':
+      return { usageMode: mode, audioGuide: true, readAloud: true, captions: false }
+    case 'screenReader':
+      return { usageMode: mode, audioGuide: false, captions: false }
+    case 'sign':
+      return { usageMode: mode, audioGuide: false, readAloud: false, captions: true }
+    default:
+      return { usageMode: mode, audioGuide: false }
+  }
+}
+
+/** Strips device-only fields before sending preferences to the server. */
+export function serverPreferences(p: Preferences): Preferences {
+  const copy = { ...p }
+  delete copy.usageMode
+  return copy
 }
 
 interface PreferencesContextValue {
@@ -62,7 +84,8 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     root.lang = prefs.locale
     root.dir = directionOf(prefs.locale)
     void loadLocale(prefs.locale)
-    storage.set('prefs', prefs)
+    // Shared device: the first-visit choice (which can reveal a disability) is not kept for the next person.
+    storage.set('prefs', prefs.sharedDevice ? { ...prefs, usageMode: null } : prefs)
     if (prefs.sharedDevice) storage.clearDrafts()
   }, [prefs])
 
@@ -70,7 +93,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     if (!syncToServer) return
     window.clearTimeout(saveTimer.current)
     saveTimer.current = window.setTimeout(() => {
-      api.put('/api/v1/preferences', prefs).catch(() => undefined) // retried on the next change; local copy is kept
+      api.put('/api/v1/preferences', serverPreferences(prefs)).catch(() => undefined) // retried on the next change; local copy is kept
     }, 600)
     return () => window.clearTimeout(saveTimer.current)
   }, [prefs, syncToServer])
@@ -79,7 +102,12 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     (patch: Partial<Preferences>) => setPrefs((p) => ({ ...p, ...patch })),
     [],
   )
-  const replace = useCallback((next: Preferences) => setPrefs(next), [])
+  // Preferences loaded from the account never overwrite the device-only first-visit choice.
+  const replace = useCallback(
+    (next: Preferences) =>
+      setPrefs((p) => ({ ...DEFAULT_PREFERENCES, ...next, usageMode: p.usageMode })),
+    [],
+  )
 
   const value = useMemo(
     () => ({ prefs, update, replace, syncToServer, setSyncToServer }),

@@ -1,6 +1,6 @@
 # ACCESSFLOW — Simplified learner flow (UX specification)
 
-_Status: approved plan, 2026-11-15. Not built yet. Amharic text is an **unreviewed draft** and must be checked by a fluent
+_Status: approved 2026-11-15 and **built** (see "As built" at the end). Amharic text is an **unreviewed draft** and must be checked by a fluent
 speaker and the co-designer before release._
 
 ## Why
@@ -176,3 +176,18 @@ Manual (required before any claim):
 | Flows | Registration: `contactMethod` becomes a link on the phone step; profile sections regrouped into 3 parts + 2 optional |
 | Backend | Minimal: profile PATCH already exists; applying already works with a partial profile |
 | Docs/tests | Update README, PROJECT_STATUS, tests listed above |
+
+## As built (2026-11-15) — differences from the plan above
+| Plan | As built | Why |
+|---|---|---|
+| Screen 0 has one button | Two: **Start** (all 5 languages) and **Activate Audio Accessibility / የድምፅ ተደራሽነትን አብራ** | Track 1 requires one-touch audio activation in English and Amharic. Audio activation skips screen 2 (already answered). |
+| Screen 0 speaks "Choose your language" | Spoken once, after a button press, in each language that has a device voice; stops when a language is pressed. Screen 2 is also read once (in the chosen language) if the person pressed Start | A blind person without a screen reader must be able to hear screen 2 to choose "Read it to me". Overlap with screen readers is limited to these two screens — **to be validated with the co-designer and NVDA/TalkBack users**. |
+| Mode stored in the account's preferences | Stored **only on this device**; never sent to the server; not kept in shared-device mode. The settings it implies (audio guide, captions…) do sync | "I use a screen reader / sign language" can reveal a disability. |
+| Header: Help + My account | Help + My account; signed-out pages also show a **Sign in** link | People with an account need a visible way back in. |
+| Minimum profile: father's name, region, headline, skills | Given and father's name are pre-filled from the account name ("Almaz Bekele") and shown on review; skills is optional | Avoids asking for the name twice. Measured: a new learner answers 12 question screens before sending (test 4 limit: 14). |
+| Path B parts | `/onboarding?part=about|work|skills|support`; the open part is in the address so a reload (also offline) returns to it. Private support part saves through `PUT /learners/{id}/support`; ID/referral opens `/identity` | Reuses existing endpoints; new `PUT /api/v1/profile/steps` saves one part. |
+| Embed `signup` view | Account (4) → minimum profile (names pre-filled) → one optional private support question; then `db-signup:done` | The full 23-question profile was too long inside a host page. |
+| Sign-out | Returns to a fresh start page (full reload) | Nothing from the session stays in memory on shared phones. |
+
+Not built from this plan: nothing is skipped, but the following are **not validated**: real screen-reader behaviour of the
+first visit, real device voices, the om/so/ti/am wording, and the audio intro overlap question above.

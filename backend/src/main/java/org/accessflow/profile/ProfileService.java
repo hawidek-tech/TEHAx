@@ -2,6 +2,8 @@ package org.accessflow.profile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -82,6 +84,60 @@ public class ProfileService {
         p.touch();
         audit.record(userId, "PROFILE_UPDATED", "PROFILE", userId);
         return profiles.save(p);
+    }
+
+    /**
+     * Saves only the given profile questions (steps), e.g. one part of the guided profile or the few details a job
+     * application needs. Other profile fields are left unchanged. Only steps of the profile sections are accepted.
+     * The profile counts as completed once every required profile question has an answer.
+     */
+    @Transactional
+    public Profile saveSteps(UUID userId, Collection<String> stepIds, Map<String, Object> input) {
+        FlowDefinition full = registry.resolved("profile").orElseThrow();
+        List<FlowDefinition.Step> chosen = full.steps().stream()
+                .filter(s -> stepIds.contains(s.id()) && PROFILE_SECTIONS.contains(s.section())).toList();
+        if (chosen.isEmpty() || chosen.size() != Set.copyOf(stepIds).size()) throw ApiException.badRequest("profile.unknownStep");
+        Map<String, Object> data = validator.validate(full.withSteps(chosen), input);
+        Profile p = profiles.findById(userId).orElseGet(() -> new Profile(userId));
+        Map<String, Object> merged = new HashMap<>(formData(p));
+        for (FlowDefinition.Step s : chosen)
+            for (FlowDefinition.Field f : s.fields()) {
+                if (data.containsKey(f.id())) merged.put(f.id(), data.get(f.id()));
+                else merged.remove(f.id());
+            }
+        applyProfileFields(p, merged);
+        if (p.getCompletedAt() == null && isComplete(full, merged)) p.markCompleted();
+        p.touch();
+        audit.record(userId, "PROFILE_UPDATED", "PROFILE", userId);
+        return profiles.save(p);
+    }
+
+    private boolean isComplete(FlowDefinition full, Map<String, Object> data) {
+        try {
+            validator.validate(registry.subset(full, PROFILE_SECTIONS), data);
+            return true;
+        } catch (ApiException e) {
+            return false;
+        }
+    }
+
+    /** The profile as answers to the profile flow (same field ids). */
+    public static Map<String, Object> formData(Profile p) {
+        Map<String, Object> m = new HashMap<>();
+        m.put("givenName", p.getGivenName());
+        m.put("fatherName", p.getFatherName());
+        m.put("grandfatherName", p.getGrandfatherName());
+        m.put("birthYear", p.getBirthYear() == null ? null : p.getBirthYear().intValue());
+        m.put("region", p.getRegion());
+        m.put("city", p.getCity());
+        m.put("headline", p.getHeadline());
+        m.put("summary", p.getSummary());
+        m.put("experience", p.getExperience());
+        m.put("education", p.getEducation());
+        m.put("skills", p.getSkills().isEmpty() ? null : String.join(", ", p.getSkills()));
+        m.put("languages", p.getLanguages());
+        m.values().removeIf(v -> v == null);
+        return m;
     }
 
     /** Private workplace-support preferences (used only for the owner's job filter). */

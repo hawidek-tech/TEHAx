@@ -21,12 +21,16 @@ test.describe('accessibility preferences change the interface', () => {
 
   test('simple words replace instructions with simplified text', async ({ page }) => {
     await page.goto('/')
-    const before = await page.getByRole('heading', { level: 1 }).textContent()
+    await page.getByRole('button', { name: /Jalqabi Start/ }).click()
+    await page.getByRole('button', { name: /^English/ }).click()
+    await page.getByRole('button', { name: /^I'll read and type/ }).click()
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+      'What would you like to do today?',
+    )
     await page.goto('/settings')
     await page.getByRole('switch', { name: /Simple words/ }).check()
     await page.goto('/')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Find work. Do it your way.')
-    expect(before).not.toBe('Find work. Do it your way.')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('What do you want to do now?')
   })
 
   test('listen buttons can be hidden', async ({ page }) => {
@@ -98,8 +102,7 @@ test.describe('accessibility preferences change the interface', () => {
     await page.goto('/register')
     await page.getByLabel('What should we call you?').fill('Own Phone')
     await page.getByRole('button', { name: 'Next' }).click()
-    await page.getByLabel('With my email address').check()
-    await page.getByRole('button', { name: 'Next' }).click()
+    await page.getByRole('button', { name: 'Use email instead of a phone number' }).click()
     await page.getByLabel('What is your email address?').fill('own@example.com')
     await page.getByRole('button', { name: 'Next' }).click()
     await page.getByLabel('Create a password').fill('a secret sentence here')

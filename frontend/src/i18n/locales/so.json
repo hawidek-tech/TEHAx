@@ -46,7 +46,9 @@
     "savedLocal": "Waxaa lagu kaydiyay qalabkan. Waa la diri doonaa marka aad dib u xiriirto.",
     "savedDevice": "Waxaa lagu kaydiyay qalabkan",
     "syncFailed": "Laguma kaydin karin server-ka. Jawaabahaagu weli waxay ku jiraan boggan.",
-    "submitOffline": "Internet kuma xirnid. Jawaabahaagu waa kaydsan yihiin. Fadlan isku day mar kale marka aad xiriirto."
+    "submitOffline": "Internet kuma xirnid. Jawaabahaagu waa kaydsan yihiin. Fadlan isku day mar kale marka aad xiriirto.",
+    "offlineSpoken": "Internet ma jiro. Sii wad; jawaabahaagu waa nabad.",
+    "backOnlineSpoken": "Mar kale waa la xiriiray. Jawaabahaaga waa la dirayaa."
   },
   "welcome": {
     "eyebrow": "Diiwaangelin iyo shaqooyin la heli karo",
@@ -908,6 +910,9 @@
       "unknownPartner": "Website-kan la-shaqeeyaha ah kuma diiwaangashana ACCESSFLOW.",
       "originNotAllowed": "Website-kan looma oggola inuu muujiyo ACCESSFLOW. Fadlan isticmaal link-ga hoose si aad si toos ah u furto.",
       "componentNotEnabled": "Foomkan lagama helo website-kan."
+    },
+    "profile": {
+      "unknownStep": "Su'aashan halkan laguma kaydin karo."
     }
   },
   "flows": {
@@ -1271,6 +1276,11 @@
       "validation": {
         "required": "Fadlan ka jawaab."
       }
+    },
+    "start": {
+      "intent": {
+        "title": "Hadda maxaad rabtaa?"
+      }
     }
   },
   "audio": {
@@ -1336,5 +1346,144 @@
     "messageLabel": "Fariintaada",
     "messageHint": "Hubi oo beddel fariinta ka hor intaadan isticmaalin.",
     "useMessage": "Isticmaal fariintan"
+  },
+  "start": {
+    "stopSound": "Jooji codka",
+    "mode": {
+      "title": "Sidee rabtaa inaad u isticmaasho ACCESSFLOW?",
+      "lead": "Mid dooro. Waxay beddeshaa sida su'aal kasta laguu soo bandhigo.",
+      "changeLater": "Tan waad beddeli kartaa wakhti kasta adigoo galaya Caawimaad iyo dejin.",
+      "simple": "Isticmaal erayo fudud",
+      "change": "Beddel sida aan u isticmaalo",
+      "listen": {
+        "label": "Ii akhri",
+        "detail": "Waan maqli doonaa su'aal kasta iyo doorashooyinkayga."
+      },
+      "screenReader": {
+        "label": "Waxaan isticmaalaa akhriyaha shaashaddayda",
+        "detail": "ACCESSFLOW way aamusaysaa si aysan codadku isku dhicin."
+      },
+      "read": {
+        "label": "Anigaa akhriyaya oo qoraya",
+        "detail": "Su'aalaha mid mid ayaa loo muujiyaa."
+      },
+      "sign": {
+        "label": "Waxaan isticmaalaa luqadda calaamadaha ama sawirro",
+        "detail": "Ku jawaab weedho sawir leh. Qoraal ayaa la tusaa, cod ma jiro."
+      }
+    },
+    "intent": {
+      "title": "Maxaad rabtaa inaad maanta samayso?",
+      "signIn": "Akoon baan haystaa: gal",
+      "employer": "Waxaan ahay loo-shaqeeye ama shaqaale",
+      "changeSetup": "Beddel luqadda ama sida aan u isticmaalo",
+      "job": {
+        "label": "Raadi shaqo",
+        "detail": "Eeg shaqooyinka. Akoon waxaa loo baahan yahay oo keliya marka aad codsanayso."
+      },
+      "applications": {
+        "label": "Codsiyadayda",
+        "detail": "Eeg waxa ku dhacay shaqooyinka aad codsatay."
+      },
+      "profile": {
+        "label": "Samee astaantayda",
+        "detail": "3 qaybood oo gaagaaban. Waad joojin kartaa qayb kasta kadib."
+      },
+      "support": {
+        "label": "Codso taageero",
+        "detail": "Waa qarsoodi. Loo-shaqeeyayaashu weligood ma arkaan."
+      },
+      "learn": {
+        "label": "Baro sida ay u shaqeyso",
+        "detail": "Qiyaastii hal daqiiqo."
+      }
+    },
+    "tour": {
+      "title": "Sida ACCESSFLOW u shaqeyso",
+      "p1": "Hal su'aal ayaad mar kasta ka jawaabtaa. Sii wad iyo Dib u noqo had iyo jeer hoose ayay ku yaallaan.",
+      "p2": "Caawimaad iyo dejin waa xagga sare: ku celi, beddel luqadda, codka, weydii qof, kaydi oo jooji.",
+      "p3": "Waad qori kartaa, sheegi kartaa jawaabtaada (waad hubinaysaa ka hor inta aan la isticmaalin), ama isticmaali kartaa weedho sawir leh.",
+      "p4": "Haddii internetku go'o, sii wad. Jawaabahaaga waa la kaydiyaa oo hadhow ayaa la diraa.",
+      "p5": "Baahiyahaaga taageero ee qarsoodiga ah weligood looma muujiyo loo-shaqeeyayaasha.",
+      "done": "Waan fahmay"
+    },
+    "returning": {
+      "welcome": "Ku soo dhowow mar kale, {{name}}.",
+      "open": "Fur",
+      "other": "Wax kale",
+      "unfinished": {
+        "job-application": "Hal shay ayaad dhammaystiri lahayd: codsi shaqo.",
+        "profile": "Hal shay ayaad dhammaystiri lahayd: astaantaada.",
+        "support-request": "Hal shay ayaad dhammaystiri lahayd: codsi taageero."
+      }
+    },
+    "account": {
+      "apply": "Si aad u codsato, waxaad u baahan tahay akoon. 4 su'aalood.",
+      "profile": "Marka hore, samee akoonkaaga. 4 su'aalood.",
+      "support": "Si aad taageero u codsato, waxaad u baahan tahay akoon. 4 su'aalood.",
+      "lead": "Jawaabahaaga waa la kaydiyaa su'aal kasta kadib. Kadib waxaad ka sii wadaysaa meeshii aad joogtay.",
+      "useEmail": "Isticmaal iimayl halkii lambar telefoon",
+      "usePhone": "Isticmaal lambar telefoon halkii iimayl"
+    },
+    "minimum": {
+      "title": "Loo-shaqeeyaha wuxuu u baahan yahay xog yar",
+      "lead": "Su'aalaha: {{count}}. Waxaa lagu kaydiyaa astaantaada, markaa mar kale laguma weydiin doono.",
+      "submit": "Kaydi oo u sii gudub codsiga",
+      "saved": "Waa la kaydiyay. Hadda su'aalaha codsiga."
+    },
+    "done": {
+      "finishProfile": "Dhammaystir astaantayda (ikhtiyaari)",
+      "moreJobs": "Eeg shaqooyin kale"
+    }
+  },
+  "helpMenu": {
+    "button": "Caawimaad iyo dejin",
+    "title": "Caawimaad iyo dejin",
+    "repeat": "Ku celi",
+    "home": "Maxaad rabtaa inaad samayso?",
+    "askQuestion": "Weydii su'aal",
+    "askPerson": "Weydii qof",
+    "saveStop": "Kaydi oo jooji",
+    "saved": "Jawaabahaaga waa la kaydiyay. Hadhow waad sii wadi kartaa.",
+    "allSettings": "Dhammaan dejinta",
+    "language": "Luqadda",
+    "sound": "Codka iyo akhriska",
+    "waysTitle": "Ku hadal ama isticmaal sawirro",
+    "waysBody": "Su'aal kasta oo qoraal ah waxaad riixi kartaa Ku hadal si aad jawaabtaada u sheegto, ama badhanka calaamadaha si aad u isticmaasho weedho sawir leh. Had iyo jeer waad hubinaysaa jawaabta ka hor inta aan la isticmaalin.",
+    "account": "Akoonkayga"
+  },
+  "profileParts": {
+    "title": "Astaantaada",
+    "intro": "Astaantaadu waxay leedahay {{parts}} qaybood oo gaagaaban ({{questions}} su'aalood ayaa haray) iyo 2 qaybood oo ikhtiyaari ah. Jawaabahaaga waa la kaydiyaa su'aal kasta kadib. Waad joojin kartaa qayb kasta kadib.",
+    "partOf": "Qaybta {{current}} ee {{total}}: {{name}}",
+    "partLead": "Su'aalaha aad horay uga jawaabtay mar kale lama weydiinayo; dhammaadka waad hubin kartaa.",
+    "supportLead": "Waa qarsoodi. Shaqaalaha taageerada oo keliya ayaa arki kara. Loo-shaqeeyayaashu weligood ma arkaan.",
+    "names": {
+      "about": "Adiga",
+      "work": "Shaqo iyo waxbarasho",
+      "skills": "Xirfado iyo luqado",
+      "support": "Taageero qarsoodi ah (ikhtiyaari)",
+      "identity": "Aqoonsi ama gudbin (ikhtiyaari)"
+    },
+    "savePart": "Kaydi qaybtan",
+    "saveSupport": "Kaydi",
+    "partDone": "Qaybta {{current}} ee {{total}} waa dhammaatay.",
+    "allDone": "Astaantaadu waa diyaar.",
+    "continueWith": "Sii wad: {{name}}",
+    "lookAtJobs": "Eeg shaqooyinka",
+    "stop": "Hadda jooji",
+    "allParts": "Eeg dhammaan qaybaha",
+    "partsTitle": "Qaybaha",
+    "state": {
+      "done": "dhammaaday",
+      "started": "su'aalaha haray: {{count}}",
+      "todo": "lama bilaabin"
+    },
+    "change": "Beddel",
+    "optionalTitle": "Qaybo ikhtiyaari ah",
+    "optionalLead": "Kuwan hadda ama hadhow ayaad ku dari kartaa.",
+    "supportSaved": "Waa la kaydiyay.",
+    "privateTitle": "Tani waa qarsoodi",
+    "privateBody": "Shaqaalaha taageerada oo keliya ayaa arki kara. Loo-shaqeeyayaashu weligood ma arkaan."
   }
 }

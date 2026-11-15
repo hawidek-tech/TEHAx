@@ -46,7 +46,9 @@
     "savedLocal": "Saved on this device. It will be sent when you are back online.",
     "savedDevice": "Saved on this device",
     "syncFailed": "Could not save to the server. Your answers are still on this page.",
-    "submitOffline": "You are offline. Your answers are saved. Please try again when you are connected."
+    "submitOffline": "You are offline. Your answers are saved. Please try again when you are connected.",
+    "offlineSpoken": "No internet. Keep going; your answers are safe.",
+    "backOnlineSpoken": "Connected again. Your answers are being sent."
   },
   "welcome": {
     "eyebrow": "Accessible onboarding and jobs",
@@ -908,6 +910,9 @@
       "unknownPartner": "This partner website is not registered with ACCESSFLOW.",
       "originNotAllowed": "This website is not allowed to show ACCESSFLOW. Please use the link below to open it directly.",
       "componentNotEnabled": "This form is not available on this website."
+    },
+    "profile": {
+      "unknownStep": "This question cannot be saved here."
     }
   },
   "flows": {
@@ -1316,6 +1321,11 @@
         "required": "Please answer.",
         "phone": "Use a phone number like 0911 234 567."
       }
+    },
+    "start": {
+      "intent": {
+        "title": "What do you want to do now?"
+      }
     }
   },
   "audio": {
@@ -1381,5 +1391,144 @@
     "messageLabel": "Your message",
     "messageHint": "Check and change the message before using it.",
     "useMessage": "Use this message"
+  },
+  "start": {
+    "stopSound": "Stop the sound",
+    "mode": {
+      "title": "How do you want to use ACCESSFLOW?",
+      "lead": "Choose one. It changes how each question is given to you.",
+      "changeLater": "You can change this any time in Help and settings.",
+      "simple": "Use simple words",
+      "change": "Change how I use this",
+      "listen": {
+        "label": "Read it to me",
+        "detail": "I will hear each question and my choices."
+      },
+      "screenReader": {
+        "label": "I use my own screen reader",
+        "detail": "ACCESSFLOW stays quiet so voices do not overlap."
+      },
+      "read": {
+        "label": "I'll read and type",
+        "detail": "Questions are shown one at a time."
+      },
+      "sign": {
+        "label": "I use sign language or pictures",
+        "detail": "Answer with picture phrases. Captions on, no sound."
+      }
+    },
+    "intent": {
+      "title": "What would you like to do today?",
+      "signIn": "I already have an account: sign in",
+      "employer": "I'm an employer or staff member",
+      "changeSetup": "Change language or how I use ACCESSFLOW",
+      "job": {
+        "label": "Find a job",
+        "detail": "Look at jobs. You only need an account when you apply."
+      },
+      "applications": {
+        "label": "My applications",
+        "detail": "See what happened to the jobs you applied for."
+      },
+      "profile": {
+        "label": "Create my profile",
+        "detail": "3 short parts. You can stop after any part."
+      },
+      "support": {
+        "label": "Ask for support",
+        "detail": "Private. Employers never see it."
+      },
+      "learn": {
+        "label": "Learn how this works",
+        "detail": "About one minute."
+      }
+    },
+    "tour": {
+      "title": "How ACCESSFLOW works",
+      "p1": "You answer one question at a time. Continue and Back are always at the bottom.",
+      "p2": "Help and settings is at the top: repeat, change language, sound, ask a person, save and stop.",
+      "p3": "You can type, speak your answer (you check it before it is used), or use picture phrases.",
+      "p4": "If the internet stops, keep going. Your answers are kept and sent later.",
+      "p5": "Your private support needs are never shown to employers.",
+      "done": "Got it"
+    },
+    "returning": {
+      "welcome": "Welcome back, {{name}}.",
+      "open": "Open",
+      "other": "Something else",
+      "unfinished": {
+        "job-application": "You have one thing to finish: a job application.",
+        "profile": "You have one thing to finish: your profile.",
+        "support-request": "You have one thing to finish: a support request."
+      }
+    },
+    "account": {
+      "apply": "To apply, you need an account. 4 questions.",
+      "profile": "First, create your account. 4 questions.",
+      "support": "To ask for support, you need an account. 4 questions.",
+      "lead": "Your answers are saved after each question. Then you continue where you were.",
+      "useEmail": "Use email instead of a phone number",
+      "usePhone": "Use a phone number instead of email"
+    },
+    "minimum": {
+      "title": "The employer needs a few details",
+      "lead": "Questions: {{count}}. They are saved in your profile, so you will not be asked again.",
+      "submit": "Save and continue to the application",
+      "saved": "Saved. Now the application questions."
+    },
+    "done": {
+      "finishProfile": "Finish my profile (optional)",
+      "moreJobs": "Look at more jobs"
+    }
+  },
+  "helpMenu": {
+    "button": "Help and settings",
+    "title": "Help and settings",
+    "repeat": "Repeat",
+    "home": "What would you like to do?",
+    "askQuestion": "Ask a question",
+    "askPerson": "Ask a person",
+    "saveStop": "Save and stop",
+    "saved": "Your answers are saved. You can continue later.",
+    "allSettings": "All settings",
+    "language": "Language",
+    "sound": "Sound and reading",
+    "waysTitle": "Speak or use pictures",
+    "waysBody": "On every written question you can press Speak to say your answer, or Sign or choose phrases to use picture phrases. You always check the answer before it is used.",
+    "account": "My account"
+  },
+  "profileParts": {
+    "title": "Your profile",
+    "intro": "Your profile has {{parts}} short parts ({{questions}} questions left) and 2 optional parts. Your answers are saved after each question. You can stop after any part.",
+    "partOf": "Part {{current}} of {{total}}: {{name}}",
+    "partLead": "Questions you already answered are not asked again; you can check them at the end.",
+    "supportLead": "Private. Only support staff can see this. Employers never see it.",
+    "names": {
+      "about": "About you",
+      "work": "Work and study",
+      "skills": "Skills and languages",
+      "support": "Private support (optional)",
+      "identity": "ID or referral (optional)"
+    },
+    "savePart": "Save this part",
+    "saveSupport": "Save",
+    "partDone": "Part {{current}} of {{total}} done.",
+    "allDone": "Your profile is ready.",
+    "continueWith": "Continue: {{name}}",
+    "lookAtJobs": "Look at jobs",
+    "stop": "Stop for now",
+    "allParts": "See all parts",
+    "partsTitle": "Parts",
+    "state": {
+      "done": "done",
+      "started": "questions left: {{count}}",
+      "todo": "not started"
+    },
+    "change": "Change",
+    "optionalTitle": "Optional parts",
+    "optionalLead": "You can add these now or later.",
+    "supportSaved": "Saved.",
+    "privateTitle": "This stays private",
+    "privateBody": "Only support staff can see this. Employers never see it."
   }
 }

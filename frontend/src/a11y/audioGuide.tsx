@@ -27,6 +27,8 @@ interface AudioGuide {
   deactivate: () => void
   /** Speak (and show) a message. Replaces whatever is being said. */
   say: (text: string) => void
+  /** Say the last message again. */
+  repeat: () => void
 }
 
 const GUIDE_ID = 'audio-guide'
@@ -35,6 +37,7 @@ const Ctx = createContext<AudioGuide>({
   activate: () => undefined,
   deactivate: () => undefined,
   say: () => undefined,
+  repeat: () => undefined,
 })
 
 export function AudioGuideProvider({ children }: { children: ReactNode }) {
@@ -78,9 +81,13 @@ export function AudioGuideProvider({ children }: { children: ReactNode }) {
     update({ audioGuide: false })
   }, [update])
 
+  const repeat = useCallback(() => {
+    if (active && lastText) speakNow(lastText)
+  }, [active, lastText, speakNow])
+
   const value = useMemo(
-    () => ({ active, activate, deactivate, say }),
-    [active, activate, deactivate, say],
+    () => ({ active, activate, deactivate, say, repeat }),
+    [active, activate, deactivate, say, repeat],
   )
   return (
     <Ctx.Provider value={value}>

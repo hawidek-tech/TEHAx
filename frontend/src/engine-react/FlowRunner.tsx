@@ -43,7 +43,17 @@ export interface FlowRunnerProps {
   onSubmit: (data: FlowData) => Promise<void>
   /** Called when the visible step changes (used by embedded components to emit a non-personal step event). */
   onStepChange?: (info: { stepId: string; index: number; total: number; section?: string }) => void
+  /**
+   * Steps not asked on the way forward because the answer is already known (pre-filled). They are still shown on
+   * the review screen, where they can be changed, and are validated before sending (never ask twice).
+   */
+  skipSteps?: string[]
+  /** A link under a question that switches to another way of answering, e.g. "Use email instead". */
+  alternatives?: Record<string, { label: string; set: FlowData; goTo: string }>
 }
+
+/** Question types whose "how to answer" text has already been spoken in this visit (later questions are shorter). */
+const spokenHow = new Set<string>()
 
 type SyncState = 'idle' | 'saving' | 'saved' | 'local' | 'error'
 
@@ -73,11 +83,15 @@ export function FlowRunner(props: FlowRunnerProps) {
   const fieldText = useFieldText(ns)
   const errText = useErrorText()
   const sensitive = useMemo(() => sensitiveFieldIds(def), [def])
+  const skipKey = (props.skipSteps ?? []).join(',')
+  const skip = useMemo(() => new Set(skipKey ? skipKey.split(',') : []), [skipKey])
 
   const [data, setData] = useState<FlowData>(() => initialData(def, prefill ?? {}, initial))
   const [loaded, setLoaded] = useState(false)
   const [restored, setRestored] = useState<string | null>(null)
-  const [stepId, setStepId] = useState<string>(def.steps[0]?.id)
+  const firstStepId = () =>
+    (visibleSteps(def, data).find((s) => !skip.has(s.id)) ?? def.steps[0])?.id
+  const [stepId, setStepId] = useState<string>(firstStepId)
   const [returnToReview, setReturnToReview] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -92,7 +106,9 @@ export function FlowRunner(props: FlowRunnerProps) {
   const firstRender = useRef(true)
   const dirty = useRef(false)
 
-  const steps = visibleSteps(def, data)
+  const allVisible = visibleSteps(def, data)
+  // The path forward leaves out pre-filled steps, except the one being changed from the review screen.
+  const steps = allVisible.filter((s) => !skip.has(s.id) || s.id === stepId)
   const REVIEW = '__review'
   const index =
     stepId === REVIEW
@@ -252,11 +268,6 @@ export function FlowRunner(props: FlowRunnerProps) {
         const parts = [t('flow.stepOf', { current: index + 1, total }), tx.label]
         if (!f.required && f.type !== 'consent') parts.push(t('flow.optionalQuestion'))
         if (tx.hint) parts.push(tx.hint)
-        if (tx.example) parts.push(`${t('flow.example')}: ${tx.example}`)
-        if (f.options?.length && f.type !== 'select')
-          parts.push(`${t('audio.choices')}: ${f.options.map((o) => tx.option(o)).join(', ')}`)
-        if (f.options?.length && f.type === 'select')
-          parts.push(t('audio.selectInstructions', { count: f.options.length }))
         const how =
           f.type === 'radio'
             ? 'radio'
@@ -269,12 +280,21 @@ export function FlowRunner(props: FlowRunnerProps) {
                   : f.type === 'file'
                     ? 'file'
                     : 'text'
-        parts.push(t(`audio.how.${how}`))
+        const firstOfType = !spokenHow.has(how)
+        if (tx.example && firstOfType) parts.push(`${t('flow.example')}: ${tx.example}`)
+        if (f.options?.length && f.type !== 'select')
+          parts.push(`${t('audio.choices')}: ${f.options.map((o) => tx.option(o)).join(', ')}`)
+        if (f.options?.length && f.type === 'select')
+          parts.push(t('audio.selectInstructions', { count: f.options.length }))
+        if (firstOfType && guide.active) {
+          spokenHow.add(how)
+          parts.push(t(`audio.how.${how}`))
+        }
         return parts.join('. ')
       })
       .join('. ')
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stepId, step, index, total, t, fieldText, submitLabel])
+  }, [stepId, step, index, total, t, fieldText, submitLabel, guide.active])
 
   useEffect(() => {
     if (!loaded) return
@@ -340,7 +360,7 @@ export function FlowRunner(props: FlowRunnerProps) {
   const submit = async () => {
     setSubmitError(null)
     // Re-check every visible step before sending.
-    for (const s of steps) {
+    for (const s of allVisible) {
       const e = validateStep(s, data)
       if (Object.keys(e).length) {
         setStepId(s.id)
@@ -356,6 +376,8 @@ export function FlowRunner(props: FlowRunnerProps) {
     try {
       await onSubmit(collectVisibleData(def, data))
       if (draftOwner) clearLocalDraft(draftOwner, flowKey, context)
+      // The answers are saved for real now; the draft would otherwise be offered as "unfinished" later.
+      if (serverDrafts) void api.del(draftUrl).catch(() => undefined)
     } catch (e) {
       if (e instanceof ApiError && e.fieldErrors.length) {
         const mapped: Record<string, string> = {}
@@ -382,7 +404,7 @@ export function FlowRunner(props: FlowRunnerProps) {
     if (serverDrafts) await api.del(draftUrl).catch(() => undefined)
     version.current = undefined
     setData(initialData(def, prefill ?? {}, initial))
-    setStepId(def.steps[0].id)
+    setStepId(firstStepId())
     setRestored(null)
     announce(t('flow.startedOver'))
   }
@@ -519,18 +541,37 @@ export function FlowRunner(props: FlowRunnerProps) {
             )}
           </>
         ) : step ? (
-          step.fields.map((f) => (
-            <QuestionStep
-              key={f.id}
-              field={f}
-              ns={ns}
-              data={data}
-              error={errors[f.id]}
-              onChange={change}
-              headingRef={headingRef}
-              onHelp={(field, label) => setHelp({ field, label })}
-            />
-          ))
+          <>
+            {step.fields.map((f) => (
+              <QuestionStep
+                key={f.id}
+                field={f}
+                ns={ns}
+                data={data}
+                error={errors[f.id]}
+                onChange={change}
+                headingRef={headingRef}
+                onHelp={(field, label) => setHelp({ field, label })}
+              />
+            ))}
+            {props.alternatives?.[step.id] && (
+              <p className="mt-5">
+                <button
+                  type="button"
+                  className="inline-flex min-h-11 items-center font-semibold text-primary underline underline-offset-4"
+                  onClick={() => {
+                    const alt = props.alternatives![step.id]
+                    dirty.current = true
+                    setErrors({})
+                    setData((d) => ({ ...d, ...alt.set }))
+                    setStepId(alt.goTo)
+                  }}
+                >
+                  {props.alternatives[step.id].label}
+                </button>
+              </p>
+            )}
+          </>
         ) : null}
       </Card>
 

@@ -131,21 +131,7 @@ public class LearnerController {
 
     /** Current profile expressed in the profile form's field ids (skills joined), so a partial change can be merged. */
     static Map<String, Object> asFormData(Profile p) {
-        Map<String, Object> m = new HashMap<>();
-        m.put("givenName", p.getGivenName());
-        m.put("fatherName", p.getFatherName());
-        m.put("grandfatherName", p.getGrandfatherName());
-        m.put("birthYear", p.getBirthYear() == null ? null : p.getBirthYear().intValue());
-        m.put("region", p.getRegion());
-        m.put("city", p.getCity());
-        m.put("headline", p.getHeadline());
-        m.put("summary", p.getSummary());
-        m.put("experience", p.getExperience());
-        m.put("education", p.getEducation());
-        m.put("skills", String.join(", ", p.getSkills()));
-        m.put("languages", p.getLanguages());
-        m.values().removeIf(v -> v == null);
-        return m;
+        return ProfileService.formData(p);
     }
 
 }

@@ -1,138 +1,188 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 import {
+  PASSWORD,
   completeProfile,
   expectNoSeriousA11yViolations,
   next,
   register,
+  signOut,
   uniqueEmail,
 } from './helpers'
 
-/** The main demonstration journey (spec §12), end to end against the real backend and database. */
-test('complete journey: language → preview → register → profile → find job → apply → track @mobile', async ({
+/**
+ * The main demonstration journey (docs/ux/first-visit-flow.md, Path A), end to end against the real backend:
+ * first visit → find a job → apply → 4 account questions → only the missing profile details → application.
+ */
+test('Path A: a new learner finds a job and applies in at most 14 question screens @mobile', async ({
   page,
 }) => {
-  // 1–2. Welcome and language selection
+  let questions = 0
+  const answer = async () => {
+    questions++
+    await next(page)
+  }
+
+  // First visit: Start → language → how → what
   await page.goto('/')
-  await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
-  await page.getByRole('radio', { name: /አማርኛ/ }).check()
+  await page.getByRole('button', { name: /Jalqabi Start/ }).click()
+  await page.getByRole('button', { name: /አማርኛ/ }).click()
   await expect(page.locator('html')).toHaveAttribute('lang', 'am')
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('ይመዝገቡ')
-  await page
-    .getByRole('radio', { name: /^English/ })
-    .first()
-    .check()
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('ACCESSFLOWን እንዴት መጠቀም ይፈልጋሉ?')
+  await page.getByRole('button', { name: 'ተመለስ' }).click()
+  await page.getByRole('button', { name: /^English/ }).click()
   await expect(page.locator('html')).toHaveAttribute('lang', 'en')
-
-  // 3–4. Accessibility preview: settings change the page immediately
-  await page.getByRole('link', { name: 'Start' }).click()
-  await expect(page.getByRole('heading', { level: 1, name: 'Try your settings' })).toBeVisible()
-  await page.getByRole('radio', { name: /150%/ }).check()
-  await expect
-    .poll(() => page.evaluate(() => getComputedStyle(document.documentElement).fontSize))
-    .toBe('24px')
-  await page.getByRole('radio', { name: /100%/ }).check()
-  await page.getByRole('link', { name: 'Continue to create an account' }).click()
-
-  // 5. Registration (one question per screen)
-  const email = uniqueEmail()
-  await register(page, email)
-
-  // 6. Guided profile incl. alternative ID route and private support request
-  await completeProfile(page)
-
-  // 7. Dashboard progress tracker
-  await expect(page.getByText('Your profile is ready')).toBeVisible()
-  await expect(page.getByText(/steps completed/)).toBeVisible()
-
-  // 8. Job discovery with the PRIVATE support filter (prefilled from the private profile choice)
-  await page.goto('/jobs')
+  await page.getByRole('button', { name: /I'll read and type/ }).click()
   await expect(
-    page.getByText('We used the private support choices from your profile.'),
-  ).toBeVisible()
+    page.getByRole('heading', { level: 1, name: 'What would you like to do today?' }),
+  ).toBeFocused()
+  await page.getByRole('button', { name: /^Find a job/ }).click()
+
+  // Jobs can be browsed without an account
   await expect(page.getByRole('heading', { name: /jobs? found/ })).toBeVisible()
-  await expect(
-    page.getByRole('link', { name: 'Sign Language Health Educator', exact: true }),
-  ).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Farm Records Assistant', exact: true })).toHaveCount(
-    0,
-  )
-  // Clear the private filter, then search
-  await page.getByRole('button', { name: 'Clear all filters' }).click()
   await page.getByLabel('Keywords').fill('customer support')
   await page.getByRole('button', { name: 'Search' }).click()
-
-  // 9. Job details with employer accommodations
   await page
     .getByRole('link', { name: 'Customer Support Agent (Amharic and English)', exact: true })
     .click()
   await expect(
     page.getByRole('heading', { name: 'Support and accessibility at this job' }),
   ).toBeVisible()
-  await page.getByRole('button', { name: 'Show simple description' }).click()
-  await expect(
-    page.getByText('You will help customers by answering their questions.'),
-  ).toBeVisible()
   await page.getByRole('link', { name: 'Apply for this job' }).click()
 
-  // 10. Application on the same engine, prefilled from the profile
-  await expect(page.getByRole('heading', { level: 1, name: /^Apply:/ })).toBeVisible()
-  await next(page) // phone (optional)
-  await expect(page.getByLabel('Which email address can the employer use?')).toHaveValue(email)
-  await next(page)
-  await page.getByLabel('Why do you want this job?').fill('I enjoy helping people solve problems.')
-  await next(page)
-  await expect(page.getByLabel('What experience do you have for this job?')).toHaveValue(
-    'Three years helping customers by phone.',
-  )
-  await next(page)
-  await page.getByLabel('In two weeks').check()
-  await next(page)
-  await page.getByLabel('Which languages can you use with customers?').fill('Amharic and English')
-  await next(page)
-  await page.getByLabel('Yes', { exact: true }).check()
-  await next(page)
-  await page.getByLabel('My education').uncheck()
-  await next(page)
-  await next(page) // keep support private (default)
+  // Account only now: 4 questions, phone is default, email via a link
+  await expect(page.getByText('To apply, you need an account. 4 questions.')).toBeVisible()
+  const email = uniqueEmail()
+  await page.getByLabel('What should we call you?').fill('Almaz Bekele')
+  await answer()
+  await page.getByRole('button', { name: 'Use email instead of a phone number' }).click()
+  await page.getByLabel('What is your email address?').fill(email)
+  await answer()
+  await page.getByLabel('Create a password').fill(PASSWORD)
+  await answer()
+  await page.getByLabel('I have read how ACCESSFLOW protects my information, and I agree.').check()
+  await answer()
+  await page.getByRole('button', { name: 'Create account' }).click()
 
-  // 11. Review: what the employer will see
+  // Only the missing profile details; names come from the account name and are NOT asked again
+  await expect(page.getByText('The employer needs a few details')).toBeVisible()
+  await expect(page.getByRole('heading', { level: 2 })).toHaveText(/region/)
+  await page.getByLabel('Which region do you live in?').selectOption({ label: 'Addis Ababa' })
+  await answer()
+  await page.getByLabel('What kind of work are you looking for?').fill('Customer service')
+  await answer()
+  await page.getByLabel('What are your skills?').fill('Typing, Amharic, English')
+  await answer()
   await expect(page.getByRole('heading', { name: 'Check your answers' })).toBeVisible()
-  await expect(
-    page.getByText('Your support needs stay private. They are not shared.'),
-  ).toBeVisible()
-  // Explicit confirmation is required
-  await page.getByRole('button', { name: 'Send my application' }).click()
-  await expect(page.getByText('Please tick the box to confirm before sending.')).toBeVisible()
+  await expect(page.getByText('Almaz', { exact: true })).toBeVisible()
+  await expect(page.getByText('Bekele', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Save and continue to the application' }).click()
+
+  // Application: contact details are already known (shown on review, not asked)
+  await expect(page.getByRole('heading', { level: 2 })).toHaveText(/Why do you want this job/)
+  await page.getByLabel('Why do you want this job?').fill('I enjoy helping people solve problems.')
+  await answer()
+  await page
+    .getByLabel('What experience do you have for this job?')
+    .fill('Three years helping customers by phone.')
+  await answer()
+  await page.getByLabel('In two weeks').check()
+  await answer()
+  await page.getByLabel('Which languages can you use with customers?').fill('Amharic and English')
+  await answer()
+  await page.getByLabel('Yes', { exact: true }).check()
+  await answer()
+  await answer() // what to share (defaults)
+  await answer() // keep support private (default)
+  await expect(page.getByRole('heading', { name: 'Check your answers' })).toBeVisible()
+  await expect(page.getByText(email)).toBeVisible()
+  expect(questions).toBeLessThanOrEqual(14)
+
   await page.getByLabel('I have checked my answers and I want to send this application.').check()
   await page.getByRole('button', { name: 'Send my application' }).click()
-
-  // 12–13. Confirmation and status tracking
   await expect(page.getByRole('heading', { name: 'Your application was sent' })).toBeVisible()
   await expect(page.getByText(/Reference: AF-/).first()).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Where your application is' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Finish my profile (optional)' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Look at more jobs' })).toBeVisible()
   await expectNoSeriousA11yViolations(page, 'application confirmation')
 })
 
-test('save and resume: a half-finished profile is restored after signing out and in', async ({
+async function signInAgain(page: Page, email: string) {
+  await page.goto('/sign-in')
+  await page.getByLabel('Email or phone number').fill(email)
+  await page.getByLabel('Password', { exact: true }).fill(PASSWORD)
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click()
+}
+
+test('save and resume: a half-finished part is offered as "one thing to finish" after signing in again', async ({
   page,
 }) => {
   const email = uniqueEmail()
   await register(page, email)
-  await page.getByLabel('What is your first name?').fill('Saba')
-  await next(page)
-  await page.getByLabel("What is your father's name?").fill('Haile')
+  await page.getByRole('button', { name: /^(Start|Continue: About you)$/ }).click()
+  await page.getByLabel("What is your grandfather's name?").fill('Haile')
   await next(page)
   await expect(page.getByText('All changes saved')).toBeVisible()
-  await page.getByRole('button', { name: 'Sign out' }).click()
-  await expect(page.getByRole('link', { name: 'Sign in' }).first()).toBeVisible()
-  await page.goto('/sign-in')
-  await page.getByLabel('Email or phone number').fill(email)
-  await page.getByLabel('Password', { exact: true }).fill('my coffee is hot today')
-  await page.getByRole('button', { name: 'Sign in', exact: true }).click()
-  await expect(page.getByRole('heading', { level: 1, name: /^Hello,/ })).toBeVisible()
-  await page.goto('/onboarding')
+  await signOut(page)
+  await signInAgain(page, email)
+
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Welcome back, Almaz Test.' }),
+  ).toBeVisible()
+  await expect(page.getByText('You have one thing to finish: your profile.')).toBeVisible()
+  await page.getByRole('button', { name: 'Continue' }).click()
+  // Straight back into the unfinished part
+  await expect(page).toHaveURL(/part=about/)
   await expect(page.getByText('We kept your answers')).toBeVisible()
-  await expect(page.getByRole('heading', { level: 2 })).toContainText('grandfather')
+  await expect(page.getByRole('heading', { level: 2 })).toContainText('born')
   await page.getByRole('button', { name: 'Back' }).click()
-  await expect(page.getByLabel("What is your father's name?")).toHaveValue('Haile')
+  await expect(page.getByLabel("What is your grandfather's name?")).toHaveValue('Haile')
+})
+
+test('Path B: stop after part 1, the returning visit continues with part 2', async ({ page }) => {
+  const email = uniqueEmail()
+  await register(page, email)
+  await expect(page.getByText(/3 short parts/)).toBeVisible()
+  await page.getByRole('button', { name: /^(Start|Continue: About you)$/ }).click()
+  await next(page) // grandfather
+  await next(page) // birth year
+  await page.getByLabel('Which region do you live in?').selectOption({ label: 'Amhara' })
+  await next(page)
+  await next(page) // city
+  await page.getByRole('button', { name: 'Save this part' }).click()
+  await expect(page.getByRole('heading', { level: 1, name: 'Part 1 of 3 done.' })).toBeFocused()
+  await page.getByRole('button', { name: 'Stop for now' }).click()
+
+  await expect(page.getByText('You have one thing to finish: your profile.')).toBeVisible()
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await expect(page.getByRole('button', { name: 'Continue: Work and study' })).toBeVisible()
+})
+
+test('private support choices from the profile filter jobs for the learner only', async ({
+  page,
+}) => {
+  await register(page, uniqueEmail())
+  await completeProfile(page) // includes the private "Sign language" workplace-support choice
+  await page.goto('/jobs')
+  await expect(
+    page.getByText('We used the private support choices from your profile.'),
+  ).toBeVisible()
+  await expect(
+    page.getByRole('link', { name: 'Sign Language Health Educator', exact: true }),
+  ).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Farm Records Assistant', exact: true })).toHaveCount(
+    0,
+  )
+  await page.getByRole('button', { name: 'Clear all filters' }).click()
+  await expect(
+    page.getByRole('link', { name: 'Farm Records Assistant', exact: true }),
+  ).toBeVisible()
+})
+
+test('Accessibility Preview: settings change the page immediately', async ({ page }) => {
+  await page.goto('/preview')
+  await expect(page.getByRole('heading', { level: 1, name: 'Try your settings' })).toBeVisible()
+  await page.getByRole('radio', { name: /150%/ }).check()
+  await expect
+    .poll(() => page.evaluate(() => getComputedStyle(document.documentElement).fontSize))
+    .toBe('24px')
 })

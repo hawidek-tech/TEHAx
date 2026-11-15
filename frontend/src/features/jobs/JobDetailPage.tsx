@@ -161,7 +161,12 @@ export default function JobDetailPage() {
                     />
                   ) : j.open ? (
                     <LinkButton
-                      to={`/jobs/${j.id}/apply`}
+                      // Signed out: create an account first (4 questions), then continue to this application.
+                      to={
+                        me
+                          ? `/jobs/${j.id}/apply`
+                          : `/register?next=${encodeURIComponent(`/jobs/${j.id}/apply`)}&reason=apply`
+                      }
                       size="lg"
                       icon={<Send size={20} aria-hidden="true" />}
                     >

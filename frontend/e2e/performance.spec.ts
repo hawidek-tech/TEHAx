@@ -24,7 +24,7 @@ test('first visit on slow 3G stays within the low-data budget', async ({ page, b
   )
   const start = Date.now()
   await page.goto('/', { waitUntil: 'commit' })
-  await expect(page.getByRole('radio', { name: /አማርኛ/ })).toBeVisible({ timeout: 30_000 })
+  await expect(page.getByRole('button', { name: /Jalqabi Start/ })).toBeVisible({ timeout: 30_000 })
   const usableMs = Date.now() - start
   await page.waitForLoadState('networkidle')
 

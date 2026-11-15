@@ -55,6 +55,30 @@ export function QuestionStep({ field, ns, data, error, onChange, headingRef, onH
     .filter(Boolean)
     .join('. ')
 
+  const signFirst = prefs.usageMode === 'sign'
+  const signControl = (field.type === 'text' || field.type === 'textarea') &&
+    field.voice !== false && (
+      <>
+        <Button
+          variant={signFirst ? 'primary' : 'secondary'}
+          size={signFirst ? 'md' : 'sm'}
+          icon={<Hand size={18} aria-hidden="true" />}
+          onClick={() => setSignOpen(true)}
+        >
+          {t('sign.open')}
+        </Button>
+        {signOpen && (
+          <SignLanguageDialog
+            open
+            question={text.label}
+            currentValue={value === undefined ? '' : String(value)}
+            onClose={() => setSignOpen(false)}
+            onAccept={(v) => onChange(field.id, v)}
+          />
+        )}
+      </>
+    )
+
   return (
     <div className="af-enter flex flex-col gap-5">
       <div className="flex items-start gap-4">
@@ -115,6 +139,8 @@ export function QuestionStep({ field, ns, data, error, onChange, headingRef, onH
       )}
 
       <div className="flex flex-wrap items-center gap-3">
+        {/* "I use sign language or pictures": picture phrases come first (in reading order too) and are larger. */}
+        {signFirst && signControl}
         {voiceEnabled(field) && (
           <VoiceInput
             question={text.label}
@@ -123,27 +149,7 @@ export function QuestionStep({ field, ns, data, error, onChange, headingRef, onH
             onAccept={(v) => onChange(field.id, v)}
           />
         )}
-        {(field.type === 'text' || field.type === 'textarea') && field.voice !== false && (
-          <>
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={<Hand size={18} aria-hidden="true" />}
-              onClick={() => setSignOpen(true)}
-            >
-              {t('sign.open')}
-            </Button>
-            {signOpen && (
-              <SignLanguageDialog
-                open
-                question={text.label}
-                currentValue={value === undefined ? '' : String(value)}
-                onClose={() => setSignOpen(false)}
-                onAccept={(v) => onChange(field.id, v)}
-              />
-            )}
-          </>
-        )}
+        {!signFirst && signControl}
         <ReadAloud text={readText} />
         <Button
           variant="ghost"

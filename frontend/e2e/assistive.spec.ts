@@ -161,18 +161,19 @@ test('offline: answers are kept on the device and the user is told; sending wait
   context,
 }) => {
   await register(page, uniqueEmail())
-  await page.getByLabel('What is your first name?').fill('Offline')
+  await page.getByRole('button', { name: /^(Start|Continue: About you)$/ }).click()
+  await page.getByLabel("What is your grandfather's name?").fill('Offline')
   await next(page)
   await expect(page.getByText('All changes saved')).toBeVisible()
   await context.setOffline(true)
   await expect(page.getByText(/You are offline/).first()).toBeVisible()
-  await page.getByLabel("What is your father's name?").fill('Tester')
+  await page.getByLabel('In what year were you born?').fill('1994')
   await next(page)
   await expect(
     page.getByText('Saved on this device. It will be sent when you are back online.').first(),
   ).toBeVisible()
-  await expect.poll(() => page.evaluate(() => JSON.stringify(localStorage))).toContain('Tester')
+  await expect.poll(() => page.evaluate(() => JSON.stringify(localStorage))).toContain('1994')
   await context.setOffline(false)
-  await page.getByLabel("What is your grandfather's name?").fill('Back')
+  await page.getByLabel('Which region do you live in?').selectOption({ label: 'Afar' })
   await expect(page.getByText('All changes saved')).toBeVisible({ timeout: 15_000 })
 })

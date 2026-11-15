@@ -37,19 +37,28 @@ const spoken = (page: Page) =>
   )
 const lastSpoken = async (page: Page) => (await spoken(page)).at(-1)?.text ?? ''
 
-test('audio accessibility (English): one action starts guidance through welcome, registration, errors, review', async ({
+test('audio accessibility (English): one touch on the first screen starts guidance through the first visit, registration, errors, review', async ({
   page,
   context,
 }) => {
   await fakeVoices(context, ['en-US', 'am-ET'])
   await page.goto('/')
   expect(await spoken(page)).toEqual([]) // nothing plays before the user asks
-  const activate = page.getByRole('button', { name: 'Activate Audio Accessibility' })
+  const activate = page.getByRole('button', { name: /Activate Audio Accessibility/ })
   await expect(activate).toBeVisible()
   await activate.click()
-  await expect.poll(() => lastSpoken(page)).toContain('Audio accessibility is on')
   await expect(page.getByRole('region', { name: 'Audio guidance' })).toBeVisible()
-  await expect(page.getByTestId('audio-guide-text')).toContainText('Audio accessibility is on') // text shown too
+  // "Choose your language" in every language with a voice, each with its own voice
+  await expect
+    .poll(async () => (await spoken(page)).map((s) => `${s.lang}: ${s.text}`))
+    .toEqual(expect.arrayContaining(['en-US: Choose your language', 'am-ET: ቋንቋዎን ይምረጡ']))
+  await page.getByRole('button', { name: /^English/ }).click()
+  // The "how" question is skipped: audio was already chosen
+  await expect.poll(() => lastSpoken(page)).toContain('What would you like to do today?')
+  expect(await lastSpoken(page)).toContain('1. Find a job')
+  await expect(page.getByTestId('audio-guide-text')).toContainText(
+    'What would you like to do today?',
+  )
 
   // Spoken navigation help
   await page
@@ -58,24 +67,22 @@ test('audio accessibility (English): one action starts guidance through welcome,
     .click()
   await expect.poll(() => lastSpoken(page)).toContain('press Tab to go to the next item')
 
-  // Registration: progress, question, choices and how to answer are spoken
-  await page.goto('/register')
+  // Registration: progress, question and (first time only) how to answer are spoken
+  await page.goto('/register?next=%2Fonboarding&reason=profile')
   await page.getByRole('button', { name: 'Repeat' }).click() // a reload needs a user action before speech is allowed
-  await expect.poll(() => lastSpoken(page)).toContain('Question 1 of')
+  await expect.poll(() => lastSpoken(page)).toContain('Question 1 of 4')
   expect(await lastSpoken(page)).toContain('What should we call you?')
+  expect(await lastSpoken(page)).toContain('Type your answer, or press Speak your answer.')
   await page.getByLabel('What should we call you?').fill('Audio User')
   await next(page)
-  await expect
-    .poll(() => lastSpoken(page))
-    .toContain('Choices: With my phone number, With my email address')
-  expect(await lastSpoken(page)).toContain('Use the arrow keys')
+  await expect.poll(() => lastSpoken(page)).toContain('What is your mobile phone number?')
+  expect(await lastSpoken(page)).not.toContain('Type your answer') // shorter after the first time
   // Errors are spoken in plain language
   await next(page)
   await expect
     .poll(() => lastSpoken(page))
     .toContain('Please check your answer. Please answer this question.')
-  await page.getByLabel('With my email address').check()
-  await next(page)
+  await page.getByRole('button', { name: 'Use email instead of a phone number' }).click()
   await page.getByLabel('What is your email address?').fill(uniqueEmail())
   await next(page)
   await page.getByLabel('Create a password').fill('my coffee is hot today')
@@ -85,11 +92,11 @@ test('audio accessibility (English): one action starts guidance through welcome,
   await expect.poll(() => lastSpoken(page)).toContain('Check your answers')
   expect(await lastSpoken(page)).toContain('Create account')
   await page.getByRole('button', { name: 'Create account' }).click()
-  // Next page (profile flow) is guided too
-  await expect.poll(() => lastSpoken(page)).toContain('What is your first name?')
-  // Repeat / stop / turn off
+  // Next page (profile overview) is guided too
+  await expect.poll(() => lastSpoken(page)).toContain('Your profile has 3 short parts')
+  // Repeat / turn off
   await page.getByRole('button', { name: 'Repeat' }).click()
-  await expect.poll(async () => (await spoken(page)).length).toBeGreaterThan(5)
+  await expect.poll(async () => (await spoken(page)).length).toBeGreaterThan(8)
   await page.getByRole('button', { name: 'Turn off audio' }).click()
   await expect(page.getByRole('region', { name: 'Audio guidance' })).toHaveCount(0)
 })
@@ -100,9 +107,9 @@ test('audio accessibility (Amharic): Amharic text is spoken with an Amharic voic
 }) => {
   await fakeVoices(context, ['en-US', 'am-ET'])
   await page.goto('/')
-  await page.getByRole('radio', { name: /አማርኛ/ }).check()
-  await page.getByRole('button', { name: 'የድምፅ ተደራሽነትን አብራ' }).click()
-  await expect.poll(() => lastSpoken(page)).toContain('የድምፅ ተደራሽነት በርቷል')
+  await page.getByRole('button', { name: /የድምፅ ተደራሽነትን አብራ/ }).click()
+  await page.getByRole('button', { name: /አማርኛ/ }).click()
+  await expect.poll(() => lastSpoken(page)).toContain('ዛሬ ምን ማድረግ ይፈልጋሉ?')
   expect((await spoken(page)).at(-1)?.lang).toBe('am-ET')
   await page.goto('/register')
   await page.getByRole('button', { name: 'ድገም' }).click()
@@ -116,13 +123,15 @@ test('audio accessibility: no voice for the language is stated on screen, never 
 }) => {
   await fakeVoices(context, ['en-US']) // no Amharic voice on this "device"
   await page.goto('/')
-  await page.getByRole('radio', { name: /አማርኛ/ }).check()
-  await page.getByRole('button', { name: 'የድምፅ ተደራሽነትን አብራ' }).click()
+  await page.getByRole('button', { name: /የድምፅ ተደራሽነትን አብራ/ }).click()
+  await page.getByRole('button', { name: /አማርኛ/ }).click()
   await expect(page.getByRole('region', { name: 'የድምፅ መመሪያ' })).toContainText(
     'ይህ መሣሪያ ለዚህ ቋንቋ ድምፅ የለውም',
   )
-  await expect(page.getByTestId('audio-guide-text')).toContainText('የድምፅ ተደራሽነት በርቷል')
-  expect(await spoken(page)).toEqual([])
+  await expect(page.getByTestId('audio-guide-text')).toContainText('ዛሬ ምን ማድረግ ይፈልጋሉ?')
+  // Only "Choose your language" in English (the one voice) was spoken; nothing Amharic with a wrong voice
+  const said = await spoken(page)
+  expect(said.every((s) => s.lang === 'en-US' && s.text === 'Choose your language')).toBe(true)
 })
 
 test('sign-language option: explicit camera start, visible indicator, tracks stopped on close; phrase message confirmed before use', async ({
@@ -175,7 +184,7 @@ test('sign-language option: explicit camera start, visible indicator, tracks sto
   ).toBe(true)
 })
 
-test('offline around question 7: answers kept, page reload while offline restores them, sync after reconnecting', async ({
+test('offline mid-journey (profile part 2, after 8 earlier questions): answers kept, reload while offline restores them, sync after reconnecting', async ({
   page,
   context,
 }) => {
@@ -190,18 +199,17 @@ test('offline around question 7: answers kept, page reload while offline restore
     .catch(() => undefined)
   await page.reload()
   await page.waitForFunction(() => !!navigator.serviceWorker?.controller, null, { timeout: 15_000 })
-  await page.getByLabel('What is your first name?').fill('Offline')
-  await next(page)
-  await page.getByLabel("What is your father's name?").fill('Seven')
-  await next(page)
-  await next(page)
-  await next(page)
+  // Path A order: 4 account questions, then the profile; question 7 of the journey is in part 2 (work)
+  await page.getByRole('button', { name: /^(Start|Continue: About you)$/ }).click()
+  await next(page) // grandfather
+  await next(page) // birth year
   await page.getByLabel('Which region do you live in?').selectOption({ label: 'Oromia' })
   await next(page)
-  await next(page)
-  await expect(page.getByText('Question 7 of')).toBeVisible()
-  await expect(page.getByText('All changes saved')).toBeVisible()
-
+  await next(page) // city
+  await page.getByRole('button', { name: 'Save this part' }).click()
+  await page.getByRole('button', { name: 'Continue: Work and study' }).click()
+  await expect(page).toHaveURL(/part=work/)
+  await expect(page.getByText('Question 1 of')).toBeVisible()
   await context.setOffline(true)
   await page.getByLabel('What kind of work are you looking for?').fill('Farm records')
   await next(page)
@@ -227,7 +235,10 @@ test('offline around question 7: answers kept, page reload while offline restore
   await context.setOffline(false)
   await page.getByLabel('What kind of work are you looking for?').fill('Farm records assistant')
   await expect(page.getByText('All changes saved')).toBeVisible({ timeout: 15_000 })
-  const draft = await page.evaluate(async () => (await fetch('/api/v1/drafts/profile')).json())
+  const draft = await page.evaluate(async () =>
+    (await fetch('/api/v1/drafts/profile?context=work')).json(),
+  )
   expect(draft.data.summary).toBe('Written while offline.')
-  expect(draft.data.region).toBe('OROMIA')
+  const profile = await page.evaluate(async () => (await fetch('/api/v1/profile')).json())
+  expect(profile.region).toBe('OROMIA')
 })

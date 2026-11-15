@@ -50,6 +50,29 @@ export const speech = {
     window.speechSynthesis.speak(u)
     return true
   },
+  /**
+   * Speaks several short texts one after another, each in its own language (only those with a device voice).
+   * Used once on the first visit to say "Choose your language" in every language. Returns how many will be spoken.
+   */
+  speakQueue(id: string, items: { text: string; locale: string }[]) {
+    if (!speechSupported()) return 0
+    const playable = items.map((i) => ({ ...i, voice: voiceFor(i.locale) })).filter((i) => i.voice)
+    window.speechSynthesis.cancel()
+    if (!playable.length) return 0
+    emit({ state: 'speaking', text: playable.map((i) => i.text).join(' '), id })
+    playable.forEach((i, n) => {
+      const u = new SpeechSynthesisUtterance(i.text)
+      u.voice = i.voice!
+      u.lang = i.voice!.lang
+      u.rate = 0.95
+      if (n === playable.length - 1) {
+        u.onend = () => snapshot.id === id && emit({ state: 'idle', text: '', id: null })
+        u.onerror = u.onend
+      }
+      window.speechSynthesis.speak(u)
+    })
+    return playable.length
+  },
   pause() {
     if (snapshot.state !== 'speaking') return
     window.speechSynthesis.pause()

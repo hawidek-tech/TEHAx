@@ -46,7 +46,9 @@
     "savedLocal": "Meeshaa kana irratti olkaa'ameera. Yeroo deebitanii walqunnamtan ni ergama.",
     "savedDevice": "Meeshaa kana irratti olkaa'ameera",
     "syncFailed": "Saarvara irratti olkaa'uun hin danda'amne. Deebiin keessan ammallee fuula kana irra jira.",
-    "submitOffline": "Toora irraa alatti jirtu. Deebiin keessan olkaa'ameera. Yeroo walqunnamtan irra deebi'aa yaalaa."
+    "submitOffline": "Toora irraa alatti jirtu. Deebiin keessan olkaa'ameera. Yeroo walqunnamtan irra deebi'aa yaalaa.",
+    "offlineSpoken": "Interneetiin hin jiru. Itti fufi; deebiiwwan kee nagaa dha.",
+    "backOnlineSpoken": "Deebi'ee walqunnameera. Deebiiwwan kee ergamaa jiru."
   },
   "welcome": {
     "eyebrow": "Galmee fi hojii dhaqqabamaa",
@@ -908,6 +910,9 @@
       "unknownPartner": "Marsariitiin michuu kun ACCESSFLOW irratti hin galmoofne.",
       "originNotAllowed": "Marsariitiin kun ACCESSFLOW agarsiisuuf hin hayyamamne. Maaloo kallattiin banuuf hidhaa armaan gadii fayyadamaa.",
       "componentNotEnabled": "Unkaan kun marsariitii kana irratti hin jiru."
+    },
+    "profile": {
+      "unknownStep": "Gaaffiin kun asitti kuufamuu hin danda'u."
     }
   },
   "flows": {
@@ -1271,6 +1276,11 @@
       "validation": {
         "required": "Maaloo deebisaa."
       }
+    },
+    "start": {
+      "intent": {
+        "title": "Amma maal barbaadda?"
+      }
     }
   },
   "audio": {
@@ -1336,5 +1346,144 @@
     "messageLabel": "Ergaa keessan",
     "messageHint": "Otoo hin fayyadamin dura ergaa mirkaneessaa jijjiiraa.",
     "useMessage": "Ergaa kana fayyadami"
+  },
+  "start": {
+    "stopSound": "Sagalee dhaabi",
+    "mode": {
+      "title": "ACCESSFLOW akkamitti fayyadamuu barbaadda?",
+      "lead": "Tokko filadhu. Akkaataa gaaffiin tokkoon tokkoon siif dhiyaatu jijjiira.",
+      "changeLater": "Kana yeroo kamiyyuu Gargaarsaa fi qindaa'ina keessatti jijjiiruu dandeessa.",
+      "simple": "Jechoota salphaa fayyadami",
+      "change": "Akkaataa itti fayyadamu jijjiiri",
+      "listen": {
+        "label": "Naaf dubbisi",
+        "detail": "Gaaffii fi filannoo koo tokkoon tokkoon nan dhaga'a."
+      },
+      "screenReader": {
+        "label": "Dubbisaa iskiriinii kootiin fayyadama",
+        "detail": "Sagaleen akka wal hin dhaabneef ACCESSFLOW ni callisa."
+      },
+      "read": {
+        "label": "Ani dubbisee nan barreessa",
+        "detail": "Gaaffiiwwan tokko tokkoon agarsiifamu."
+      },
+      "sign": {
+        "label": "Afaan mallattoo ykn suuraa fayyadama",
+        "detail": "Gaalee suuraatiin deebisi. Barreeffamni ni mul'ata, sagaleen hin jiru."
+      }
+    },
+    "intent": {
+      "title": "Har'a maal gochuu barbaadda?",
+      "signIn": "Herrega qaba: seeni",
+      "employer": "Hojjechiisaa ykn hojjetaa dha",
+      "changeSetup": "Afaan ykn akkaataa fayyadamaa jijjiiri",
+      "job": {
+        "label": "Hojii barbaadi",
+        "detail": "Hojiiwwan ilaali. Herregni kan barbaachisu yeroo iyyattu qofa."
+      },
+      "applications": {
+        "label": "Iyyannoowwan koo",
+        "detail": "Hojiiwwan iyyatte maal akka ta'an ilaali."
+      },
+      "profile": {
+        "label": "Seenaa koo uumi",
+        "detail": "Kutaalee gabaabaa 3. Kutaa kamiyyuu booda dhaabuu dandeessa."
+      },
+      "support": {
+        "label": "Deeggarsa gaafadhu",
+        "detail": "Dhuunfaa dha. Hojjechiiftonni gonkumaa hin argan."
+      },
+      "learn": {
+        "label": "Akkamitti akka hojjetu baradhu",
+        "detail": "Daqiiqaa tokko qofa."
+      }
+    },
+    "tour": {
+      "title": "ACCESSFLOW akkamitti hojjeta",
+      "p1": "Gaaffii tokko yeroo tokkotti deebifta. Itti fufi fi Duubatti yeroo hunda gadi jiru.",
+      "p2": "Gargaarsaa fi qindaa'inni gubbaa jira: irra deebi'i, afaan jijjiiri, sagalee, nama gaafadhu, olkaa'ii dhaabi.",
+      "p3": "Barreessuu, deebii kee dubbachuu (osoo hin fayyadamin dura ni mirkaneessita) ykn gaalee suuraa fayyadamuu dandeessa.",
+      "p4": "Interneetiin yoo citu itti fufi. Deebiiwwan kee ni kuufamu, booda ni ergamu.",
+      "p5": "Fedhiin deeggarsa dhuunfaa kee hojjechiiftotaaf gonkumaa hin mul'atu.",
+      "done": "Hubadheera"
+    },
+    "returning": {
+      "welcome": "Baga nagaan deebite, {{name}}.",
+      "open": "Bani",
+      "other": "Waan biraa",
+      "unfinished": {
+        "job-application": "Waan xumurtu tokko qabda: iyyannoo hojii.",
+        "profile": "Waan xumurtu tokko qabda: seenaa kee.",
+        "support-request": "Waan xumurtu tokko qabda: gaaffii deeggarsaa."
+      }
+    },
+    "account": {
+      "apply": "Iyyachuuf herregni si barbaachisa. Gaaffii 4.",
+      "profile": "Jalqaba herrega kee uumi. Gaaffii 4.",
+      "support": "Deeggarsa gaafachuuf herregni si barbaachisa. Gaaffii 4.",
+      "lead": "Deebiiwwan kee gaaffii hundaa booda ni kuufamu. Achiis bakka turtetti itti fufta.",
+      "useEmail": "Lakkoofsa bilbilaa bakka email fayyadami",
+      "usePhone": "Email bakka lakkoofsa bilbilaa fayyadami"
+    },
+    "minimum": {
+      "title": "Hojjechiisaan odeeffannoo muraasa barbaada",
+      "lead": "Gaaffiiwwan: {{count}}. Seenaa kee keessatti kuufamu, kanaaf irra deebi'amee hin gaafatamtu.",
+      "submit": "Olkaa'ii gara iyyannootti itti fufi",
+      "saved": "Kuufameera. Amma gaaffiiwwan iyyannoo."
+    },
+    "done": {
+      "finishProfile": "Seenaa koo xumuri (filannoo)",
+      "moreJobs": "Hojiiwwan dabalataa ilaali"
+    }
+  },
+  "helpMenu": {
+    "button": "Gargaarsaa fi qindaa'ina",
+    "title": "Gargaarsaa fi qindaa'ina",
+    "repeat": "Irra deebi'i",
+    "home": "Maal gochuu barbaadda?",
+    "askQuestion": "Gaaffii gaafadhu",
+    "askPerson": "Nama gaafadhu",
+    "saveStop": "Olkaa'ii dhaabi",
+    "saved": "Deebiiwwan kee kuufamaniiru. Booda itti fufuu dandeessa.",
+    "allSettings": "Qindaa'ina hunda",
+    "language": "Afaan",
+    "sound": "Sagalee fi dubbisa",
+    "waysTitle": "Dubbadhu ykn suuraa fayyadami",
+    "waysBody": "Gaaffii barreeffamaa hunda irratti deebii kee dubbachuuf Dubbadhu, ykn gaalee suuraa fayyadamuuf mallattoo tuquu dandeessa. Deebiin osoo hin fayyadamin dura yeroo hunda ni mirkaneessita.",
+    "account": "Herrega koo"
+  },
+  "profileParts": {
+    "title": "Seenaa kee",
+    "intro": "Seenaan kee kutaalee gabaabaa {{parts}} (gaaffiiwwan {{questions}} hafaniiru) fi kutaalee filannoo 2 qaba. Deebiiwwan kee gaaffii hundaa booda ni kuufamu. Kutaa kamiyyuu booda dhaabuu dandeessa.",
+    "partOf": "Kutaa {{current}} kan {{total}}: {{name}}",
+    "partLead": "Gaaffiiwwan duraan deebifte irra deebi'amanii hin gaafataman; dhuma irratti mirkaneessuu dandeessa.",
+    "supportLead": "Dhuunfaa dha. Kana kan argan hojjettoota deeggarsaa qofa. Hojjechiiftonni gonkumaa hin argan.",
+    "names": {
+      "about": "Waa'ee kee",
+      "work": "Hojii fi barnoota",
+      "skills": "Dandeettii fi afaanota",
+      "support": "Deeggarsa dhuunfaa (filannoo)",
+      "identity": "Eenyummaa ykn ergaa (filannoo)"
+    },
+    "savePart": "Kutaa kana olkaa'i",
+    "saveSupport": "Olkaa'i",
+    "partDone": "Kutaa {{current}} kan {{total}} xumurameera.",
+    "allDone": "Seenaan kee qophaa'eera.",
+    "continueWith": "Itti fufi: {{name}}",
+    "lookAtJobs": "Hojiiwwan ilaali",
+    "stop": "Amma dhaabi",
+    "allParts": "Kutaalee hunda ilaali",
+    "partsTitle": "Kutaalee",
+    "state": {
+      "done": "xumurameera",
+      "started": "gaaffiiwwan hafan: {{count}}",
+      "todo": "hin jalqabamne"
+    },
+    "change": "Jijjiiri",
+    "optionalTitle": "Kutaalee filannoo",
+    "optionalLead": "Kanneen amma ykn booda dabaluu dandeessa.",
+    "supportSaved": "Kuufameera.",
+    "privateTitle": "Kun dhuunfaa ta'ee hafa",
+    "privateBody": "Kana kan argan hojjettoota deeggarsaa qofa. Hojjechiiftonni gonkumaa hin argan."
   }
 }

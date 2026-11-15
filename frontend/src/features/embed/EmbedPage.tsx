@@ -1,7 +1,7 @@
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router'
-import { usePreferences } from '../../a11y/preferences'
+import { usageModePatch, usePreferences } from '../../a11y/preferences'
 import { CaptionBar } from '../../a11y/ReadAloud'
 import { Alert } from '../../design-system/Alert'
 import { Button } from '../../design-system/Button'
@@ -12,9 +12,25 @@ import { LOCALES } from '../../i18n'
 import { useT } from '../../i18n/useT'
 import { ApiError, api, setEmbedMode } from '../../lib/api'
 import { useSession } from '../../lib/session'
-import type { ApplicationSummary, JobDetail, JobSummary, Locale, Profile } from '../../lib/types'
+import type {
+  ApplicationSummary,
+  JobDetail,
+  JobSummary,
+  Locale,
+  Profile,
+  UsageMode,
+} from '../../lib/types'
 import { useApi } from '../../lib/useApi'
 import { DateText } from '../shared/DateText'
+import {
+  MINIMUM_FOR_APPLYING,
+  SUPPORT_STEPS,
+  answeredSteps,
+  namesFromDisplayName,
+  profileAnswers,
+  subsetDefinition,
+} from '../onboarding/profileParts'
+import { registrationShortcuts } from '../onboarding/registrationShortcuts'
 
 interface EmbedConfig {
   partnerName: string
@@ -170,6 +186,8 @@ export default function EmbedPage() {
           </Alert>
         ) : !config ? (
           <Loading label={t('app.loading')} />
+        ) : !prefs.usageMode ? (
+          <EmbedModeChoice />
         ) : (
           <EmbedContent view={view} jobId={jobId} post={post} />
         )}
@@ -186,6 +204,17 @@ export default function EmbedPage() {
             <span className="sr-only">({t('app.opensNewTab')})</span>
           </a>
         </p>
+        {config && prefs.usageMode && (
+          <p className="mt-3">
+            <button
+              type="button"
+              onClick={() => update({ usageMode: null })}
+              className="inline-flex min-h-11 items-center font-semibold text-primary underline"
+            >
+              {t('start.mode.change')}
+            </button>
+          </p>
+        )}
       </main>
       <CaptionBar />
     </div>
@@ -235,6 +264,7 @@ function EmbedContent({ view, jobId, post }: { view: string; jobId: string; post
           flowKey="registration"
           draftOwner={null}
           serverDrafts={false}
+          {...registrationShortcuts(t)}
           submitLabel={t('auth.createAccount')}
           onStepChange={onStep}
           onSubmit={async (d) => {
@@ -307,6 +337,7 @@ function RegisterInline({ onStep }: { onStep: StepFn }) {
         flowKey="registration"
         draftOwner={null}
         serverDrafts={false}
+        {...registrationShortcuts(t)}
         submitLabel={t('auth.createAccount')}
         onStepChange={onStep}
         onSubmit={async (d) => {
@@ -335,33 +366,96 @@ function SignupProfile({
   meId: string
 }) {
   const t = useT()
+  const { me } = useSession()
   const flow = useApi<FlowDefinition>('/api/v1/forms/profile')
   const profile = useApi<Profile>('/api/v1/profile')
+  const [stage, setStage] = useState<'minimum' | 'support'>('minimum')
   if (!flow.data || !profile.data) return <Loading label={t('app.loading')} />
-  if (profile.data.completed)
+  if (profile.data.completed && stage === 'minimum')
     return (
       <Alert tone="success" title={t('embed.profileReadyTitle')}>
         {t('embed.profileReady')}
       </Alert>
     )
+  // Short sign-up: the few details employers need (names pre-filled from the account name), then one optional,
+  // private question about support. The rest of the profile can be added later in the full profile.
+  if (stage === 'minimum') {
+    const known = { ...namesFromDisplayName(me?.displayName), ...profileAnswers(profile.data) }
+    const prefilled = answeredSteps(MINIMUM_FOR_APPLYING, known)
+    return (
+      <FlowRunner
+        key="minimum"
+        definition={subsetDefinition(flow.data, MINIMUM_FOR_APPLYING)}
+        flowKey="profile"
+        context="embed-signup"
+        draftOwner={null}
+        serverDrafts
+        initial={Object.fromEntries(prefilled.map((id) => [id, known[id]]))}
+        skipSteps={prefilled}
+        submitLabel={t('app.continue')}
+        onStepChange={onStep}
+        onSubmit={async (data) => {
+          await api.put(`/api/v1/profile/steps?steps=${MINIMUM_FOR_APPLYING.join(',')}`, data)
+          setStage('support')
+        }}
+      />
+    )
+  }
   return (
     <FlowRunner
-      definition={flow.data}
+      key="support"
+      definition={subsetDefinition(
+        flow.data,
+        SUPPORT_STEPS.filter((id) => id !== 'workplaceSupport'),
+      )}
       flowKey="profile"
+      context="embed-support"
       draftOwner={null}
       serverDrafts
       submitLabel={t('onboarding.submit')}
       onStepChange={onStep}
       onSubmit={async (data) => {
-        const res = await api.post<{ supportRequestId?: string }>(
-          '/api/v1/onboarding/profile',
-          data,
-        )
-        if (res.supportRequestId) post('support', { requested: true })
+        if (data.supportNeeded === 'yes') {
+          await api.put(`/api/v1/learners/${meId}/support`, {
+            workplaceSupport: profile.data?.supportPreferences ?? [],
+            request: {
+              category: data.supportCategory,
+              message: data.supportMessage,
+              contact: data.supportContact,
+            },
+          })
+          post('support', { requested: true })
+        }
         post('completed', { reference: meId })
         onDone('embed.signupDone')
       }}
     />
+  )
+}
+
+/** "How do you want to use ACCESSFLOW?" - asked once inside the module (kept in the module's own storage). */
+function EmbedModeChoice() {
+  const t = useT()
+  const { update } = usePreferences()
+  const modes: UsageMode[] = ['listen', 'screenReader', 'read', 'sign']
+  return (
+    <section aria-labelledby="embed-mode-title" className="flex flex-col gap-3">
+      <h2 id="embed-mode-title" className="text-xl font-bold">
+        {t('start.mode.title')}
+      </h2>
+      <p className="text-muted">{t('start.mode.changeLater')}</p>
+      {modes.map((m) => (
+        <button
+          key={m}
+          type="button"
+          onClick={() => update(usageModePatch(m))}
+          className="af-transition flex min-h-14 w-full flex-col rounded-xl border-2 border-field bg-surface px-4 py-2 text-left hover:border-primary hover:bg-primary-soft"
+        >
+          <span className="text-lg font-bold">{t(`start.mode.${m}.label`)}</span>
+          <span className="text-muted">{t(`start.mode.${m}.detail`)}</span>
+        </button>
+      ))}
+    </section>
   )
 }
 
@@ -550,6 +644,7 @@ function ApplyInFrame({
         'account.phone': me?.phone,
         'profile.summary': profile.data?.summary,
       }}
+      skipSteps={me?.phone || me?.email ? ['contactPhone', 'contactEmail'] : []}
       submitLabel={t('apply.submit')}
       confirmLabel={t('apply.confirmLabel')}
       onSubmit={async (data) => {

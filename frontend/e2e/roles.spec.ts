@@ -41,8 +41,7 @@ test('employer reviews a consented application and updates its status; staff ver
   await register(applicant, email, applicantName)
   await completeProfile(applicant)
   await applicant.goto('/jobs/0c000000-0000-4000-8000-000000000006/apply')
-  await next(applicant)
-  await next(applicant)
+  // Full profile and known contact details: the application starts with its own questions
   await applicant.getByLabel('Why do you want this job?').fill(motivation)
   await next(applicant)
   await next(applicant)
@@ -79,7 +78,16 @@ test('employer reviews a consented application and updates its status; staff ver
   ).toBeVisible()
   await expectNoSeriousA11yViolations(employer, 'employer job + accommodation form')
 
-  // Applicant sees the update
+  // Applicant: the news is the one main action on the returning visit
+  await applicant.goto('/')
+  await expect(applicant.getByRole('heading', { level: 1 })).toHaveText(
+    `Welcome back, ${applicantName}.`,
+  )
+  await expect(
+    applicant.getByText('Update on "Data Entry Internship": Invited to interview.'),
+  ).toBeVisible()
+  await applicant.getByRole('button', { name: 'Open' }).click()
+  await expect(applicant).toHaveURL(/\/applications$/)
   await applicant.goto('/dashboard')
   await expect(
     applicant.getByText(/Update on "Data Entry Internship": Invited to interview/),
